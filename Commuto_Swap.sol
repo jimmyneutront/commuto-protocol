@@ -42,7 +42,7 @@ contract Commuto_Swap {
     
     struct Offer {
         bool isCreated;
-        address maker
+        address maker;
         bytes interfaceAddress;
         StablecoinType stablecoinType;
         uint256 amountLowerBound;
@@ -99,7 +99,14 @@ contract Commuto_Swap {
         }
         
         uint256 serviceFeeAmountUpperBound = newOffer.amountUpperBound / 100;
-        uint256 totalAmount = SafeMath.add(SafeMath.add(newOffer.amountUpperBound, newOffer.securityDepositAmount), serviceFeeAmountUpperBound);
+        uint256 totalAmount;
+        if(newOffer.direction == SwapDirection.SELL) {
+            totalAmount = SafeMath.add(SafeMath.add(newOffer.amountUpperBound, newOffer.securityDepositAmount), serviceFeeAmountUpperBound);
+        } else if (newOffer.direction == SwapDirection.BUY) {
+            totalAmount = SafeMath.add(newOffer.securityDepositAmount, serviceFeeAmountUpperBound);
+        } else {
+            revert("You must specify a supported direction");
+        }
         require(totalAmount >= token.allowance(msg.sender, address(this)), "Token allowance must be greater than total swap amount, including maximum swap amount, security deposit and max service fee");
         require(token.transferFrom(msg.sender, address(this), totalAmount), "Token transfer to Commuto Protocol failed");
         
