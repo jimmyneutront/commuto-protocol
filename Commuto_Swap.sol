@@ -75,7 +75,7 @@ contract Commuto_Swap {
     //Create a new swap offer
     function openOffer(bytes16 offerID, Offer memory newOffer) public {
         //Validate arguments
-        require(offers[offerID].isCreated, "An offer with the specified id already exists");
+        require(offers[offerID].isCreated == false, "An offer with the specified id already exists");
         require(newOffer.amountLowerBound > 0, "The minimum swap amount must be greater than zero");
         require(newOffer.amountUpperBound >= newOffer.amountLowerBound, "The maximum swap amount must be >= the minimum swap amount");
         require(SafeMath.mul(newOffer.securityDepositAmount, 10) >= newOffer.amountLowerBound, "The security deposit must be at least 10% of the minimum swap amount");
