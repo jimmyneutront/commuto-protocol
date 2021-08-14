@@ -232,7 +232,13 @@ contract Commuto_Swap {
         //Validate arguments
         require(swaps[swapID].isCreated, "A swap with the specified id does not exist");
         require(swaps[swapID].isPaymentSent == false, "Payment sending has already been reported for swap with specified id");
-        require(swaps[swapID].taker == msg.sender, "Payment sending can only be reported by swap taker");
+        if(swaps[swapID].direction == SwapDirection.BUY) {
+            require(swaps[swapID].maker == msg.sender, "Payment sending can only be reported by buyer");
+        } else if (swaps[swapID].direction == SwapDirection.SELL) {
+            require(swaps[swapID].taker == msg.sender, "Payment sending can only be reported by buyer");
+        } else {
+            revert("Swap has invalid direction");
+        }
 
         //Mark payment sent and notify
         swaps[swapID].isPaymentSent = true;
