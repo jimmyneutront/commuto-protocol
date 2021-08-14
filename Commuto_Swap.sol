@@ -125,8 +125,7 @@ contract Commuto_Swap {
         }
 
         //Calculate required total amount
-        //TODO: Use SafeMath here
-        uint256 serviceFeeAmountUpperBound = newOffer.amountUpperBound / 100;
+        uint256 serviceFeeAmountUpperBound = SafeMath.div(newOffer.amountUpperBound, 100);
         uint256 totalAmount;
         if(newOffer.direction == SwapDirection.SELL) {
             totalAmount = SafeMath.add(SafeMath.add(newOffer.amountUpperBound, newOffer.securityDepositAmount), serviceFeeAmountUpperBound);
