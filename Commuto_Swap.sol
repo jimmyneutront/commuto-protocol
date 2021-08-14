@@ -80,6 +80,7 @@ contract Commuto_Swap {
     
     event OfferOpened(bytes16 offerID);
     event OfferTaken(bytes16 offerID);
+    event PaymentSent(bytes16 swapID);
     
     mapping (bytes16 => Offer) private offers;
     mapping (bytes16 => Swap) private swaps;
@@ -219,5 +220,17 @@ contract Commuto_Swap {
         newSwap.isPaymentReceived = false;
         swaps[offerID] = newSwap;
         emit OfferTaken(offerID);
+    }
+
+    //Report payment sent for swap
+    function reportPaymentSent(bytes16 swapID) public {
+        //Validate arguments
+        require(swaps[swapID].isCreated, "A swap with the specified id does not exist");
+        require(swaps[swapID].isPaymentSent == false, "Payment sending has already been reported for swap with specified id");
+        require(swaps[swapID].taker == msg.sender, "Payment sending can only be reported by swap taker");
+
+        //Mark payment sent and notify
+        swaps[swapID].isPaymentSent = true;
+        emit PaymentSent(swapID);
     }
 }
