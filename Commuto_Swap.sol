@@ -42,6 +42,7 @@ contract Commuto_Swap {
     
     struct Offer {
         bool isCreated;
+        bool isTaken;
         address maker;
         bytes interfaceAddress;
         StablecoinType stablecoinType;
@@ -54,10 +55,34 @@ contract Commuto_Swap {
         uint256 protocolVersion;
         bytes32 extraData;
     }
+
+    struct Swap {
+        bool isCreated;
+        address maker;
+        bytes makerInterfaceAddress;
+        address taker;
+        bytes takerInterfaceAddress;
+        StablecoinType stablecoinType;
+        uint256 amountLowerBound;
+        uint256 amountUpperBound;
+        uint256 securityDepositAmount;
+        uint256 takenSwapAmount;
+        uint256 serviceFeeAmount;
+        SwapDirection direction;
+        bytes price;
+        PaymentMethod paymentMethod;
+        uint256 protocolVersion;
+        bytes32 makerExtraData;
+        bytes32 takerExtraData;
+        bool isPaymentSent;
+        bool isPaymentReceived;
+    }
     
     event OfferOpened(bytes16 offerID);
+    event OfferTaken(bytes16 offerID);
     
     mapping (bytes16 => Offer) private offers;
+    mapping (bytes16 => Swap) private swaps;
     
     constructor () public {
         owner = msg.sender;
@@ -72,6 +97,7 @@ contract Commuto_Swap {
     //TODO: Test stablecoin type protection
     //TODO: Test stablecoin allowance check
     //TODO: Test OfferOpened event emittance
+    //TODO: Test token transfer failure
     //Create a new swap offer
     function openOffer(bytes16 offerID, Offer memory newOffer) public {
         //Validate arguments
@@ -97,7 +123,9 @@ contract Commuto_Swap {
         } else {
             revert("You must specify a supported stablecoin");
         }
-        
+
+        //Calculate required total amount
+        //TODO: Use SafeMath here
         uint256 serviceFeeAmountUpperBound = newOffer.amountUpperBound / 100;
         uint256 totalAmount;
         if(newOffer.direction == SwapDirection.SELL) {
@@ -107,12 +135,91 @@ contract Commuto_Swap {
         } else {
             revert("You must specify a supported direction");
         }
+        //Lock required total amount in escrow
+        //TODO: Improve accuracy of this comment (doesn't include swap amount if maker is buyer)
         require(totalAmount >= token.allowance(msg.sender, address(this)), "Token allowance must be greater than total swap amount, including maximum swap amount, security deposit and max service fee");
         require(token.transferFrom(msg.sender, address(this), totalAmount), "Token transfer to Commuto Protocol failed");
-        
+
+        //Finish and notify of offer creation
         newOffer.isCreated = true;
+        newOffer.isTaken = false;
         newOffer.maker = msg.sender;
         offers[offerID] = newOffer;
         emit OfferOpened(offerID);
+    }
+
+    //TODO: Write Tests
+    //TODO: Test offer existence protection
+    //TODO: Test swap existence protection
+    //TODO: Test maker address checking
+    //TODO: Test interface address checking
+    //TODO: Test stablecoin type checking
+    //TODO: Test lower bound matching
+    //TODO: Test upper bound matching
+    //TODO: Test security deposit matching
+    //TODO: Test direction matching
+    //TODO: Test price matching
+    //TODO: Test payment method matching
+    //TODO: Test protocol version matching
+    //TODO: Test extra data matching
+    //TODO: Test token transfer failure
+    //Take a swap offer
+    function takeOffer(bytes16 offerID, Swap memory newSwap) public {
+        //Validate arguments
+        require(offers[offerID].isCreated, "An offer with the specified id does not exist");
+        require(swaps[offerID].isCreated == false, "The offer with the specified id has already been taken");
+        require(offers[offerID].maker == newSwap.maker, "Maker addresses must match");
+        require(keccak256(offers[offerID].interfaceAddress) == keccak256(newSwap.makerInterfaceAddress), "Maker interface addresses must match");
+        require(offers[offerID].stablecoinType == newSwap.stablecoinType, "Stablecoin types must match");
+        require(offers[offerID].amountLowerBound == newSwap.amountLowerBound, "Lower bounds must match");
+        require(offers[offerID].amountUpperBound == newSwap.amountUpperBound, "Upper bounds must match");
+        require(offers[offerID].securityDepositAmount == newSwap.securityDepositAmount, "Security deposit amounts must match");
+        require(offers[offerID].amountLowerBound <= newSwap.takenSwapAmount, "Swap amount must be >= lower bound of offer amount");
+        require(offers[offerID].amountUpperBound >= newSwap.takenSwapAmount, "Swap amount must be <= upper bound of offer amout");
+        require(offers[offerID].direction == newSwap.direction, "Directions must match");
+        require(keccak256(offers[offerID].price) == keccak256(newSwap.price), "Prices must match");
+        require(offers[offerID].paymentMethod == newSwap.paymentMethod, "Payment methods must match");
+        require(offers[offerID].protocolVersion == newSwap.protocolVersion, "Protocol versions must match");
+        require(offers[offerID].extraData == newSwap.makerExtraData, "Maker extra data must match");
+
+        //Find proper stablecoin contract
+        ERC20 token;
+
+        if(newSwap.stablecoinType == StablecoinType.DAI) {
+            token = ERC20(daiAddress);
+        } else if (newSwap.stablecoinType == StablecoinType.USDC) {
+            token = ERC20(usdcAddress);
+        } else if (newSwap.stablecoinType == StablecoinType.BUSD) {
+            token = ERC20(busdAddress);
+        } else if (newSwap.stablecoinType == StablecoinType.USDT) {
+            token = ERC20(usdtAddress);
+        } else {
+            revert("You must specify a supported stablecoin");
+        }
+
+        //Calculate required total amount
+        newSwap.serviceFeeAmount = SafeMath.div(newSwap.takenSwapAmount, 100);
+        uint256 totalAmount;
+        if(newSwap.direction == SwapDirection.SELL) {
+            //Taker is Buyer
+            totalAmount = SafeMath.add(newSwap.securityDepositAmount, newSwap.serviceFeeAmount);
+        } else if (newSwap.direction == SwapDirection.BUY) {
+            //Taker is seller
+            totalAmount = SafeMath.add(SafeMath.add(newSwap.takenSwapAmount, newSwap.securityDepositAmount), newSwap.serviceFeeAmount);
+        } else {
+            revert("You must specify a supported direction");
+        }
+        //Lock required total amount in escrow
+        require(totalAmount >= token.allowance(msg.sender, address(this)), "Token allowance must be >= required amount");
+        require(token.transferFrom(msg.sender, address(this), totalAmount), "Token transfer to Commuto Protocol failed");
+
+        //Finish swap creation and notify that offer is taken
+        newSwap.isCreated = true;
+        newSwap.taker = msg.sender;
+        offers[offerID].isTaken = true;
+        newSwap.isPaymentSent = false;
+        newSwap.isPaymentReceived = false;
+        swaps[offerID] = newSwap;
+        emit OfferTaken(offerID);
     }
 }
