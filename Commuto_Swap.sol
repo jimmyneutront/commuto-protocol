@@ -135,8 +135,7 @@ contract Commuto_Swap {
             revert("You must specify a supported direction");
         }
         //Lock required total amount in escrow
-        //TODO: Improve accuracy of this comment (doesn't include swap amount if maker is buyer)
-        require(totalAmount >= token.allowance(msg.sender, address(this)), "Token allowance must be greater than total swap amount, including maximum swap amount, security deposit and max service fee");
+        require(totalAmount >= token.allowance(msg.sender, address(this)), "Token allowance must be >= required amount");
         require(token.transferFrom(msg.sender, address(this), totalAmount), "Token transfer to Commuto Protocol failed");
 
         //Finish and notify of offer creation
