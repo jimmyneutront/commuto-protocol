@@ -81,6 +81,7 @@ contract Commuto_Swap {
     event OfferOpened(bytes16 offerID);
     event OfferTaken(bytes16 offerID);
     event PaymentSent(bytes16 swapID);
+    event PaymentReceived(bytes16 swapID);
     
     mapping (bytes16 => Offer) private offers;
     mapping (bytes16 => Swap) private swaps;
@@ -222,6 +223,10 @@ contract Commuto_Swap {
         emit OfferTaken(offerID);
     }
 
+    //TODO: Write Tests
+    //TODO: Test swap creation check
+    //TODO: Test payment already sent protection
+    //TODO: Test taker is sender check
     //Report payment sent for swap
     function reportPaymentSent(bytes16 swapID) public {
         //Validate arguments
@@ -232,5 +237,29 @@ contract Commuto_Swap {
         //Mark payment sent and notify
         swaps[swapID].isPaymentSent = true;
         emit PaymentSent(swapID);
+    }
+
+    //TODO: Write Tests
+    //TODO: Test swap creation check
+    //TODO: Test payment not sent protection
+    //TODO: Test payment already received protection
+    //TODO: Test maker is sender check
+    //Report payment received for swap
+    function reportPaymentReceived(bytes16 swapID) public {
+        //Validate arguments
+        require(swaps[swapID].isCreated, "A swap with the specified id does not exist");
+        require(swaps[swapID].isPaymentSent, "Payment sending has not been reported for swap with specified id");
+        require(swaps[swapID].isPaymentReceived == false, "Payment receiving has already been reported for swap with specified id");
+        if(swaps[swapID].direction == SwapDirection.BUY) {
+            require(swaps[swapID].taker == msg.sender, "Payment receiving can only be reported by seller");
+        } else if (swaps[swapID].direction == SwapDirection.SELL) {
+            require(swaps[swapID].maker == msg.sender, "Payment receiving can only be reported by seller");
+        } else {
+            revert("Swap has invalid direction");
+        }
+
+        //Mark payment received and notify
+        swaps[swapID].isPaymentSent = true;
+        emit PaymentReceived(swapID);
     }
 }
