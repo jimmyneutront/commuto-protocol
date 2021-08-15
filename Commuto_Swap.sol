@@ -82,6 +82,7 @@ contract Commuto_Swap {
     }
     
     event OfferOpened(bytes16 offerID);
+    event OfferCanceled(bytes16 offerID);
     event OfferTaken(bytes16 offerID);
     event PaymentSent(bytes16 swapID);
     event PaymentReceived(bytes16 swapID);
@@ -152,6 +153,49 @@ contract Commuto_Swap {
         newOffer.maker = msg.sender;
         offers[offerID] = newOffer;
         emit OfferOpened(offerID);
+    }
+
+    //TODO: Write Tests
+    //TODO: Test offer existence protection
+    //TODO: Test swap taken check
+    //TODO: Test maker address check
+    //Cancel open swap offer
+    function cancelOffer(bytes16 offerID) public {
+        //Validate arguments
+        require(offers[offerID].isCreated, "An offer with the specified id does not exist");
+        require(offers[offerID].isTaken == false, "Offer is taken and cannot be canceled");
+        require(offers[offerID].maker == msg.sender, "Offers can only be canceled by offer maker");
+
+        //Find proper stablecoin contract
+        ERC20 token;
+
+        if(offers[offerID].stablecoinType == StablecoinType.DAI) {
+            token = ERC20(daiAddress);
+        } else if (offers[offerID].stablecoinType == StablecoinType.USDC) {
+            token = ERC20(usdcAddress);
+        } else if (offers[offerID].stablecoinType == StablecoinType.BUSD) {
+            token = ERC20(busdAddress);
+        } else if (offers[offerID].stablecoinType == StablecoinType.USDT) {
+            token = ERC20(usdtAddress);
+        } else {
+            revert("You must specify a supported stablecoin");
+        }
+
+        //Calculate total amount in escrow
+        uint256 serviceFeeAmountUpperBound = SafeMath.div(offers[offerID].amountUpperBound, 100);
+        uint256 totalAmount;
+        if(offers[offerID].direction == SwapDirection.SELL) {
+            totalAmount = SafeMath.add(SafeMath.add(offers[offerID].amountUpperBound, offers[offerID].securityDepositAmount), serviceFeeAmountUpperBound);
+        } else if (offers[offerID].direction == SwapDirection.BUY) {
+            totalAmount = SafeMath.add(offers[offerID].securityDepositAmount, serviceFeeAmountUpperBound);
+        } else {
+            revert("Offer has invalid direction");
+        }
+
+        //Delete offer, refund STBL and notify
+        delete offers[offerID];
+        require(token.transfer(offers[offerID].maker, totalAmount), "Token transfer failed");
+        emit OfferCanceled(offerID);
     }
 
     //TODO: Write Tests
