@@ -6,4 +6,7 @@ import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/v3.0.0/contr
 contract DAI is ERC20 {
     constructor () public ERC20("Dai", "DAI") {
     }
+    function mint(address account, uint256 amount) public {
+        _mint(account, amount);
+    }
 }
