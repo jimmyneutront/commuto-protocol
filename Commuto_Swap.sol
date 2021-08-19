@@ -120,7 +120,7 @@ contract Commuto_Swap {
     }
     //TODO: Write tests
     //TODO: Test duplicate id prevention
-    //TODO: Test non-zero lower bound protection
+    //TODO: Test >= lower bound protection
     //TODO: Test upper bound larger than lower bound protection
     //TODO: Test security deposit amount protection
     //TODO: Test service fee amount protection
