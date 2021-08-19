@@ -419,3 +419,82 @@ except ValueError as e:
 		logger.info("Test " + test_id + " passed")
 	else:
 		raise(e)
+try:
+	test_id = "2.0"
+	logger.info("Test " + test_id + ": Ensuring cancelOffer checks for offer existence")
+	tx_details = {
+		"from":taker_address
+	}
+	commuto_swap_contract.functions.cancelOffer(
+		HexBytes(uuid4().bytes)
+	).transact(tx_details)
+	raise (Exception("Test " + test_id + " failed without raising exception"))
+except ValueError as e:
+	if "An offer with the specified id does not exist" in str(e):
+		logger.info("Test " + test_id + " passed")
+	else:
+		raise(e)
+try:
+	test_id = "2.1"
+	logger.info("Test " + test_id + ": Ensuring cancelOffer can only be called by offer maker")
+	tx_details = {
+		"from":taker_address
+	}
+	commuto_swap_contract.functions.cancelOffer(
+		newOfferID,
+	).transact(tx_details)
+	raise (Exception("Test " + test_id + " failed without raising exception"))
+except ValueError as e:
+	if "Offers can only be canceled by offer maker" in str(e):
+		logger.info("Test " + test_id + " passed")
+	else:
+		raise (e)
+try:
+	test_id = "2.2"
+	logger.info("Test " + test_id + ": Ensuring that taken offers cannot be canceled")
+	tx_details = {
+		"from":taker_address
+	}
+	newSwap = {
+		"isCreated": False,
+		"maker": maker_address,
+		"makerInterfaceAddress": HexBytes("an interface address here".encode("utf-8").hex()),
+		"taker": taker_address,
+		"takerInterfaceAddress": HexBytes("an interface address here".encode("utf-8").hex()),
+		"stablecoinType": 0,
+		"amountLowerBound": 100,
+		"amountUpperBound": 100,
+		"securityDepositAmount": 10,
+		"takenSwapAmount": 100,
+		"serviceFeeAmount": 1,
+		"direction": 1,
+		"price": HexBytes("a price here".encode("utf-8").hex()),
+		"paymentMethod": 0,
+		"protocolVersion": 1,
+		"makerExtraData": Web3.keccak(text="A bunch of extra data in here"),
+		"takerExtraData": Web3.keccak(text="A bunch of extra data in here"),
+		"isPaymentSent": True,
+		"isPaymentReceived": True,
+		"hasBuyerClosed": True,
+		"hasSellerClosed": True,
+	}
+	test_dai_contract.functions.increaseAllowance(
+		commuto_swap_deployment_tx_receipt.contractAddress,
+		11,
+	).transact(tx_details)
+	commuto_swap_contract.functions.takeOffer(
+		newOfferID,
+		newSwap,
+	).transact(tx_details)
+	tx_details = {
+		"from":maker_address
+	}
+	commuto_swap_contract.functions.cancelOffer(
+		newOfferID
+	).transact(tx_details)
+	raise (Exception("Test " + test_id + " failed without raising exception"))
+except ValueError as e:
+	if "Offer is taken and cannot be canceled":
+		logger.info("Test " + test_id + " passed")
+	else:
+		raise(e)
