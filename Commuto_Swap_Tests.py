@@ -1,5 +1,7 @@
-from web3 import Web3
+from hexbytes import HexBytes
 import logging
+from uuid import uuid4
+from web3 import Web3
 
 logger = logging.getLogger(__name__)
 
@@ -136,7 +138,6 @@ tx_hash = test_usdt_contract.functions.mint(ERC20_recipient_account_one, token_m
 tx_recipt = w3.eth.wait_for_transaction_receipt(tx_hash)
 logger.info("Minted " + str(token_mint_amount) + " USDT to ERC20_recipient_account_one")
 
-#TODO: Deploy Commuto_Swap contract
 commuto_swap_abi = '[{"inputs": [{"internalType": "address","name": "_serviceFeePool","type": "address"},{"internalType": "address","name": "_daiAddress","type": "address"},{"internalType": "address","name": "_usdcAddress","type": "address"},{"internalType": "address","name": "_busdAddress","type": "address"},{"internalType": "address","name": "_usdtAddress","type": "address"}],"stateMutability": "nonpayable","type": "constructor"},{"anonymous": false,"inputs": [{"indexed": false,"internalType": "bytes16","name": "swapID","type": "bytes16"}],"name": "BuyerClosed","type": "event"},{"anonymous": false,"inputs": [{"indexed": false,"internalType": "bytes16","name": "offerID","type": "bytes16"}],"name": "OfferCanceled","type": "event"},{"anonymous": false,"inputs": [{"indexed": false,"internalType": "bytes16","name": "offerID","type": "bytes16"}],"name": "OfferOpened","type": "event"},{"anonymous": false,"inputs": [{"indexed": false,"internalType": "bytes16","name": "offerID","type": "bytes16"}],"name": "OfferTaken","type": "event"},{"anonymous": false,"inputs": [{"indexed": false,"internalType": "bytes16","name": "swapID","type": "bytes16"}],"name": "PaymentReceived","type": "event"},{"anonymous": false,"inputs": [{"indexed": false,"internalType": "bytes16","name": "swapID","type": "bytes16"}],"name": "PaymentSent","type": "event"},{"anonymous": false,"inputs": [{"indexed": false,"internalType": "bytes16","name": "swapID","type": "bytes16"}],"name": "SellerClosed","type": "event"},{"inputs": [],"name": "busdAddress","outputs": [{"internalType": "address","name": "","type": "address"}],"stateMutability": "view","type": "function"},{"inputs": [{"internalType": "bytes16","name": "offerID","type": "bytes16"}],"name": "cancelOffer","outputs": [],"stateMutability": "nonpayable","type": "function"},{"inputs": [{"internalType": "bytes16","name": "swapID","type": "bytes16"}],"name": "closeSwap","outputs": [],"stateMutability": "nonpayable","type": "function"},{"inputs": [],"name": "daiAddress","outputs": [{"internalType": "address","name": "","type": "address"}],"stateMutability": "view","type": "function"},{"inputs": [{"internalType": "bytes16","name": "offerID","type": "bytes16"},{"components": [{"internalType": "bool","name": "isCreated","type": "bool"},{"internalType": "bool","name": "isTaken","type": "bool"},{"internalType": "address","name": "maker","type": "address"},{"internalType": "bytes","name": "interfaceAddress","type": "bytes"},{"internalType": "enum Commuto_Swap.StablecoinType","name": "stablecoinType","type": "uint8"},{"internalType": "uint256","name": "amountLowerBound","type": "uint256"},{"internalType": "uint256","name": "amountUpperBound","type": "uint256"},{"internalType": "uint256","name": "securityDepositAmount","type": "uint256"},{"internalType": "enum Commuto_Swap.SwapDirection","name": "direction","type": "uint8"},{"internalType": "bytes","name": "price","type": "bytes"},{"internalType": "enum Commuto_Swap.PaymentMethod","name": "paymentMethod","type": "uint8"},{"internalType": "uint256","name": "protocolVersion","type": "uint256"},{"internalType": "bytes32","name": "extraData","type": "bytes32"}],"internalType": "struct Commuto_Swap.Offer","name": "newOffer","type": "tuple"}],"name": "openOffer","outputs": [],"stateMutability": "nonpayable","type": "function"},{"inputs": [],"name": "owner","outputs": [{"internalType": "address","name": "","type": "address"}],"stateMutability": "view","type": "function"},{"inputs": [],"name": "protocolVersion","outputs": [{"internalType": "uint256","name": "","type": "uint256"}],"stateMutability": "view","type": "function"},{"inputs": [{"internalType": "bytes16","name": "swapID","type": "bytes16"}],"name": "reportPaymentReceived","outputs": [],"stateMutability": "nonpayable","type": "function"},{"inputs": [{"internalType": "bytes16","name": "swapID","type": "bytes16"}],"name": "reportPaymentSent","outputs": [],"stateMutability": "nonpayable","type": "function"},{"inputs": [],"name": "serviceFeePool","outputs": [{"internalType": "address","name": "","type": "address"}],"stateMutability": "view","type": "function"},{"inputs": [{"internalType": "bytes16","name": "offerID","type": "bytes16"},{"components": [{"internalType": "bool","name": "isCreated","type": "bool"},{"internalType": "address","name": "maker","type": "address"},{"internalType": "bytes","name": "makerInterfaceAddress","type": "bytes"},{"internalType": "address","name": "taker","type": "address"},{"internalType": "bytes","name": "takerInterfaceAddress","type": "bytes"},{"internalType": "enum Commuto_Swap.StablecoinType","name": "stablecoinType","type": "uint8"},{"internalType": "uint256","name": "amountLowerBound","type": "uint256"},{"internalType": "uint256","name": "amountUpperBound","type": "uint256"},{"internalType": "uint256","name": "securityDepositAmount","type": "uint256"},{"internalType": "uint256","name": "takenSwapAmount","type": "uint256"},{"internalType": "uint256","name": "serviceFeeAmount","type": "uint256"},{"internalType": "enum Commuto_Swap.SwapDirection","name": "direction","type": "uint8"},{"internalType": "bytes","name": "price","type": "bytes"},{"internalType": "enum Commuto_Swap.PaymentMethod","name": "paymentMethod","type": "uint8"},{"internalType": "uint256","name": "protocolVersion","type": "uint256"},{"internalType": "bytes32","name": "makerExtraData","type": "bytes32"},{"internalType": "bytes32","name": "takerExtraData","type": "bytes32"},{"internalType": "bool","name": "isPaymentSent","type": "bool"},{"internalType": "bool","name": "isPaymentReceived","type": "bool"},{"internalType": "bool","name": "hasBuyerClosed","type": "bool"},{"internalType": "bool","name": "hasSellerClosed","type": "bool"}],"internalType": "struct Commuto_Swap.Swap","name": "newSwap","type": "tuple"}],"name": "takeOffer","outputs": [],"stateMutability": "nonpayable","type": "function"},{"inputs": [],"name": "usdcAddress","outputs": [{"internalType": "address","name": "","type": "address"}],"stateMutability": "view","type": "function"},{"inputs": [],"name": "usdtAddress","outputs": [{"internalType": "address","name": "","type": "address"}],"stateMutability": "view","type": "function"}]'
 commuto_swap_remix_bytecode_output = {
 	"linkReferences": {},
@@ -158,12 +159,13 @@ logger.info("Estimated Commuto_Swap deployment gas requirement: " + str(w3.eth.e
 
 logger.info("Deploying Commuto_Swap contract:\n" +
 			"Fee pool address: " + str(w3.eth.accounts[2]))
-commuto_swap_deployment_tx_hash = undeployed_commuto_swap_contract.constructor(w3.eth.accounts[2],
-																			   dai_deployment_tx_recipt.contractAddress,
-																			   usdc_deployment_tx_recipt.contractAddress,
-																			   busd_deployment_tx_recipt.contractAddress,
-																			   usdt_deployment_tx_recipt.contractAddress,
-																			   ).transact()
+commuto_swap_deployment_tx_hash = undeployed_commuto_swap_contract.constructor(
+	w3.eth.accounts[2],
+	dai_deployment_tx_recipt.contractAddress,
+	usdc_deployment_tx_recipt.contractAddress,
+	busd_deployment_tx_recipt.contractAddress,
+	usdt_deployment_tx_recipt.contractAddress,
+	).transact()
 logger.info("Deployed Commuto_Swap contract, awaiting tx mining")
 commuto_swap_deployment_tx_receipt = w3.eth.wait_for_transaction_receipt(commuto_swap_deployment_tx_hash)
 logger.info("Commuto_Swap contract deployed with address " + str(commuto_swap_deployment_tx_receipt.contractAddress))
@@ -172,4 +174,40 @@ commuto_swap_contract = w3.eth.contract(
 	abi = commuto_swap_abi
 )
 logger.info("Commuto_Swap contract deployment completed")
-#TODO: Tests
+
+maker_address = w3.eth.accounts[0]
+taker_address = w3.eth.accounts[1]
+
+logger.info("Running openOffer tests")
+logger.info("Ensuring amountLowerBound of new offer must be > 0")
+try:
+	test_id = "1.0"
+	logger.info("Test " + test_id + ": Ensuring amountLowerBound of new offer must be > 0")
+	tx_details = {
+		"from":maker_address,
+	}
+	newOfferID = HexBytes(uuid4().bytes)
+	newOffer = {
+		"isCreated":True,
+		"isTaken":True,
+		"maker":maker_address,
+		"interfaceAddress":HexBytes("an interface address here".encode("utf-8").hex()),
+		"stablecoinType":0,
+		"amountLowerBound":0,
+		"amountUpperBound":1000,
+		"securityDepositAmount":100,
+		"direction":1,
+		"price":HexBytes("124.084".encode("utf-8").hex()),
+		"paymentMethod":0,
+		"protocolVersion":1,
+		"extraData":Web3.keccak(text="A bunch of extra data in here")
+	}
+	commuto_swap_contract.functions.openOffer(
+		newOfferID,
+		newOffer,
+	).transact(tx_details)
+except ValueError as e:
+	if "The minimum swap amount must be greater than zero" in str(e):
+		logger.info("Test " + test_id + " passed")
+	else:
+		raise(e)
