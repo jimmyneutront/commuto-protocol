@@ -166,7 +166,7 @@ contract Commuto_Swap {
             revert("You must specify a supported direction");
         }
         //Lock required total amount in escrow
-        require(totalAmount >= token.allowance(msg.sender, address(this)), "Token allowance must be >= required amount");
+        require(totalAmount <= token.allowance(msg.sender, address(this)), "Token allowance must be >= required amount");
         require(token.transferFrom(msg.sender, address(this), totalAmount), "Token transfer to Commuto Protocol failed");
 
         //Finish and notify of offer creation
@@ -282,7 +282,7 @@ contract Commuto_Swap {
             revert("You must specify a supported direction");
         }
         //Lock required total amount in escrow
-        require(totalAmount >= token.allowance(msg.sender, address(this)), "Token allowance must be >= required amount");
+        require(totalAmount <= token.allowance(msg.sender, address(this)), "Token allowance must be >= required amount");
         require(token.transferFrom(msg.sender, address(this), totalAmount), "Token transfer to Commuto Protocol failed");
 
         //Finish swap creation and notify that offer is taken
