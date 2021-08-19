@@ -118,17 +118,7 @@ contract Commuto_Swap {
         busdAddress = _busdAddress;
         usdtAddress = _usdtAddress;
     }
-    //TODO: Write tests
-    //TODO: Test duplicate id prevention
-    //TODO: Test >= lower bound protection
-    //TODO: Test upper bound larger than lower bound protection
-    //TODO: Test security deposit amount protection
-    //TODO: Test service fee amount protection
-    //TODO: Test offer protocol protection
-    //TODO: Test stablecoin type protection
-    //TODO: Test stablecoin allowance check
-    //TODO: Test OfferOpened event emittance
-    //TODO: Test token transfer failure
+
     //Create a new swap offer
     function openOffer(bytes16 offerID, Offer memory newOffer) public {
         //Validate arguments
