@@ -167,10 +167,6 @@ contract Commuto_Swap {
         emit OfferOpened(offerID);
     }
 
-    //TODO: Write Tests
-    //TODO: Test offer existence protection
-    //TODO: Test swap taken check
-    //TODO: Test maker address check
     //Cancel open swap offer
     function cancelOffer(bytes16 offerID) public {
         //Validate arguments
