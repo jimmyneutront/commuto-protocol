@@ -25,10 +25,10 @@ contract Commuto_Swap {
     address public owner;
     address public serviceFeePool;
     //TODO: Deal with decimal point precision differences between stablecoins
-    address public daiAddress = 0xd9145CCE52D386f254917e481eB44e9943F39138; //The address of a ERC20 contract to represent DAI
-    address public usdcAddress = 0xd8b934580fcE35a11B58C6D73aDeE468a2833fa8; //The address of a ERC20 contract to represent USDC
-    address public busdAddress = 0xf8e81D47203A594245E36C48e151709F0C19fBe8; //The address of a ERC20 contract to represent BUSD
-    address public usdtAddress = 0xD7ACd2a9FD159E69Bb102A1ca21C9a3e3A5F771B; //The address of a ERC20 contract to represent USDT
+    address public daiAddress; //The address of a ERC20 contract to represent DAI
+    address public usdcAddress; //The address of a ERC20 contract to represent USDC
+    address public busdAddress; //The address of a ERC20 contract to represent BUSD
+    address public usdtAddress; //The address of a ERC20 contract to represent USDT
     
     //The current version of the Commuto Protocol
     uint256 public protocolVersion = 0;
@@ -106,9 +106,17 @@ contract Commuto_Swap {
     mapping (bytes16 => Offer) private offers;
     mapping (bytes16 => Swap) private swaps;
     
-    constructor () public {
+    constructor (address _serviceFeePool,
+                 address _daiAddress,
+                 address _usdcAddress,
+                 address _busdAddress,
+                 address _usdtAddress) public {
         owner = msg.sender;
-        serviceFeePool = msg.sender;
+        serviceFeePool = _serviceFeePool;
+        daiAddress = _daiAddress;
+        usdcAddress = _usdcAddress;
+        busdAddress = _busdAddress;
+        usdtAddress = _usdtAddress;
     }
     //TODO: Write tests
     //TODO: Test duplicate id prevention
