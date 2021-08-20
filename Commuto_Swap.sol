@@ -301,16 +301,10 @@ contract Commuto_Swap {
         }
 
         //Mark payment received and notify
-        swaps[swapID].isPaymentSent = true;
+        swaps[swapID].isPaymentReceived = true;
         emit PaymentReceived(swapID);
     }
 
-    //TODO: Write tests
-    //TODO: Test swap existence check
-    //TODO: Test payment not received protection
-    //TODO: Test maker/taker sender check
-    //TODO: Test buyer already closed protection
-    //TODO: Test seller already closed protection
     //Close swap and receive STBL from escrow
     function closeSwap(bytes16 swapID) public {
         //Validate arguments
