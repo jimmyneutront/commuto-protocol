@@ -1121,3 +1121,252 @@ except ValueError as e:
 		logger.info("Test " + test_id + " passed")
 	else:
 		raise(e)
+try:
+	test_id = "4.0"
+	logger.info("Test " + test_id + ": Ensuring reportPaymentSent checks for swap existence")
+	tx_details = {
+		"from":taker_address
+	}
+	commuto_swap_contract.functions.reportPaymentSent(
+		HexBytes(uuid4().bytes)
+	).transact(tx_details)
+	raise (Exception("Test " + test_id + " failed without raising exception"))
+except ValueError as e:
+	if "A swap with the specified id does not exist" in str(e):
+		logger.info("Test " + test_id + " passed")
+	else:
+		raise(e)
+try:
+	test_id = "4.1"
+	logger.info("Test " + test_id + ": Ensuring reportPaymentSent cannot be called by taker/seller")
+	newOfferID = HexBytes(uuid4().bytes)
+	#Maker is buyer
+	tx_details = {
+		"from":maker_address,
+	}
+	newOffer = {
+		"isCreated": True,
+		"isTaken": True,
+		"maker": maker_address,
+		"interfaceAddress": HexBytes("an interface address here".encode("utf-8").hex()),
+		"stablecoinType": 0,
+		"amountLowerBound": 100,
+		"amountUpperBound": 100,
+		"securityDepositAmount": 10,
+		"direction": 0,
+		"price": HexBytes("a price here".encode("utf-8").hex()),
+		"paymentMethod": 0,
+		"protocolVersion": 1,
+		"extraData": Web3.keccak(text="A bunch of extra data in here")
+	}
+	test_dai_contract.functions.increaseAllowance(
+		commuto_swap_deployment_tx_receipt.contractAddress,
+		11,
+	).transact(tx_details)
+	logger.info("Test " + test_id + ": Creating test offer with uuid " + str(newOfferID))
+	commuto_swap_contract.functions.openOffer(
+		newOfferID,
+		newOffer,
+	).transact(tx_details)
+	#Taker is seller
+	tx_details = {
+		"from":taker_address
+	}
+	newSwap = {
+		"isCreated": False,
+		"maker": maker_address,
+		"makerInterfaceAddress": HexBytes("an interface address here".encode("utf-8").hex()),
+		"taker": taker_address,
+		"takerInterfaceAddress": HexBytes("an interface address here".encode("utf-8").hex()),
+		"stablecoinType": 0,
+		"amountLowerBound": 100,
+		"amountUpperBound": 100,
+		"securityDepositAmount": 10,
+		"takenSwapAmount": 100,
+		"serviceFeeAmount": 1,
+		"direction": 0,
+		"price": HexBytes("a price here".encode("utf-8").hex()),
+		"paymentMethod": 0,
+		"protocolVersion": 1,
+		"makerExtraData": Web3.keccak(text="A bunch of extra data in here"),
+		"takerExtraData": Web3.keccak(text="A bunch of extra data in here"),
+		"isPaymentSent": True,
+		"isPaymentReceived": True,
+		"hasBuyerClosed": True,
+		"hasSellerClosed": True,
+	}
+	test_dai_contract.functions.increaseAllowance(
+		commuto_swap_deployment_tx_receipt.contractAddress,
+		111,
+	).transact(tx_details)
+	commuto_swap_contract.functions.takeOffer(
+		newOfferID,
+		newSwap,
+	).transact(tx_details)
+	commuto_swap_contract.functions.reportPaymentSent(
+		newOfferID
+	).transact(tx_details)
+	raise (Exception("Test " + test_id + " failed without raising exception"))
+except ValueError as e:
+	if "Payment sending can only be reported by buyer" in str(e):
+		logger.info("Test " + test_id + " passed")
+	else:
+		raise(e)
+try:
+	test_id = "4.2"
+	logger.info("Test " + test_id + ": Ensuring reportPaymentSent cannot be called by maker/seller")
+	newOfferID = HexBytes(uuid4().bytes)
+	#Maker is seller
+	tx_details = {
+		"from":maker_address,
+	}
+	newOffer = {
+		"isCreated": True,
+		"isTaken": True,
+		"maker": maker_address,
+		"interfaceAddress": HexBytes("an interface address here".encode("utf-8").hex()),
+		"stablecoinType": 0,
+		"amountLowerBound": 100,
+		"amountUpperBound": 100,
+		"securityDepositAmount": 10,
+		"direction": 1,
+		"price": HexBytes("a price here".encode("utf-8").hex()),
+		"paymentMethod": 0,
+		"protocolVersion": 1,
+		"extraData": Web3.keccak(text="A bunch of extra data in here")
+	}
+	test_dai_contract.functions.increaseAllowance(
+		commuto_swap_deployment_tx_receipt.contractAddress,
+		111,
+	).transact(tx_details)
+	logger.info("Test " + test_id + ": Creating test offer with uuid " + str(newOfferID))
+	commuto_swap_contract.functions.openOffer(
+		newOfferID,
+		newOffer,
+	).transact(tx_details)
+	#Taker is buyer
+	tx_details = {
+		"from":taker_address
+	}
+	newSwap = {
+		"isCreated": False,
+		"maker": maker_address,
+		"makerInterfaceAddress": HexBytes("an interface address here".encode("utf-8").hex()),
+		"taker": taker_address,
+		"takerInterfaceAddress": HexBytes("an interface address here".encode("utf-8").hex()),
+		"stablecoinType": 0,
+		"amountLowerBound": 100,
+		"amountUpperBound": 100,
+		"securityDepositAmount": 10,
+		"takenSwapAmount": 100,
+		"serviceFeeAmount": 1,
+		"direction": 1,
+		"price": HexBytes("a price here".encode("utf-8").hex()),
+		"paymentMethod": 0,
+		"protocolVersion": 1,
+		"makerExtraData": Web3.keccak(text="A bunch of extra data in here"),
+		"takerExtraData": Web3.keccak(text="A bunch of extra data in here"),
+		"isPaymentSent": True,
+		"isPaymentReceived": True,
+		"hasBuyerClosed": True,
+		"hasSellerClosed": True,
+	}
+	test_dai_contract.functions.increaseAllowance(
+		commuto_swap_deployment_tx_receipt.contractAddress,
+		11,
+	).transact(tx_details)
+	commuto_swap_contract.functions.takeOffer(
+		newOfferID,
+		newSwap,
+	).transact(tx_details)
+	tx_details = {
+		"from": maker_address,
+	}
+	commuto_swap_contract.functions.reportPaymentSent(
+		newOfferID
+	).transact(tx_details)
+	raise (Exception("Test " + test_id + " failed without raising exception"))
+except ValueError as e:
+	if "Payment sending can only be reported by buyer" in str(e):
+		logger.info("Test " + test_id + " passed")
+	else:
+		raise(e)
+try:
+	test_id = "4.3"
+	logger.info("Test " + test_id + ": Ensuring reportPaymentSent cannot be called more than once")
+	newOfferID = HexBytes(uuid4().bytes)
+	#Maker is seller
+	tx_details = {
+		"from":maker_address,
+	}
+	newOffer = {
+		"isCreated": True,
+		"isTaken": True,
+		"maker": maker_address,
+		"interfaceAddress": HexBytes("an interface address here".encode("utf-8").hex()),
+		"stablecoinType": 0,
+		"amountLowerBound": 100,
+		"amountUpperBound": 100,
+		"securityDepositAmount": 10,
+		"direction": 1,
+		"price": HexBytes("a price here".encode("utf-8").hex()),
+		"paymentMethod": 0,
+		"protocolVersion": 1,
+		"extraData": Web3.keccak(text="A bunch of extra data in here")
+	}
+	test_dai_contract.functions.increaseAllowance(
+		commuto_swap_deployment_tx_receipt.contractAddress,
+		111,
+	).transact(tx_details)
+	logger.info("Test " + test_id + ": Creating test offer with uuid " + str(newOfferID))
+	commuto_swap_contract.functions.openOffer(
+		newOfferID,
+		newOffer,
+	).transact(tx_details)
+	#Taker is buyer
+	tx_details = {
+		"from":taker_address
+	}
+	newSwap = {
+		"isCreated": False,
+		"maker": maker_address,
+		"makerInterfaceAddress": HexBytes("an interface address here".encode("utf-8").hex()),
+		"taker": taker_address,
+		"takerInterfaceAddress": HexBytes("an interface address here".encode("utf-8").hex()),
+		"stablecoinType": 0,
+		"amountLowerBound": 100,
+		"amountUpperBound": 100,
+		"securityDepositAmount": 10,
+		"takenSwapAmount": 100,
+		"serviceFeeAmount": 1,
+		"direction": 1,
+		"price": HexBytes("a price here".encode("utf-8").hex()),
+		"paymentMethod": 0,
+		"protocolVersion": 1,
+		"makerExtraData": Web3.keccak(text="A bunch of extra data in here"),
+		"takerExtraData": Web3.keccak(text="A bunch of extra data in here"),
+		"isPaymentSent": True,
+		"isPaymentReceived": True,
+		"hasBuyerClosed": True,
+		"hasSellerClosed": True,
+	}
+	test_dai_contract.functions.increaseAllowance(
+		commuto_swap_deployment_tx_receipt.contractAddress,
+		11,
+	).transact(tx_details)
+	commuto_swap_contract.functions.takeOffer(
+		newOfferID,
+		newSwap,
+	).transact(tx_details)
+	commuto_swap_contract.functions.reportPaymentSent(
+		newOfferID
+	).transact(tx_details)
+	commuto_swap_contract.functions.reportPaymentSent(
+		newOfferID
+	).transact(tx_details)
+	raise (Exception("Test " + test_id + " failed without raising exception"))
+except ValueError as e:
+	if "Payment sending has already been reported for swap with specified id" in str(e):
+		logger.info("Test " + test_id + " passed")
+	else:
+		raise(e)
