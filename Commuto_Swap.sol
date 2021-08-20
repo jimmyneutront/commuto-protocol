@@ -206,21 +206,6 @@ contract Commuto_Swap {
         emit OfferCanceled(offerID);
     }
 
-    //TODO: Write Tests
-    //TODO: Test offer existence protection
-    //TODO: Test swap existence protection
-    //TODO: Test maker address checking
-    //TODO: Test interface address checking
-    //TODO: Test stablecoin type checking
-    //TODO: Test lower bound matching
-    //TODO: Test upper bound matching
-    //TODO: Test security deposit matching
-    //TODO: Test direction matching
-    //TODO: Test price matching
-    //TODO: Test payment method matching
-    //TODO: Test protocol version matching
-    //TODO: Test extra data matching
-    //TODO: Test token transfer failure
     //Take a swap offer
     function takeOffer(bytes16 offerID, Swap memory newSwap) public {
         //Validate arguments
@@ -233,7 +218,7 @@ contract Commuto_Swap {
         require(offers[offerID].amountUpperBound == newSwap.amountUpperBound, "Upper bounds must match");
         require(offers[offerID].securityDepositAmount == newSwap.securityDepositAmount, "Security deposit amounts must match");
         require(offers[offerID].amountLowerBound <= newSwap.takenSwapAmount, "Swap amount must be >= lower bound of offer amount");
-        require(offers[offerID].amountUpperBound >= newSwap.takenSwapAmount, "Swap amount must be <= upper bound of offer amout");
+        require(offers[offerID].amountUpperBound >= newSwap.takenSwapAmount, "Swap amount must be <= upper bound of offer amount");
         require(offers[offerID].direction == newSwap.direction, "Directions must match");
         require(keccak256(offers[offerID].price) == keccak256(newSwap.price), "Prices must match");
         require(offers[offerID].paymentMethod == newSwap.paymentMethod, "Payment methods must match");
