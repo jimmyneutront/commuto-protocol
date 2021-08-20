@@ -286,11 +286,6 @@ contract Commuto_Swap {
         emit PaymentSent(swapID);
     }
 
-    //TODO: Write Tests
-    //TODO: Test swap creation check
-    //TODO: Test payment not sent protection
-    //TODO: Test payment already received protection
-    //TODO: Test maker is sender check
     //Report payment received for swap
     function reportPaymentReceived(bytes16 swapID) public {
         //Validate arguments
