@@ -362,7 +362,7 @@ contract Commuto_Swap {
             uint256 swapRemainder = SafeMath.sub(swaps[swapID].amountUpperBound, swaps[swapID].takenSwapAmount);
             uint256 serviceFeeAmountUpperBound = SafeMath.div(swaps[swapID].amountUpperBound, 100);
             returnAmount = SafeMath.add(SafeMath.add(swapRemainder, swaps[swapID].securityDepositAmount), SafeMath.sub(serviceFeeAmountUpperBound, swaps[swapID].serviceFeeAmount));
-            require(token.transfer(swaps[swapID].taker, returnAmount), "Token transfer failed");
+            require(token.transfer(swaps[swapID].maker, returnAmount), "Token transfer failed");
             require(token.transfer(serviceFeePool, swaps[swapID].serviceFeeAmount), "Service fee transfer failed");
             swaps[swapID].hasSellerClosed = true;
             emit SellerClosed(swapID);
