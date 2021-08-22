@@ -79,7 +79,8 @@ commuto_swap_contract = w3.eth.contract(
 )
 logger.info("Commuto_Swap contract deployment completed")
 logger.info("Running Commuto_Swap Integration Tests")
-# TODO: Maker as seller
+# TODO: Check for all types of expected events
+# Testing Maker as Seller trade
 maker_initial_dai_balance = test_dai_contract.functions.balanceOf(maker_address).call()
 taker_initial_dai_balance = test_dai_contract.functions.balanceOf(taker_address).call()
 service_fee_initial_dai_balance = test_dai_contract.functions.balanceOf(commuto_service_fee_account).call()
@@ -184,3 +185,112 @@ if service_fee_initial_dai_balance + 2 != service_fee_final_dai_balance:
     raise Exception("Service Fee Pool did not receive valid amount for Maker as Seller swap with id " + str(maker_as_seller_swap_id))
 logger.info("Maker as Seller swap with id " + str(maker_as_seller_swap_id) + " closed successfully")
 # TODO: Maker as buyer
+maker_initial_dai_balance = test_dai_contract.functions.balanceOf(maker_address).call()
+taker_initial_dai_balance = test_dai_contract.functions.balanceOf(taker_address).call()
+service_fee_initial_dai_balance = test_dai_contract.functions.balanceOf(commuto_service_fee_account).call()
+maker_as_buyer_swap_id = HexBytes(uuid4().bytes)
+tx_details = {
+	"from": maker_address
+}
+maker_as_buyer_offer = {
+    "isCreated": True,
+    "isTaken": True,
+    "maker": maker_address,
+    "interfaceAddress": HexBytes("an interface address here".encode("utf-8").hex()),
+    "stablecoinType": 0,
+    "amountLowerBound": 100,
+	"amountUpperBound": 100,
+	"securityDepositAmount": 10,
+	"direction": 0,
+	"price": HexBytes("a price here".encode("utf-8").hex()),
+	"paymentMethod": 0,
+	"protocolVersion": 1,
+	"extraData": Web3.keccak(text="A bunch of extra data in here")
+}
+test_dai_contract.functions.increaseAllowance(
+	commuto_swap_deployment_tx_receipt.contractAddress,
+	11,
+).transact(tx_details)
+logger.info("Opening Maker as Buyer offer with id " + str(maker_as_buyer_swap_id))
+commuto_swap_contract.functions.openOffer(
+	maker_as_buyer_swap_id,
+	maker_as_buyer_offer,
+).transact(tx_details)
+logger.info("Checking for OfferOpened event for offer with id " + str(maker_as_buyer_swap_id))
+OfferOpened_event_filter = commuto_swap_contract.events.OfferOpened.createFilter(fromBlock="latest", argument_filters={"offerID": maker_as_buyer_swap_id})
+events = OfferOpened_event_filter.get_new_entries()
+if not (len(events) == 1 and events[0]["args"]["offerID"] == maker_as_buyer_swap_id and events[0]["event"] == "OfferOpened"):
+    raise Exception("OfferOpened event for offer with id " + str(maker_as_buyer_swap_id) + " not found")
+tx_details = {
+    "from": taker_address
+}
+maker_as_buyer_swap = {
+	"isCreated": False,
+	"maker": maker_address,
+	"makerInterfaceAddress": HexBytes("an interface address here".encode("utf-8").hex()),
+	"taker": taker_address,
+	"takerInterfaceAddress": HexBytes("an interface address here".encode("utf-8").hex()),
+	"stablecoinType": 0,
+	"amountLowerBound": 100,
+	"amountUpperBound": 100,
+	"securityDepositAmount": 10,
+	"takenSwapAmount": 100,
+	"serviceFeeAmount": 1,
+	"direction": 0,
+	"price": HexBytes("a price here".encode("utf-8").hex()),
+	"paymentMethod": 0,
+	"protocolVersion": 1,
+	"makerExtraData": Web3.keccak(text="A bunch of extra data in here"),
+	"takerExtraData": Web3.keccak(text="A bunch of extra data in here"),
+	"isPaymentSent": True,
+	"isPaymentReceived": True,
+	"hasBuyerClosed": True,
+	"hasSellerClosed": True,
+}
+test_dai_contract.functions.increaseAllowance(
+    commuto_swap_deployment_tx_receipt.contractAddress,
+    111
+).transact(tx_details)
+logger.info("Taking Maker as Buyer offer with id " + str(maker_as_buyer_swap_id))
+commuto_swap_contract.functions.takeOffer(
+	maker_as_buyer_swap_id,
+	maker_as_buyer_swap,
+).transact(tx_details)
+tx_details = {
+	"from": maker_address
+}
+logger.info("Reporting payment sent for Maker as Buyer swap with id " + str(maker_as_buyer_swap_id))
+commuto_swap_contract.functions.reportPaymentSent(
+	maker_as_buyer_swap_id
+).transact(tx_details)
+tx_details = {
+	"from": taker_address
+}
+logger.info("Reporting payment received for Maker as Buyer swap with id " + str(maker_as_buyer_swap_id))
+commuto_swap_contract.functions.reportPaymentReceived(
+    maker_as_buyer_swap_id
+).transact(tx_details)
+logger.info("Closing Maker as Buyer swap with id " + str(maker_as_buyer_swap_id) + " as Taker/Seller")
+commuto_swap_contract.functions.closeSwap(
+    maker_as_buyer_swap_id
+).transact(tx_details)
+tx_details = {
+	"from": maker_address
+}
+logger.info("Closing Maker as Buyer swap with id " + str(maker_as_buyer_swap_id) + " as Maker/Buyer")
+commuto_swap_contract.functions.closeSwap(
+    maker_as_buyer_swap_id
+).transact(tx_details)
+maker_final_dai_balance = test_dai_contract.functions.balanceOf(maker_address).call()
+taker_final_dai_balance = test_dai_contract.functions.balanceOf(taker_address).call()
+service_fee_final_dai_balance = test_dai_contract.functions.balanceOf(commuto_service_fee_account).call()
+if maker_initial_dai_balance + 99 != maker_final_dai_balance:
+	raise Exception(
+		"Maker did not receive valid amount for Maker as Buyer swap with id " + str(maker_as_buyer_swap_id))
+if taker_initial_dai_balance - 101 != taker_final_dai_balance:
+	raise Exception(
+		"Taker did not receive valid amount for Maker as Buyer swap with id " + str(maker_as_buyer_swap_id))
+if service_fee_initial_dai_balance + 2 != service_fee_final_dai_balance:
+	raise Exception("Service Fee Pool did not receive valid amount for Maker as Buyer swap with id " + str(
+		maker_as_buyer_swap_id))
+logger.info("Maker as Buyer swap with id " + str(maker_as_buyer_swap_id) + " closed successfully")
