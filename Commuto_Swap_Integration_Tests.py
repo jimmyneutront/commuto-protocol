@@ -79,7 +79,6 @@ commuto_swap_contract = w3.eth.contract(
 )
 logger.info("Commuto_Swap contract deployment completed")
 logger.info("Running Commuto_Swap Integration Tests")
-# TODO: Check for all types of expected events
 # Testing Maker as Seller swap
 maker_initial_dai_balance = test_dai_contract.functions.balanceOf(maker_address).call()
 taker_initial_dai_balance = test_dai_contract.functions.balanceOf(taker_address).call()
@@ -284,10 +283,19 @@ commuto_swap_contract.functions.takeOffer(
 tx_details = {
 	"from": maker_address
 }
+OfferTaken_event_filter = commuto_swap_contract.events.OfferTaken.createFilter(fromBlock="latest", argument_filters={"offerID": maker_as_buyer_swap_id})
+events = OfferTaken_event_filter.get_new_entries()
+if not (len(events) == 1 and events[0]["args"]["offerID"] == maker_as_buyer_swap_id and events[0]["event"] == "OfferTaken"):
+	raise Exception("OfferTaken event for offer with id " + str(maker_as_buyer_swap_id) + " not found")
 logger.info("Reporting payment sent for Maker as Buyer swap with id " + str(maker_as_buyer_swap_id))
 commuto_swap_contract.functions.reportPaymentSent(
 	maker_as_buyer_swap_id
 ).transact(tx_details)
+logger.info("Checking for PaymentSent event for swap with id " + str(maker_as_buyer_swap_id))
+PaymentSent_event_filter = commuto_swap_contract.events.PaymentSent.createFilter(fromBlock="latest", argument_filters={"swapID": maker_as_buyer_swap_id})
+events = PaymentSent_event_filter.get_new_entries()
+if not (len(events) == 1 and events[0]["args"]["swapID"] == maker_as_buyer_swap_id and events[0]["event"] == "PaymentSent"):
+	raise Exception("PaymentSent event for swap with id " + str(maker_as_buyer_swap_id) + " not found")
 tx_details = {
 	"from": taker_address
 }
@@ -295,10 +303,20 @@ logger.info("Reporting payment received for Maker as Buyer swap with id " + str(
 commuto_swap_contract.functions.reportPaymentReceived(
     maker_as_buyer_swap_id
 ).transact(tx_details)
+logger.info("Checking for PaymentReceived event for swap with id " + str(maker_as_buyer_swap_id))
+PaymentReceived_event_filter = commuto_swap_contract.events.PaymentReceived.createFilter(fromBlock="latest", argument_filters={"swapID": maker_as_buyer_swap_id})
+events = PaymentReceived_event_filter.get_new_entries()
+if not (len(events) == 1 and events[0]["args"]["swapID"] == maker_as_buyer_swap_id and events[0]["event"] == "PaymentReceived"):
+	raise Exception("PaymentReceived event for swap with id " + str(maker_as_buyer_swap_id) + " not found")
 logger.info("Closing Maker as Buyer swap with id " + str(maker_as_buyer_swap_id) + " as Taker/Seller")
 commuto_swap_contract.functions.closeSwap(
     maker_as_buyer_swap_id
 ).transact(tx_details)
+logger.info("Checking for SellerClosed event for swap with id " + str(maker_as_buyer_swap_id))
+SellerClosed_event_filter = commuto_swap_contract.events.SellerClosed.createFilter(fromBlock="latest", argument_filters={"swapID": maker_as_buyer_swap_id})
+events = SellerClosed_event_filter.get_new_entries()
+if not (len(events) == 1 and events[0]["args"]["swapID"] == maker_as_buyer_swap_id and events[0]["event"] == "SellerClosed"):
+	raise Exception("SellerClosed event for swap with id " + str(maker_as_buyer_swap_id) + " not found")
 tx_details = {
 	"from": maker_address
 }
@@ -306,6 +324,11 @@ logger.info("Closing Maker as Buyer swap with id " + str(maker_as_buyer_swap_id)
 commuto_swap_contract.functions.closeSwap(
     maker_as_buyer_swap_id
 ).transact(tx_details)
+logger.info("Checking for BuyerClosed event for swap with id " + str(maker_as_buyer_swap_id))
+BuyerClosed_event_filter = commuto_swap_contract.events.BuyerClosed.createFilter(fromBlock="latest", argument_filters={"swapID": maker_as_buyer_swap_id})
+events = BuyerClosed_event_filter.get_new_entries()
+if not (len(events) == 1 and events[0]["args"]["swapID"] == maker_as_buyer_swap_id and events[0]["event"] == "BuyerClosed"):
+	raise Exception("BuyerClosed event for swap with id " + str(maker_as_buyer_swap_id) + " not found")
 maker_final_dai_balance = test_dai_contract.functions.balanceOf(maker_address).call()
 taker_final_dai_balance = test_dai_contract.functions.balanceOf(taker_address).call()
 service_fee_final_dai_balance = test_dai_contract.functions.balanceOf(commuto_service_fee_account).call()
