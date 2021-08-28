@@ -2,7 +2,8 @@
 pragma solidity ^0.6.0;
 pragma experimental ABIEncoderV2;
 
-import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/v3.0.0/contracts/math/SafeMath.sol";
+//import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/v3.0.0/contracts/math/SafeMath.sol";
+import "SafeMath.sol";
 
 //Abstract ERC20 contract
 abstract contract ERC20 {
@@ -155,9 +156,6 @@ contract Commuto_Swap {
         } else {
             revert("You must specify a supported direction");
         }
-        //Lock required total amount in escrow
-        require(totalAmount <= token.allowance(msg.sender, address(this)), "Token allowance must be >= required amount");
-        require(token.transferFrom(msg.sender, address(this), totalAmount), "Token transfer to Commuto Protocol failed");
 
         //Finish and notify of offer creation
         newOffer.isCreated = true;
@@ -165,6 +163,10 @@ contract Commuto_Swap {
         newOffer.maker = msg.sender;
         offers[offerID] = newOffer;
         emit OfferOpened(offerID);
+
+        //Lock required total amount in escrow
+        require(totalAmount <= token.allowance(msg.sender, address(this)), "Token allowance must be >= required amount");
+        require(token.transferFrom(msg.sender, address(this), totalAmount), "Token transfer to Commuto Protocol failed");
     }
 
     //Cancel open swap offer
@@ -252,9 +254,6 @@ contract Commuto_Swap {
         } else {
             revert("You must specify a supported direction");
         }
-        //Lock required total amount in escrow
-        require(totalAmount <= token.allowance(msg.sender, address(this)), "Token allowance must be >= required amount");
-        require(token.transferFrom(msg.sender, address(this), totalAmount), "Token transfer to Commuto Protocol failed");
 
         //Finish swap creation and notify that offer is taken
         newSwap.isCreated = true;
@@ -266,6 +265,10 @@ contract Commuto_Swap {
         newSwap.hasSellerClosed = false;
         swaps[offerID] = newSwap;
         emit OfferTaken(offerID);
+
+        //Lock required total amount in escrow
+        require(totalAmount <= token.allowance(msg.sender, address(this)), "Token allowance must be >= required amount");
+        require(token.transferFrom(msg.sender, address(this), totalAmount), "Token transfer to Commuto Protocol failed");
     }
 
     //Report payment sent for swap
@@ -332,29 +335,29 @@ contract Commuto_Swap {
         if(swaps[swapID].direction == SwapDirection.SELL && swaps[swapID].taker == msg.sender) {
             require(swaps[swapID].hasBuyerClosed == false, "Buyer has already closed swap");
             returnAmount = SafeMath.add(swaps[swapID].securityDepositAmount, swaps[swapID].takenSwapAmount);
-            require(token.transfer(swaps[swapID].taker, returnAmount), "Token transfer failed");
-            require(token.transfer(serviceFeePool, swaps[swapID].serviceFeeAmount), "Service fee transfer failed");
             swaps[swapID].hasBuyerClosed = true;
             emit BuyerClosed(swapID);
+            require(token.transfer(swaps[swapID].taker, returnAmount), "Token transfer failed");
+            require(token.transfer(serviceFeePool, swaps[swapID].serviceFeeAmount), "Service fee transfer failed");
         }
         //If caller is buyer and maker, return security deposit, swap amount, and serviceFeeUpperBound - serviceFeeAmount, and send service fee to pool
         else if (swaps[swapID].direction == SwapDirection.BUY && swaps[swapID].maker == msg.sender) {
             require(swaps[swapID].hasBuyerClosed == false, "Buyer has already closed swap");
             uint256 serviceFeeAmountUpperBound = SafeMath.div(swaps[swapID].amountUpperBound, 100);
             returnAmount = SafeMath.add(SafeMath.add(swaps[swapID].securityDepositAmount, swaps[swapID].takenSwapAmount), SafeMath.sub(serviceFeeAmountUpperBound, swaps[swapID].serviceFeeAmount));
-            require(token.transfer(swaps[swapID].maker, returnAmount), "Token transfer failed");
-            require(token.transfer(serviceFeePool, swaps[swapID].serviceFeeAmount), "Service fee transfer failed");
             swaps[swapID].hasBuyerClosed = true;
             emit BuyerClosed(swapID);
+            require(token.transfer(swaps[swapID].maker, returnAmount), "Token transfer failed");
+            require(token.transfer(serviceFeePool, swaps[swapID].serviceFeeAmount), "Service fee transfer failed");
         }
         //If caller is seller and taker, return security deposit, and send service fee to pool
         else if (swaps[swapID].direction == SwapDirection.BUY && swaps[swapID].taker == msg.sender) {
             require(swaps[swapID].hasSellerClosed == false, "Seller has already closed swap");
             returnAmount = swaps[swapID].securityDepositAmount;
-            require(token.transfer(swaps[swapID].taker, returnAmount), "Token transfer failed");
-            require(token.transfer(serviceFeePool, swaps[swapID].serviceFeeAmount), "Service fee transfer failed");
             swaps[swapID].hasSellerClosed = true;
             emit SellerClosed(swapID);
+            require(token.transfer(swaps[swapID].taker, returnAmount), "Token transfer failed");
+            require(token.transfer(serviceFeePool, swaps[swapID].serviceFeeAmount), "Service fee transfer failed");
         }
         //If caller is seller and maker, return amountUpperBound - takenSwapAmount, security deposit and serviceFeeUpperBound - serviceFeeAmount, and send service fee to pool
         else if (swaps[swapID].direction == SwapDirection.SELL && swaps[swapID].maker == msg.sender) {
@@ -362,10 +365,10 @@ contract Commuto_Swap {
             uint256 swapRemainder = SafeMath.sub(swaps[swapID].amountUpperBound, swaps[swapID].takenSwapAmount);
             uint256 serviceFeeAmountUpperBound = SafeMath.div(swaps[swapID].amountUpperBound, 100);
             returnAmount = SafeMath.add(SafeMath.add(swapRemainder, swaps[swapID].securityDepositAmount), SafeMath.sub(serviceFeeAmountUpperBound, swaps[swapID].serviceFeeAmount));
-            require(token.transfer(swaps[swapID].maker, returnAmount), "Token transfer failed");
-            require(token.transfer(serviceFeePool, swaps[swapID].serviceFeeAmount), "Service fee transfer failed");
             swaps[swapID].hasSellerClosed = true;
             emit SellerClosed(swapID);
+            require(token.transfer(swaps[swapID].maker, returnAmount), "Token transfer failed");
+            require(token.transfer(serviceFeePool, swaps[swapID].serviceFeeAmount), "Service fee transfer failed");
         } else {
             revert("Only swap maker or taker can call this function");
         }
