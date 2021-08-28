@@ -129,7 +129,7 @@ contract Commuto_Swap {
     //Create a new swap offer
     function openOffer(bytes16 offerID, Offer memory newOffer) public {
         //Validate arguments
-        require(offers[offerID].isCreated == false, "An offer with the specified id already exists");
+        require(!offers[offerID].isCreated, "An offer with the specified id already exists");
         require(newOffer.amountLowerBound > 0, "The minimum swap amount must be greater than zero");
         require(newOffer.amountUpperBound >= newOffer.amountLowerBound, "The maximum swap amount must be >= the minimum swap amount");
         require(SafeMath.mul(newOffer.securityDepositAmount, 10) >= newOffer.amountLowerBound, "The security deposit must be at least 10% of the minimum swap amount");
@@ -189,7 +189,7 @@ contract Commuto_Swap {
     function cancelOffer(bytes16 offerID) public {
         //Validate arguments
         require(offers[offerID].isCreated, "An offer with the specified id does not exist");
-        require(offers[offerID].isTaken == false, "Offer is taken and cannot be canceled");
+        require(!offers[offerID].isTaken, "Offer is taken and cannot be canceled");
         require(offers[offerID].maker == msg.sender, "Offers can only be canceled by offer maker");
 
         //Find proper stablecoin contract
@@ -233,7 +233,7 @@ contract Commuto_Swap {
     function takeOffer(bytes16 offerID, Swap memory newSwap) public {
         //Validate arguments
         require(offers[offerID].isCreated, "An offer with the specified id does not exist");
-        require(swaps[offerID].isCreated == false, "The offer with the specified id has already been taken");
+        require(!swaps[offerID].isCreated, "The offer with the specified id has already been taken");
         require(offers[offerID].maker == newSwap.maker, "Maker addresses must match");
         require(keccak256(offers[offerID].interfaceAddress) == keccak256(newSwap.makerInterfaceAddress), "Maker interface addresses must match");
         require(offers[offerID].stablecoinType == newSwap.stablecoinType, "Stablecoin types must match");
@@ -306,7 +306,7 @@ contract Commuto_Swap {
     function reportPaymentSent(bytes16 swapID) public {
         //Validate arguments
         require(swaps[swapID].isCreated, "A swap with the specified id does not exist");
-        require(swaps[swapID].isPaymentSent == false, "Payment sending has already been reported for swap with specified id");
+        require(!swaps[swapID].isPaymentSent, "Payment sending has already been reported for swap with specified id");
         if(swaps[swapID].direction == SwapDirection.BUY) {
             require(swaps[swapID].maker == msg.sender, "Payment sending can only be reported by buyer");
         } else if (swaps[swapID].direction == SwapDirection.SELL) {
@@ -325,7 +325,7 @@ contract Commuto_Swap {
         //Validate arguments
         require(swaps[swapID].isCreated, "A swap with the specified id does not exist");
         require(swaps[swapID].isPaymentSent, "Payment sending has not been reported for swap with specified id");
-        require(swaps[swapID].isPaymentReceived == false, "Payment receiving has already been reported for swap with specified id");
+        require(!swaps[swapID].isPaymentReceived, "Payment receiving has already been reported for swap with specified id");
         if(swaps[swapID].direction == SwapDirection.BUY) {
             require(swaps[swapID].taker == msg.sender, "Payment receiving can only be reported by seller");
         } else if (swaps[swapID].direction == SwapDirection.SELL) {
@@ -369,7 +369,7 @@ contract Commuto_Swap {
 
         //If caller is buyer and taker, return security deposit and swap amount, and send service fee to pool
         if(swaps[swapID].direction == SwapDirection.SELL && swaps[swapID].taker == msg.sender) {
-            require(swaps[swapID].hasBuyerClosed == false, "Buyer has already closed swap");
+            require(!swaps[swapID].hasBuyerClosed, "Buyer has already closed swap");
             returnAmount = SafeMath.add(swaps[swapID].securityDepositAmount, swaps[swapID].takenSwapAmount);
             swaps[swapID].hasBuyerClosed = true;
             emit BuyerClosed(swapID);
@@ -378,7 +378,7 @@ contract Commuto_Swap {
         }
         //If caller is buyer and maker, return security deposit, swap amount, and serviceFeeUpperBound - serviceFeeAmount, and send service fee to pool
         else if (swaps[swapID].direction == SwapDirection.BUY && swaps[swapID].maker == msg.sender) {
-            require(swaps[swapID].hasBuyerClosed == false, "Buyer has already closed swap");
+            require(!swaps[swapID].hasBuyerClosed, "Buyer has already closed swap");
             uint256 serviceFeeAmountUpperBound = SafeMath.div(swaps[swapID].amountUpperBound, 100);
             returnAmount = SafeMath.add(SafeMath.add(swaps[swapID].securityDepositAmount, swaps[swapID].takenSwapAmount), SafeMath.sub(serviceFeeAmountUpperBound, swaps[swapID].serviceFeeAmount));
             swaps[swapID].hasBuyerClosed = true;
@@ -388,7 +388,7 @@ contract Commuto_Swap {
         }
         //If caller is seller and taker, return security deposit, and send service fee to pool
         else if (swaps[swapID].direction == SwapDirection.BUY && swaps[swapID].taker == msg.sender) {
-            require(swaps[swapID].hasSellerClosed == false, "Seller has already closed swap");
+            require(!swaps[swapID].hasSellerClosed, "Seller has already closed swap");
             returnAmount = swaps[swapID].securityDepositAmount;
             swaps[swapID].hasSellerClosed = true;
             emit SellerClosed(swapID);
@@ -397,7 +397,7 @@ contract Commuto_Swap {
         }
         //If caller is seller and maker, return amountUpperBound - takenSwapAmount, security deposit and serviceFeeUpperBound - serviceFeeAmount, and send service fee to pool
         else if (swaps[swapID].direction == SwapDirection.SELL && swaps[swapID].maker == msg.sender) {
-            require(swaps[swapID].hasSellerClosed == false, "Seller has already closed swap");
+            require(!swaps[swapID].hasSellerClosed, "Seller has already closed swap");
             uint256 swapRemainder = SafeMath.sub(swaps[swapID].amountUpperBound, swaps[swapID].takenSwapAmount);
             uint256 serviceFeeAmountUpperBound = SafeMath.div(swaps[swapID].amountUpperBound, 100);
             returnAmount = SafeMath.add(SafeMath.add(swapRemainder, swaps[swapID].securityDepositAmount), SafeMath.sub(serviceFeeAmountUpperBound, swaps[swapID].serviceFeeAmount));
