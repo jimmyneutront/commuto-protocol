@@ -114,10 +114,15 @@ contract Commuto_Swap {
                  address _busdAddress,
                  address _usdtAddress) public {
         owner = msg.sender;
+        require(_serviceFeePool != address(0), "_serviceFeePool address cannot be zero");
         serviceFeePool = _serviceFeePool;
+        require(_daiAddress != address(0), "_daiAddress cannot be zero address");
         daiAddress = _daiAddress;
+        require(_usdcAddress != address(0), "_usdcAddress cannot be zero address");
         usdcAddress = _usdcAddress;
+        require(_busdAddress != address(0), "_busdAddress cannot be zero address");
         busdAddress = _busdAddress;
+        require(_usdtAddress != address(0), "_usdtAddress cannot be zero address");
         usdtAddress = _usdtAddress;
     }
 
