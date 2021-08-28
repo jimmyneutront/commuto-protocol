@@ -225,8 +225,8 @@ contract Commuto_Swap {
 
         //Delete offer, refund STBL and notify
         delete offers[offerID];
-        require(token.transfer(offers[offerID].maker, totalAmount), "Token transfer failed");
         emit OfferCanceled(offerID);
+        require(token.transfer(offers[offerID].maker, totalAmount), "Token transfer failed");
     }
 
     //Take a swap offer
