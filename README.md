@@ -27,13 +27,22 @@ Set up a Commuto Protocol development and testing environment with the following
 
 1. Clone this repository
 2. Initialize a new virtualenv virtual environment in the root project directory with a Python 3.9 interpreter
-3. Use pip to install Python packages web3 and hexbytes
-4. Install and set up the Hardhat Ethereum development environment. Instructions can be found here: 
+3. Use pip to install the following Python packages: web3, hexbytes, slither-analyzer, and solc-select
+4. Use solc-select to install solc 0.6.12 and designate solc 0.6.12 as the default solidity compiler to be used. macOS 
+users may not be able to complete this step due to Python not using macOS system SSL certificates. To fix this, run the
+"Install Certificates.command" file included in the "/Applications/Python3.9" directory, which will install a bundle of
+default root certificates from the certifi Python package.
+5. Install and set up the Hardhat Ethereum development environment. Instructions can be found here: 
 https://hardhat.org/getting-started/
-5. Start a standalone Hardhat Network instance
-6. Replace the web3 provider address in Commuto_Swap_Tests.py and Commuto_Swap_Integration_Tests.py with the address and
+6. Start a standalone Hardhat Network instance
+7. Replace the web3 provider address in Commuto_Swap_Tests.py and Commuto_Swap_Integration_Tests.py with the address and
 port number of your Hardhat Network instance
-7. You are now ready to run tests and experiment with the Commuto Protocol
+8. You are now ready to run tests and experiment with the Commuto Protocol
+
+Before submitting any pull requests, run Commuto_Swap_Tests.py and Commuto_Swap_Integration_Tests.py, and run
+Slither on the project as well. Do not submit a pull request if Commuto_Swap_Tests or Commuto_Swap_Integration_Tests do 
+not pass. Attempt to resolve all issues raised by Slither. However, if an issue cannot be resolved for any reason, 
+include a comment with the code in question to explain why.
 
 The recommended Commuto Protocol development environment workflow is intended to be as simple as possible, only 
 requiring developers to install software that is absolutely necessary. For this reason, it is recommended to use the 
