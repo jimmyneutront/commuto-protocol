@@ -22,7 +22,7 @@ abstract contract ERC20 {
 
 //TODO: Better code comments
 //TODO: Use localizable keys for error messages, and create an external English key to error message dictionary
-contract Commuto_Swap {
+contract CommutoSwap {
     
     address public owner;
     address public serviceFeePool;
