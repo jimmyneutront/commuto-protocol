@@ -21,6 +21,7 @@ abstract contract ERC20 {
 }
 
 //TODO: Better code comments
+//TODO: Use localizable keys for error messages, and create an external English key to error message dictionary
 contract Commuto_Swap {
     
     address public owner;
@@ -132,6 +133,11 @@ contract Commuto_Swap {
         require(newOffer.protocolVersion >= protocolVersion, "Offers can only be created for the most recent protocol version");
         
         //Find proper stablecoin contract
+        /*
+        Slither complains that "token" is never initialized. However, compilation fails if this declaration takes place
+        within the if/else statements, so it must remain here. Additionally, if initialization doesn't take place within
+        the if/else statements, the function reverts because a supported stablecoin has not been specified.
+        */
         ERC20 token;
         
         if(newOffer.stablecoinType == StablecoinType.DAI) {
@@ -148,6 +154,11 @@ contract Commuto_Swap {
 
         //Calculate required total amount
         uint256 serviceFeeAmountUpperBound = SafeMath.div(newOffer.amountUpperBound, 100);
+        /*
+        Slither complains that "totalAmount" is never initialized. However, compilation fails if this declaration takes place
+        within the if/else statements, so it must remain here. Additionally, if initialization doesn't take place within
+        the if/else statements, the function reverts because a supported direction has not been specified.
+        */
         uint256 totalAmount;
         if(newOffer.direction == SwapDirection.SELL) {
             totalAmount = SafeMath.add(SafeMath.add(newOffer.amountUpperBound, newOffer.securityDepositAmount), serviceFeeAmountUpperBound);
@@ -193,6 +204,11 @@ contract Commuto_Swap {
 
         //Calculate total amount in escrow
         uint256 serviceFeeAmountUpperBound = SafeMath.div(offers[offerID].amountUpperBound, 100);
+        /*
+        Slither complains that "totalAmount" is never initialized. However, compilation fails if this declaration takes place
+        within the if/else statements, so it must remain here. Additionally, if initialization doesn't take place within
+        the if/else statements, the function reverts because the specified offer has an invalid direction.
+        */
         uint256 totalAmount;
         if(offers[offerID].direction == SwapDirection.SELL) {
             totalAmount = SafeMath.add(SafeMath.add(offers[offerID].amountUpperBound, offers[offerID].securityDepositAmount), serviceFeeAmountUpperBound);
@@ -228,6 +244,11 @@ contract Commuto_Swap {
         require(offers[offerID].extraData == newSwap.makerExtraData, "Maker extra data must match");
 
         //Find proper stablecoin contract
+        /*
+        Slither complains that "token" is never initialized. However, compilation fails if this declaration takes place
+        within the if/else statements, so it must remain here. Additionally, if initialization doesn't take place within
+        the if/else statements, the function reverts because a supported stablecoin has not been specified.
+        */
         ERC20 token;
 
         if(newSwap.stablecoinType == StablecoinType.DAI) {
@@ -244,6 +265,11 @@ contract Commuto_Swap {
 
         //Calculate required total amount
         newSwap.serviceFeeAmount = SafeMath.div(newSwap.takenSwapAmount, 100);
+        /*
+        Slither complains that "totalAmount" is never initialized. However, compilation fails if this declaration takes place
+        within the if/else statements, so it must remain here. Additionally, if initialization doesn't take place within
+        the if/else statements, the function reverts because a supported direction has not been specified.
+        */
         uint256 totalAmount;
         if(newSwap.direction == SwapDirection.SELL) {
             //Taker is Buyer
@@ -315,6 +341,11 @@ contract Commuto_Swap {
         require(swaps[swapID].isPaymentReceived, "Payment receiving has not been reported for swap with specified id");
 
         //Find proper stablecoin contract
+        /*
+        Slither complains that "token" is never initialized. However, compilation fails if this declaration takes place
+        within the if/else statements, so it must remain here. Additionally, if initialization doesn't take place within
+        the if/else statements, the function reverts because a supported stablecoin has not been specified.
+        */
         ERC20 token;
 
         if(swaps[swapID].stablecoinType == StablecoinType.DAI) {
