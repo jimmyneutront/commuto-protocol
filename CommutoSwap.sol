@@ -21,6 +21,8 @@ abstract contract ERC20 {
 }
 
 //TODO: Better code comments
+//TODO: Allow custom payment methods, and multiple payment methods for one offer
+//TODO: Allow changing offer price
 //TODO: Use localizable keys for error messages, and create an external English key to error message dictionary
 contract CommutoSwap {
     
