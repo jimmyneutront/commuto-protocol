@@ -20,7 +20,7 @@ logger.setLevel(logging.DEBUG)
 
 # TODO: Start hardhat node
 # Establish connection to web3 provider
-w3 = Web3(Web3.HTTPProvider("http://192.168.0.195:8545"))
+w3 = Web3(Web3.HTTPProvider("http://192.168.1.12:8545"))
 # Check connection
 logger.info("Is connected to Web3 provider: " + str(w3.isConnected()))
 if not w3.isConnected():
@@ -210,7 +210,8 @@ try:
 	).transact(tx_details)
 	raise(Exception("Test " + test_id + " failed without raising exception"))
 except ValueError as e:
-	if "The minimum swap amount must be greater than zero" in str(e):
+	#"e6":"The minimum swap amount must be greater than zero"
+	if "e6" in str(e):
 		logger.info("Test " + test_id + " passed")
 	else:
 		raise e
@@ -242,7 +243,8 @@ try:
 	).transact(tx_details)
 	raise (Exception("Test " + test_id + " failed without raising exception"))
 except ValueError as e:
-	if "The maximum swap amount must be >= the minimum swap amount" in str(e):
+	#"e7":"The maximum swap amount must be >= the minimum swap amount"
+	if "e7" in str(e):
 		logger.info("Test " + test_id + " passed")
 	else:
 		raise e
@@ -274,7 +276,8 @@ try:
 	).transact(tx_details)
 	raise (Exception("Test " + test_id + " failed without raising exception"))
 except ValueError as e:
-	if "The security deposit must be at least 10% of the minimum swap amount" in str(e):
+	#"e8":"The security deposit must be at least 10% of the minimum swap amount"
+	if "e8" in str(e):
 		logger.info("Test " + test_id + " passed")
 	else:
 		raise e
@@ -306,7 +309,8 @@ try:
 	).transact(tx_details)
 	raise (Exception("Test " + test_id + " failed without raising exception"))
 except ValueError as e:
-	if "Service fee amount must be greater than zero" in str(e):
+	#"e9":"Service fee amount must be greater than zero"
+	if "e9" in str(e):
 		logger.info("Test " + test_id + " passed")
 	else:
 		raise e
@@ -339,7 +343,8 @@ try:
 	).transact(tx_details)
 	raise (Exception("Test " + test_id + " failed without raising exception"))
 except ValueError as e:
-	if "Token allowance must be >= required amount" in str(e):
+	#"e13":"Token allowance must be >= required amount"
+	if "e13" in str(e):
 		logger.info("Test " + test_id + " passed")
 	else:
 		raise e
@@ -413,7 +418,8 @@ try:
 	).transact(tx_details)
 	raise (Exception("Test " + test_id + " failed without raising exception"))
 except ValueError as e:
-	if "An offer with the specified id already exists" in str(e):
+	#"e5":"An offer with the specified id already exists"
+	if "e5" in str(e):
 		logger.info("Test " + test_id + " passed")
 	else:
 		raise e
@@ -428,7 +434,8 @@ try:
 	).transact(tx_details)
 	raise (Exception("Test " + test_id + " failed without raising exception"))
 except ValueError as e:
-	if "An offer with the specified id does not exist" in str(e):
+	#"e15":"An offer with the specified id does not exist"
+	if "e15" in str(e):
 		logger.info("Test " + test_id + " passed")
 	else:
 		raise e
@@ -443,7 +450,8 @@ try:
 	).transact(tx_details)
 	raise (Exception("Test " + test_id + " failed without raising exception"))
 except ValueError as e:
-	if "Offers can only be canceled by offer maker" in str(e):
+	#"e17":"Offers can only be canceled by offer maker"
+	if "e17" in str(e):
 		logger.info("Test " + test_id + " passed")
 	else:
 		raise e
@@ -492,7 +500,8 @@ try:
 	).transact(tx_details)
 	raise (Exception("Test " + test_id + " failed without raising exception"))
 except ValueError as e:
-	if "Offer is taken and cannot be canceled" in str(e):
+	#"e16":"Offer is taken and cannot be canceled"
+	if "e16" in str(e):
 		logger.info("Test " + test_id + " passed")
 	else:
 		raise e
@@ -531,7 +540,8 @@ try:
 	).transact(tx_details)
 	raise (Exception("Test " + test_id + " failed without raising exception"))
 except ValueError as e:
-	if "An offer with the specified id does not exist" in str(e):
+	#"e15":"An offer with the specified id does not exist"
+	if "e15" in str(e):
 		logger.info("Test " + test_id + " passed")
 	else:
 		raise e
@@ -570,7 +580,8 @@ try:
 	).transact(tx_details)
 	raise (Exception("Test " + test_id + " failed without raising exception"))
 except ValueError as e:
-	if "The offer with the specified id has already been taken" in str(e):
+	#"e20":"The offer with the specified id has already been taken"
+	if "e20" in str(e):
 		logger.info("Test " + test_id + " passed")
 	else:
 		raise e
@@ -637,7 +648,8 @@ try:
 	).transact(tx_details)
 	raise (Exception("Test " + test_id + " failed without raising exception"))
 except ValueError as e:
-	if "Maker addresses must match" in str(e):
+	#"e21":"Maker addresses must match"
+	if "e21" in str(e):
 		logger.info("Test " + test_id + " passed")
 	else:
 		raise e
@@ -676,7 +688,8 @@ try:
 	).transact(tx_details)
 	raise (Exception("Test " + test_id + " failed without raising exception"))
 except ValueError as e:
-	if "Maker interface addresses must match" in str(e):
+	#"e21.1":"Maker interface addresses must match"
+	if "e21.1" in str(e):
 		logger.info("Test " + test_id + " passed")
 	else:
 		raise e
@@ -715,7 +728,8 @@ try:
 	).transact(tx_details)
 	raise (Exception("Test " + test_id + " failed without raising exception"))
 except ValueError as e:
-	if "Stablecoin types must match" in str(e):
+	#"e22":"Stablecoin types must match"
+	if "e22" in str(e):
 		logger.info("Test " + test_id + " passed")
 	else:
 		raise e
@@ -754,7 +768,8 @@ try:
 	).transact(tx_details)
 	raise (Exception("Test " + test_id + " failed without raising exception"))
 except ValueError as e:
-	if "Lower bounds must match" in str(e):
+	#"e23":"Lower bounds must match"
+	if "e23" in str(e):
 		logger.info("Test " + test_id + " passed")
 	else:
 		raise e
@@ -793,7 +808,8 @@ try:
 	).transact(tx_details)
 	raise (Exception("Test " + test_id + " failed without raising exception"))
 except ValueError as e:
-	if "Upper bounds must match" in str(e):
+	#"e24":"Upper bounds must match"
+	if "e24" in str(e):
 		logger.info("Test " + test_id + " passed")
 	else:
 		raise e
@@ -832,7 +848,8 @@ try:
 	).transact(tx_details)
 	raise (Exception("Test " + test_id + " failed without raising exception"))
 except ValueError as e:
-	if "Security deposit amounts must match" in str(e):
+	#"e25":"Security deposit amounts must match"
+	if "e25" in str(e):
 		logger.info("Test " + test_id + " passed")
 	else:
 		raise e
@@ -874,7 +891,8 @@ try:
 	).transact(tx_details)
 	raise (Exception("Test " + test_id + " failed without raising exception"))
 except ValueError as e:
-	if "Swap amount must be >= lower bound of offer amount" in str(e):
+	#"e26":"Swap amount must be >= lower bound of offer amount"
+	if "e26" in str(e):
 		logger.info("Test " + test_id + " passed")
 	else:
 		raise e
@@ -916,7 +934,8 @@ try:
 	).transact(tx_details)
 	raise (Exception("Test " + test_id + " failed without raising exception"))
 except ValueError as e:
-	if "Swap amount must be <= upper bound of offer amount" in str(e):
+	#"e27":"Swap amount must be <= upper bound of offer amount"
+	if "e27" in str(e):
 		logger.info("Test " + test_id + " passed")
 	else:
 		raise e
@@ -956,7 +975,8 @@ try:
 	).transact(tx_details)
 	raise (Exception("Test " + test_id + " failed without raising exception"))
 except ValueError as e:
-	if "Directions must match" in str(e):
+	#"e28":"Directions must match"
+	if "e28" in str(e):
 		logger.info("Test " + test_id + " passed")
 	else:
 		raise e
@@ -996,7 +1016,8 @@ try:
 	).transact(tx_details)
 	raise (Exception("Test " + test_id + " failed without raising exception"))
 except ValueError as e:
-	if "Prices must match" in str(e):
+	#"e29":"Prices must match"
+	if "e29" in str(e):
 		logger.info("Test " + test_id + " passed")
 	else:
 		raise e
@@ -1036,7 +1057,8 @@ try:
 	).transact(tx_details)
 	raise (Exception("Test " + test_id + " failed without raising exception"))
 except ValueError as e:
-	if "Payment methods must match" in str(e):
+	#"e30":"Payment methods must match"
+	if "e30" in str(e):
 		logger.info("Test " + test_id + " passed")
 	else:
 		raise e
@@ -1077,7 +1099,8 @@ try:
 	).transact(tx_details)
 	raise (Exception("Test " + test_id + " failed without raising exception"))
 except ValueError as e:
-	if "Maker extra data must match" in str(e):
+	#"e32":"Maker extra data must match"
+	if "e32" in str(e):
 		logger.info("Test " + test_id + " passed")
 	else:
 		raise e
@@ -1117,7 +1140,8 @@ try:
 	).transact(tx_details)
 	raise (Exception("Test " + test_id + " failed without raising exception"))
 except ValueError as e:
-	if "Token allowance must be >= required amount" in str(e):
+	#"e13":"Token allowance must be >= required amount"
+	if "e13" in str(e):
 		logger.info("Test " + test_id + " passed")
 	else:
 		raise e
@@ -1132,7 +1156,8 @@ try:
 	).transact(tx_details)
 	raise (Exception("Test " + test_id + " failed without raising exception"))
 except ValueError as e:
-	if "A swap with the specified id does not exist" in str(e):
+	#"e33":"A swap with the specified id does not exist"
+	if "e33" in str(e):
 		logger.info("Test " + test_id + " passed")
 	else:
 		raise e
@@ -1208,7 +1233,8 @@ try:
 	).transact(tx_details)
 	raise (Exception("Test " + test_id + " failed without raising exception"))
 except ValueError as e:
-	if "Payment sending can only be reported by buyer" in str(e):
+	#"e35": "Payment sending can only be reported by buyer"
+	if "e35" in str(e):
 		logger.info("Test " + test_id + " passed")
 	else:
 		raise e
@@ -1287,7 +1313,8 @@ try:
 	).transact(tx_details)
 	raise (Exception("Test " + test_id + " failed without raising exception"))
 except ValueError as e:
-	if "Payment sending can only be reported by buyer" in str(e):
+	#"e35":"Payment sending can only be reported by buyer"
+	if "e35" in str(e):
 		logger.info("Test " + test_id + " passed")
 	else:
 		raise e
@@ -1366,7 +1393,8 @@ try:
 	).transact(tx_details)
 	raise (Exception("Test " + test_id + " failed without raising exception"))
 except ValueError as e:
-	if "Payment sending has already been reported for swap with specified id" in str(e):
+	#"e34": "Payment sending has already been reported for swap with specified id"
+	if "e34" in str(e):
 		logger.info("Test " + test_id + " passed")
 	else:
 		raise e
@@ -1381,7 +1409,8 @@ try:
 	).transact(tx_details)
 	raise (Exception("Test " + test_id + " failed without raising exception"))
 except ValueError as e:
-	if "A swap with the specified id does not exist" in str(e):
+	#"e33":"A swap with the specified id does not exist"
+	if "e33" in str(e):
 		logger.info("Test " + test_id + " passed")
 	else:
 		raise e
@@ -1460,7 +1489,8 @@ try:
 	).transact(tx_details)
 	raise(Exception("Test " + test_id + " failed without raising exception"))
 except ValueError as e:
-	if "Payment sending has not been reported for swap with specified id" in str(e):
+	#"e37":"Payment sending has not been reported for swap with specified id"
+	if "e37" in str(e):
 		logger.info("Test " + test_id + " passed")
 	else:
 		raise e
@@ -1544,7 +1574,8 @@ try:
 		newOfferID
 	)
 except ValueError as e:
-	if "Payment receiving has already been reported for swap with specified id" in str(e):
+	#"e38":"Payment receiving has already been reported for swap with specified id"
+	if "e38" in str(e):
 		logger.info("Test " + test_id + " passed")
 	else:
 		raise e
@@ -1626,7 +1657,8 @@ try:
 	).transact(tx_details)
 	raise (Exception("Test " + test_id + " failed without raising exception"))
 except ValueError as e:
-	if "Payment receiving can only be reported by seller" in str(e):
+	#"e39":"Payment receiving can only be reported by seller"
+	if "e39" in str(e):
 		logger.info("Test " + test_id + " passed")
 	else:
 		raise e
@@ -1705,7 +1737,8 @@ try:
 	).transact(tx_details)
 	raise (Exception("Test " + test_id + " failed without raising exception"))
 except ValueError as e:
-	if "Payment receiving can only be reported by seller" in str(e):
+	#"e39":"Payment receiving can only be reported by seller"
+	if "e39" in str(e):
 		logger.info("Test " + test_id + " passed")
 	else:
 		raise e
@@ -1720,7 +1753,8 @@ try:
 	).transact(tx_details)
 	raise (Exception("Test " + test_id + " failed without raising exception"))
 except ValueError as e:
-	if "A swap with the specified id does not exist" in str(e):
+	#"e33":"A swap with the specified id does not exist"
+	if "e33" in str(e):
 		logger.info("Test " + test_id + " passed")
 	else:
 		raise e
@@ -1795,7 +1829,8 @@ try:
 	).transact(tx_details)
 	raise(Exception("Test " + test_id + " failed without raising exception"))
 except ValueError as e:
-	if "Payment receiving has not been reported for swap with specified id" in str(e):
+	#"e40":"Payment receiving has not been reported for swap with specified id"
+	if "e40" in str(e):
 		logger.info("Test " + test_id + " passed")
 	else:
 		raise e
@@ -1822,7 +1857,8 @@ try:
 	).transact(tx_details)
 	raise (Exception("Test " + test_id + " failed without raising exception"))
 except ValueError as e:
-	if "Only swap maker or taker can call this function" in str(e):
+	#"e44":"Only swap maker or taker can call this function"
+	if "e44" in str(e):
 		logger.info("Test " + test_id + " passed")
 	else:
 		raise e
@@ -1840,7 +1876,8 @@ try:
 	).transact(tx_details)
 	raise(Exception("Test " + test_id + " failed without raising exception"))
 except ValueError as e:
-	if "Buyer has already closed swap" in str(e):
+	#"e41":"Buyer has already closed swap"
+	if "e41" in str(e):
 		logger.info("Test " + test_id + " passed")
 	else:
 		raise e
@@ -1858,7 +1895,8 @@ try:
 	).transact()
 	raise(Exception("Test " + test_id + " failed without raising exception"))
 except ValueError as e:
-	if "Seller has already closed swap" in str(e):
+	#"e43":"Seller has already closed swap"
+	if "e43" in str(e):
 		logger.info("Test " + test_id + " passed")
 	else:
 		raise e

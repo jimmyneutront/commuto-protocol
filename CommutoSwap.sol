@@ -116,28 +116,28 @@ contract CommutoSwap {
                  address _busdAddress,
                  address _usdtAddress) public {
         owner = msg.sender;
-        require(_serviceFeePool != address(0), "_serviceFeePool address cannot be zero");
+        require(_serviceFeePool != address(0), "e0"); //"e0": "_serviceFeePool address cannot be zero"
         serviceFeePool = _serviceFeePool;
-        require(_daiAddress != address(0), "_daiAddress cannot be zero address");
+        require(_daiAddress != address(0), "e1"); //"e1": "_daiAddress cannot be zero address"
         daiAddress = _daiAddress;
-        require(_usdcAddress != address(0), "_usdcAddress cannot be zero address");
+        require(_usdcAddress != address(0), "e2"); //"e2": "_usdcAddress cannot be zero address"
         usdcAddress = _usdcAddress;
-        require(_busdAddress != address(0), "_busdAddress cannot be zero address");
+        require(_busdAddress != address(0), "e3"); //"e3": "_busdAddress cannot be zero address"
         busdAddress = _busdAddress;
-        require(_usdtAddress != address(0), "_usdtAddress cannot be zero address");
+        require(_usdtAddress != address(0), "e4"); //"e4": "_usdtAddress cannot be zero address"
         usdtAddress = _usdtAddress;
     }
 
     //Create a new swap offer
     function openOffer(bytes16 offerID, Offer memory newOffer) public {
         //Validate arguments
-        require(!offers[offerID].isCreated, "An offer with the specified id already exists");
-        require(newOffer.amountLowerBound > 0, "The minimum swap amount must be greater than zero");
-        require(newOffer.amountUpperBound >= newOffer.amountLowerBound, "The maximum swap amount must be >= the minimum swap amount");
-        require(SafeMath.mul(newOffer.securityDepositAmount, 10) >= newOffer.amountLowerBound, "The security deposit must be at least 10% of the minimum swap amount");
+        require(!offers[offerID].isCreated, "e5"); //"An offer with the specified id already exists"
+        require(newOffer.amountLowerBound > 0, "e6"); //"The minimum swap amount must be greater than zero"
+        require(newOffer.amountUpperBound >= newOffer.amountLowerBound, "e7"); //"e7": "The maximum swap amount must be >= the minimum swap amount"
+        require(SafeMath.mul(newOffer.securityDepositAmount, 10) >= newOffer.amountLowerBound, "e8"); //"e8": "The security deposit must be at least 10% of the minimum swap amount"
         uint256 serviceFeeAmountLowerBound = SafeMath.div(newOffer.amountLowerBound, 100);
-        require(serviceFeeAmountLowerBound > 0, "Service fee amount must be greater than zero");
-        require(newOffer.protocolVersion >= protocolVersion, "Offers can only be created for the most recent protocol version");
+        require(serviceFeeAmountLowerBound > 0, "e9"); //"e9": "Service fee amount must be greater than zero"
+        require(newOffer.protocolVersion >= protocolVersion, "e10"); //"e10": "Offers can only be created for the most recent protocol version"
         
         //Find proper stablecoin contract
         /*
@@ -156,7 +156,7 @@ contract CommutoSwap {
         } else if (newOffer.stablecoinType == StablecoinType.USDT) {
             token = ERC20(usdtAddress);
         } else {
-            revert("You must specify a supported stablecoin");
+            revert("e11"); //"e11": "You must specify a supported stablecoin"
         }
 
         //Calculate required total amount
@@ -172,7 +172,7 @@ contract CommutoSwap {
         } else if (newOffer.direction == SwapDirection.BUY) {
             totalAmount = SafeMath.add(newOffer.securityDepositAmount, serviceFeeAmountUpperBound);
         } else {
-            revert("You must specify a supported direction");
+            revert("e12"); //"e12": "You must specify a supported direction"
         }
 
         //Finish and notify of offer creation
@@ -183,16 +183,16 @@ contract CommutoSwap {
         emit OfferOpened(offerID);
 
         //Lock required total amount in escrow
-        require(totalAmount <= token.allowance(msg.sender, address(this)), "Token allowance must be >= required amount");
-        require(token.transferFrom(msg.sender, address(this), totalAmount), "Token transfer to Commuto Protocol failed");
+        require(totalAmount <= token.allowance(msg.sender, address(this)), "e13"); //"e13": "Token allowance must be >= required amount"
+        require(token.transferFrom(msg.sender, address(this), totalAmount), "e14"); //"e14": "Token transfer to Commuto Protocol failed"
     }
 
     //Cancel open swap offer
     function cancelOffer(bytes16 offerID) public {
         //Validate arguments
-        require(offers[offerID].isCreated, "An offer with the specified id does not exist");
-        require(!offers[offerID].isTaken, "Offer is taken and cannot be canceled");
-        require(offers[offerID].maker == msg.sender, "Offers can only be canceled by offer maker");
+        require(offers[offerID].isCreated, "e15"); //"e15": "An offer with the specified id does not exist"
+        require(!offers[offerID].isTaken, "e16"); //"e16": "Offer is taken and cannot be canceled"
+        require(offers[offerID].maker == msg.sender, "e17"); //"e17": "Offers can only be canceled by offer maker"
 
         //Find proper stablecoin contract
         ERC20 token;
@@ -206,7 +206,7 @@ contract CommutoSwap {
         } else if (offers[offerID].stablecoinType == StablecoinType.USDT) {
             token = ERC20(usdtAddress);
         } else {
-            revert("You must specify a supported stablecoin");
+            revert("e11"); //"e11": "You must specify a supported stablecoin"
         }
 
         //Calculate total amount in escrow
@@ -222,33 +222,33 @@ contract CommutoSwap {
         } else if (offers[offerID].direction == SwapDirection.BUY) {
             totalAmount = SafeMath.add(offers[offerID].securityDepositAmount, serviceFeeAmountUpperBound);
         } else {
-            revert("Offer has invalid direction");
+            revert("e18"); //"e18": "Offer has invalid direction"
         }
 
         //Delete offer, refund STBL and notify
         delete offers[offerID];
         emit OfferCanceled(offerID);
-        require(token.transfer(offers[offerID].maker, totalAmount), "Token transfer failed");
+        require(token.transfer(offers[offerID].maker, totalAmount), "e19"); //"e19": "Token transfer failed"
     }
 
     //Take a swap offer
     function takeOffer(bytes16 offerID, Swap memory newSwap) public {
         //Validate arguments
-        require(offers[offerID].isCreated, "An offer with the specified id does not exist");
-        require(!swaps[offerID].isCreated, "The offer with the specified id has already been taken");
-        require(offers[offerID].maker == newSwap.maker, "Maker addresses must match");
-        require(keccak256(offers[offerID].interfaceAddress) == keccak256(newSwap.makerInterfaceAddress), "Maker interface addresses must match");
-        require(offers[offerID].stablecoinType == newSwap.stablecoinType, "Stablecoin types must match");
-        require(offers[offerID].amountLowerBound == newSwap.amountLowerBound, "Lower bounds must match");
-        require(offers[offerID].amountUpperBound == newSwap.amountUpperBound, "Upper bounds must match");
-        require(offers[offerID].securityDepositAmount == newSwap.securityDepositAmount, "Security deposit amounts must match");
-        require(offers[offerID].amountLowerBound <= newSwap.takenSwapAmount, "Swap amount must be >= lower bound of offer amount");
-        require(offers[offerID].amountUpperBound >= newSwap.takenSwapAmount, "Swap amount must be <= upper bound of offer amount");
-        require(offers[offerID].direction == newSwap.direction, "Directions must match");
-        require(keccak256(offers[offerID].price) == keccak256(newSwap.price), "Prices must match");
-        require(offers[offerID].paymentMethod == newSwap.paymentMethod, "Payment methods must match");
-        require(offers[offerID].protocolVersion == newSwap.protocolVersion, "Protocol versions must match");
-        require(offers[offerID].extraData == newSwap.makerExtraData, "Maker extra data must match");
+        require(offers[offerID].isCreated, "e15"); //"e15": "An offer with the specified id does not exist",
+        require(!swaps[offerID].isCreated, "e20"); //"e20": "The offer with the specified id has already been taken"
+        require(offers[offerID].maker == newSwap.maker, "e21"); //"e21": "Maker addresses must match"
+        require(keccak256(offers[offerID].interfaceAddress) == keccak256(newSwap.makerInterfaceAddress), "e21.1"); //"e21.1": "Maker interface addresses must match",
+        require(offers[offerID].stablecoinType == newSwap.stablecoinType, "e22"); //"e22": "Stablecoin types must match"
+        require(offers[offerID].amountLowerBound == newSwap.amountLowerBound, "e23"); //"e23": "Lower bounds must match"
+        require(offers[offerID].amountUpperBound == newSwap.amountUpperBound, "e24"); //"e24": "Upper bounds must match"
+        require(offers[offerID].securityDepositAmount == newSwap.securityDepositAmount, "e25"); //"e25": "Security deposit amounts must match"
+        require(offers[offerID].amountLowerBound <= newSwap.takenSwapAmount, "e26"); //"e26": "Swap amount must be >= lower bound of offer amount"
+        require(offers[offerID].amountUpperBound >= newSwap.takenSwapAmount, "e27"); //"e27": "Swap amount must be <= upper bound of offer amount"
+        require(offers[offerID].direction == newSwap.direction, "e28"); //"e28": "Directions must match"
+        require(keccak256(offers[offerID].price) == keccak256(newSwap.price), "e29"); //"e29": "Prices must match"
+        require(offers[offerID].paymentMethod == newSwap.paymentMethod, "e30"); //"e30": "Payment methods must match"
+        require(offers[offerID].protocolVersion == newSwap.protocolVersion, "e31"); //"e31": "Protocol versions must match"
+        require(offers[offerID].extraData == newSwap.makerExtraData, "e32"); //"e32": "Maker extra data must match"
 
         //Find proper stablecoin contract
         /*
@@ -267,7 +267,7 @@ contract CommutoSwap {
         } else if (newSwap.stablecoinType == StablecoinType.USDT) {
             token = ERC20(usdtAddress);
         } else {
-            revert("You must specify a supported stablecoin");
+            revert("e11"); //"e11": "You must specify a supported stablecoin"
         }
 
         //Calculate required total amount
@@ -285,7 +285,7 @@ contract CommutoSwap {
             //Taker is seller
             totalAmount = SafeMath.add(SafeMath.add(newSwap.takenSwapAmount, newSwap.securityDepositAmount), newSwap.serviceFeeAmount);
         } else {
-            revert("You must specify a supported direction");
+            revert("e12"); //"e12": "You must specify a supported direction"
         }
 
         //Finish swap creation and notify that offer is taken
@@ -300,21 +300,21 @@ contract CommutoSwap {
         emit OfferTaken(offerID);
 
         //Lock required total amount in escrow
-        require(totalAmount <= token.allowance(msg.sender, address(this)), "Token allowance must be >= required amount");
-        require(token.transferFrom(msg.sender, address(this), totalAmount), "Token transfer to Commuto Protocol failed");
+        require(totalAmount <= token.allowance(msg.sender, address(this)), "e13"); //"e13": "Token allowance must be >= required amount"
+        require(token.transferFrom(msg.sender, address(this), totalAmount), "e14"); //"e14": "Token transfer to Commuto Protocol failed"
     }
 
     //Report payment sent for swap
     function reportPaymentSent(bytes16 swapID) public {
         //Validate arguments
-        require(swaps[swapID].isCreated, "A swap with the specified id does not exist");
-        require(!swaps[swapID].isPaymentSent, "Payment sending has already been reported for swap with specified id");
+        require(swaps[swapID].isCreated, "e33"); //"e33": "A swap with the specified id does not exist"
+        require(!swaps[swapID].isPaymentSent, "e34"); //"e34": "Payment sending has already been reported for swap with specified id"
         if(swaps[swapID].direction == SwapDirection.BUY) {
-            require(swaps[swapID].maker == msg.sender, "Payment sending can only be reported by buyer");
+            require(swaps[swapID].maker == msg.sender, "e35"); //"e35": "Payment sending can only be reported by buyer"
         } else if (swaps[swapID].direction == SwapDirection.SELL) {
-            require(swaps[swapID].taker == msg.sender, "Payment sending can only be reported by buyer");
+            require(swaps[swapID].taker == msg.sender, "e35"); //"e35": "Payment sending can only be reported by buyer"
         } else {
-            revert("Swap has invalid direction");
+            revert("e36"); //"e36": "Swap has invalid direction"
         }
 
         //Mark payment sent and notify
@@ -325,15 +325,15 @@ contract CommutoSwap {
     //Report payment received for swap
     function reportPaymentReceived(bytes16 swapID) public {
         //Validate arguments
-        require(swaps[swapID].isCreated, "A swap with the specified id does not exist");
-        require(swaps[swapID].isPaymentSent, "Payment sending has not been reported for swap with specified id");
-        require(!swaps[swapID].isPaymentReceived, "Payment receiving has already been reported for swap with specified id");
+        require(swaps[swapID].isCreated, "e33"); //"e33": "A swap with the specified id does not exist"
+        require(swaps[swapID].isPaymentSent, "e37"); //"e37": "Payment sending has not been reported for swap with specified id"
+        require(!swaps[swapID].isPaymentReceived, "e38"); //"e38": "Payment receiving has already been reported for swap with specified id"
         if(swaps[swapID].direction == SwapDirection.BUY) {
-            require(swaps[swapID].taker == msg.sender, "Payment receiving can only be reported by seller");
+            require(swaps[swapID].taker == msg.sender, "e39"); //"e39": "Payment receiving can only be reported by seller"
         } else if (swaps[swapID].direction == SwapDirection.SELL) {
-            require(swaps[swapID].maker == msg.sender, "Payment receiving can only be reported by seller");
+            require(swaps[swapID].maker == msg.sender, "e39"); //"e39": "Payment receiving can only be reported by seller"
         } else {
-            revert("Swap has invalid direction");
+            revert("e36"); //"e36": "Swap has invalid direction"
         }
 
         //Mark payment received and notify
@@ -344,8 +344,8 @@ contract CommutoSwap {
     //Close swap and receive STBL from escrow
     function closeSwap(bytes16 swapID) public {
         //Validate arguments
-        require(swaps[swapID].isCreated, "A swap with the specified id does not exist");
-        require(swaps[swapID].isPaymentReceived, "Payment receiving has not been reported for swap with specified id");
+        require(swaps[swapID].isCreated, "e33"); //"e33": "A swap with the specified id does not exist"
+        require(swaps[swapID].isPaymentReceived, "e40"); //"e40": "Payment receiving has not been reported for swap with specified id"
 
         //Find proper stablecoin contract
         /*
@@ -364,51 +364,51 @@ contract CommutoSwap {
         } else if (swaps[swapID].stablecoinType == StablecoinType.USDT) {
             token = ERC20(usdtAddress);
         } else {
-            revert("You must specify a supported stablecoin");
+            revert("e11"); //"e11": "You must specify a supported stablecoin"
         }
 
         uint256 returnAmount;
 
         //If caller is buyer and taker, return security deposit and swap amount, and send service fee to pool
         if(swaps[swapID].direction == SwapDirection.SELL && swaps[swapID].taker == msg.sender) {
-            require(!swaps[swapID].hasBuyerClosed, "Buyer has already closed swap");
+            require(!swaps[swapID].hasBuyerClosed, "e41"); //"e41": "Buyer has already closed swap"
             returnAmount = SafeMath.add(swaps[swapID].securityDepositAmount, swaps[swapID].takenSwapAmount);
             swaps[swapID].hasBuyerClosed = true;
             emit BuyerClosed(swapID);
-            require(token.transfer(swaps[swapID].taker, returnAmount), "Token transfer failed");
-            require(token.transfer(serviceFeePool, swaps[swapID].serviceFeeAmount), "Service fee transfer failed");
+            require(token.transfer(swaps[swapID].taker, returnAmount), "e19"); //"e19": "Token transfer failed"
+            require(token.transfer(serviceFeePool, swaps[swapID].serviceFeeAmount), "e42"); //"e42": "Service fee transfer failed"
         }
         //If caller is buyer and maker, return security deposit, swap amount, and serviceFeeUpperBound - serviceFeeAmount, and send service fee to pool
         else if (swaps[swapID].direction == SwapDirection.BUY && swaps[swapID].maker == msg.sender) {
-            require(!swaps[swapID].hasBuyerClosed, "Buyer has already closed swap");
+            require(!swaps[swapID].hasBuyerClosed, "e41"); //"e41": "Buyer has already closed swap"
             uint256 serviceFeeAmountUpperBound = SafeMath.div(swaps[swapID].amountUpperBound, 100);
             returnAmount = SafeMath.add(SafeMath.add(swaps[swapID].securityDepositAmount, swaps[swapID].takenSwapAmount), SafeMath.sub(serviceFeeAmountUpperBound, swaps[swapID].serviceFeeAmount));
             swaps[swapID].hasBuyerClosed = true;
             emit BuyerClosed(swapID);
-            require(token.transfer(swaps[swapID].maker, returnAmount), "Token transfer failed");
-            require(token.transfer(serviceFeePool, swaps[swapID].serviceFeeAmount), "Service fee transfer failed");
+            require(token.transfer(swaps[swapID].maker, returnAmount), "e19"); //"e19": "Token transfer failed"
+            require(token.transfer(serviceFeePool, swaps[swapID].serviceFeeAmount), "e42"); //"e42": "Service fee transfer failed"
         }
         //If caller is seller and taker, return security deposit, and send service fee to pool
         else if (swaps[swapID].direction == SwapDirection.BUY && swaps[swapID].taker == msg.sender) {
-            require(!swaps[swapID].hasSellerClosed, "Seller has already closed swap");
+            require(!swaps[swapID].hasSellerClosed, "e43"); //"e43": "Seller has already closed swap"
             returnAmount = swaps[swapID].securityDepositAmount;
             swaps[swapID].hasSellerClosed = true;
             emit SellerClosed(swapID);
-            require(token.transfer(swaps[swapID].taker, returnAmount), "Token transfer failed");
-            require(token.transfer(serviceFeePool, swaps[swapID].serviceFeeAmount), "Service fee transfer failed");
+            require(token.transfer(swaps[swapID].taker, returnAmount), "e19"); //"e19": "Token transfer failed"
+            require(token.transfer(serviceFeePool, swaps[swapID].serviceFeeAmount), "e42"); //"e42": "Service fee transfer failed"
         }
         //If caller is seller and maker, return amountUpperBound - takenSwapAmount, security deposit and serviceFeeUpperBound - serviceFeeAmount, and send service fee to pool
         else if (swaps[swapID].direction == SwapDirection.SELL && swaps[swapID].maker == msg.sender) {
-            require(!swaps[swapID].hasSellerClosed, "Seller has already closed swap");
+            require(!swaps[swapID].hasSellerClosed, "e43"); //"e43": "Seller has already closed swap"
             uint256 swapRemainder = SafeMath.sub(swaps[swapID].amountUpperBound, swaps[swapID].takenSwapAmount);
             uint256 serviceFeeAmountUpperBound = SafeMath.div(swaps[swapID].amountUpperBound, 100);
             returnAmount = SafeMath.add(SafeMath.add(swapRemainder, swaps[swapID].securityDepositAmount), SafeMath.sub(serviceFeeAmountUpperBound, swaps[swapID].serviceFeeAmount));
             swaps[swapID].hasSellerClosed = true;
             emit SellerClosed(swapID);
-            require(token.transfer(swaps[swapID].maker, returnAmount), "Token transfer failed");
-            require(token.transfer(serviceFeePool, swaps[swapID].serviceFeeAmount), "Service fee transfer failed");
+            require(token.transfer(swaps[swapID].maker, returnAmount), "e19"); //"e19": "Token transfer failed"
+            require(token.transfer(serviceFeePool, swaps[swapID].serviceFeeAmount), "e42"); //"e42": "Service fee transfer failed"
         } else {
-            revert("Only swap maker or taker can call this function");
+            revert("e44"); //"e44": "Only swap maker or taker can call this function"
         }
     }
 }
