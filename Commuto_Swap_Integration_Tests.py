@@ -109,10 +109,12 @@ test_dai_contract.functions.increaseAllowance(
     111,
 ).transact(tx_details)
 logger.info("Opening Maker as Seller offer with id " + str(maker_as_seller_swap_id))
-commuto_swap_contract.functions.openOffer(
+openOffer_tx_hash = commuto_swap_contract.functions.openOffer(
     maker_as_seller_swap_id,
     maker_as_seller_offer
 ).transact(tx_details)
+openOffer_tx_receipt = w3.eth.get_transaction_receipt(openOffer_tx_hash)
+logger.info("Gas used: " + str(openOffer_tx_receipt["gasUsed"]))
 logger.info("Checking for OfferOpened event for offer with id " + str(maker_as_seller_swap_id))
 OfferOpened_event_filter = commuto_swap_contract.events.OfferOpened.createFilter(fromBlock="latest", argument_filters={
     "offerID": maker_as_seller_swap_id,
@@ -153,10 +155,12 @@ test_dai_contract.functions.increaseAllowance(
     11
 ).transact(tx_details)
 logger.info("Taking Maker as Seller offer with id " + str(maker_as_seller_swap_id))
-commuto_swap_contract.functions.takeOffer(
+takeOffer_tx_hash = commuto_swap_contract.functions.takeOffer(
     maker_as_seller_swap_id,
     maker_as_seller_swap,
 ).transact(tx_details)
+takeOffer_tx_receipt = w3.eth.get_transaction_receipt(takeOffer_tx_hash)
+logger.info("Gas used: " + str(takeOffer_tx_receipt["gasUsed"]))
 logger.info("Checking for OfferTaken event for offer with id " + str(maker_as_seller_swap_id))
 OfferTaken_event_filter = commuto_swap_contract.events.OfferTaken.createFilter(fromBlock="latest", argument_filters={
     "offerID": maker_as_seller_swap_id,
@@ -167,9 +171,11 @@ if not (len(events) == 1 and events[0]["args"]["offerID"] == maker_as_seller_swa
             "event"] == "OfferTaken"):
     raise Exception("OfferTaken event for offer with id " + str(maker_as_seller_swap_id) + " not found")
 logger.info("Reporting payment sent for Maker as Seller swap with id " + str(maker_as_seller_swap_id))
-commuto_swap_contract.functions.reportPaymentSent(
+reportPaymentSent_tx_hash = commuto_swap_contract.functions.reportPaymentSent(
     maker_as_seller_swap_id
 ).transact(tx_details)
+reportPaymentSent_tx_receipt = w3.eth.get_transaction_receipt(reportPaymentSent_tx_hash)
+logger.info("Gas used: " + str(reportPaymentSent_tx_receipt["gasUsed"]))
 logger.info("Checking for PaymentSent event for swap with id " + str(maker_as_seller_swap_id))
 PaymentSent_event_filter = commuto_swap_contract.events.PaymentSent.createFilter(fromBlock="latest", argument_filters={
     "swapID": maker_as_seller_swap_id})
@@ -181,9 +187,11 @@ tx_details = {
     "from": maker_address
 }
 logger.info("Reporting payment received for Maker as Seller swap with id " + str(maker_as_seller_swap_id))
-commuto_swap_contract.functions.reportPaymentReceived(
+reportPaymentReceived_tx_hash = commuto_swap_contract.functions.reportPaymentReceived(
     maker_as_seller_swap_id
 ).transact(tx_details)
+reportPaymentReceieved_tx_receipt = w3.eth.get_transaction_receipt(reportPaymentReceived_tx_hash)
+logger.info("Gas used: " + str(reportPaymentReceieved_tx_receipt["gasUsed"]))
 logger.info("Checking for PaymentReceived event for swap with id " + str(maker_as_seller_swap_id))
 PaymentReceived_event_filter = commuto_swap_contract.events.PaymentReceived.createFilter(fromBlock="latest",
                                                                                          argument_filters={
@@ -193,9 +201,11 @@ if not (len(events) == 1 and events[0]["args"]["swapID"] == maker_as_seller_swap
     "event"] == "PaymentReceived"):
     raise Exception("PaymentReceived event for swap with id " + str(maker_as_seller_swap_id) + " not found")
 logger.info("Closing Maker as Seller swap with id " + str(maker_as_seller_swap_id) + " as Maker/Seller")
-commuto_swap_contract.functions.closeSwap(
+maker_closeSwap_tx_hash = commuto_swap_contract.functions.closeSwap(
     maker_as_seller_swap_id
 ).transact(tx_details)
+maker_closeSwap_tx_receipt = w3.eth.get_transaction_receipt(maker_closeSwap_tx_hash)
+logger.info("Gas used: " + str(maker_closeSwap_tx_receipt["gasUsed"]))
 logger.info("Checking for SellerClosed event for swap with id " + str(maker_as_seller_swap_id))
 SellerClosed_event_filter = commuto_swap_contract.events.SellerClosed.createFilter(fromBlock="latest",
                                                                                    argument_filters={
@@ -208,9 +218,11 @@ tx_details = {
     "from": taker_address
 }
 logger.info("Closing Maker as Seller swap with id " + str(maker_as_seller_swap_id) + " as Taker/Buyer")
-commuto_swap_contract.functions.closeSwap(
+taker_closeSwap_tx_hash = commuto_swap_contract.functions.closeSwap(
     maker_as_seller_swap_id
 ).transact(tx_details)
+taker_closeSwap_tx_receipt = w3.eth.get_transaction_receipt(taker_closeSwap_tx_hash)
+logger.info("Gas used: " + str(taker_closeSwap_tx_receipt["gasUsed"]))
 logger.info("Checking for BuyerClosed event for swap with id " + str(maker_as_seller_swap_id))
 BuyerClosed_event_filter = commuto_swap_contract.events.BuyerClosed.createFilter(fromBlock="latest", argument_filters={
     "swapID": maker_as_seller_swap_id})
@@ -259,10 +271,12 @@ test_dai_contract.functions.increaseAllowance(
     11,
 ).transact(tx_details)
 logger.info("Opening Maker as Buyer offer with id " + str(maker_as_buyer_swap_id))
-commuto_swap_contract.functions.openOffer(
+openOffer_tx_hash = commuto_swap_contract.functions.openOffer(
     maker_as_buyer_swap_id,
     maker_as_buyer_offer,
 ).transact(tx_details)
+openOffer_tx_receipt = w3.eth.get_transaction_receipt(openOffer_tx_hash)
+logger.info("Gas used: " + str(openOffer_tx_receipt["gasUsed"]))
 logger.info("Checking for OfferOpened event for offer with id " + str(maker_as_buyer_swap_id))
 OfferOpened_event_filter = commuto_swap_contract.events.OfferOpened.createFilter(fromBlock="latest", argument_filters={
     "offerID": maker_as_buyer_swap_id,
@@ -303,10 +317,12 @@ test_dai_contract.functions.increaseAllowance(
     111
 ).transact(tx_details)
 logger.info("Taking Maker as Buyer offer with id " + str(maker_as_buyer_swap_id))
-commuto_swap_contract.functions.takeOffer(
+takeOffer_tx_hash = commuto_swap_contract.functions.takeOffer(
     maker_as_buyer_swap_id,
     maker_as_buyer_swap,
 ).transact(tx_details)
+takeOffer_tx_receipt = w3.eth.get_transaction_receipt(takeOffer_tx_hash)
+logger.info("Gas used: " + str(takeOffer_tx_receipt["gasUsed"]))
 tx_details = {
     "from": maker_address
 }
@@ -319,9 +335,11 @@ if not (len(events) == 1 and events[0]["args"]["offerID"] == maker_as_buyer_swap
             "event"] == "OfferTaken"):
     raise Exception("OfferTaken event for offer with id " + str(maker_as_buyer_swap_id) + " not found")
 logger.info("Reporting payment sent for Maker as Buyer swap with id " + str(maker_as_buyer_swap_id))
-commuto_swap_contract.functions.reportPaymentSent(
+reportPaymentSent_tx_hash = commuto_swap_contract.functions.reportPaymentSent(
     maker_as_buyer_swap_id
 ).transact(tx_details)
+reportPaymentSent_tx_receipt = w3.eth.get_transaction_receipt(reportPaymentSent_tx_hash)
+logger.info("Gas used: " + str(reportPaymentSent_tx_receipt["gasUsed"]))
 logger.info("Checking for PaymentSent event for swap with id " + str(maker_as_buyer_swap_id))
 PaymentSent_event_filter = commuto_swap_contract.events.PaymentSent.createFilter(fromBlock="latest", argument_filters={
     "swapID": maker_as_buyer_swap_id})
@@ -333,9 +351,11 @@ tx_details = {
     "from": taker_address
 }
 logger.info("Reporting payment received for Maker as Buyer swap with id " + str(maker_as_buyer_swap_id))
-commuto_swap_contract.functions.reportPaymentReceived(
+reportPaymentReceived_tx_hash = commuto_swap_contract.functions.reportPaymentReceived(
     maker_as_buyer_swap_id
 ).transact(tx_details)
+reportPaymentReceieved_tx_receipt = w3.eth.get_transaction_receipt(reportPaymentReceived_tx_hash)
+logger.info("Gas used: " + str(reportPaymentReceieved_tx_receipt["gasUsed"]))
 logger.info("Checking for PaymentReceived event for swap with id " + str(maker_as_buyer_swap_id))
 PaymentReceived_event_filter = commuto_swap_contract.events.PaymentReceived.createFilter(fromBlock="latest",
                                                                                          argument_filters={
@@ -345,9 +365,11 @@ if not (len(events) == 1 and events[0]["args"]["swapID"] == maker_as_buyer_swap_
     "event"] == "PaymentReceived"):
     raise Exception("PaymentReceived event for swap with id " + str(maker_as_buyer_swap_id) + " not found")
 logger.info("Closing Maker as Buyer swap with id " + str(maker_as_buyer_swap_id) + " as Taker/Seller")
-commuto_swap_contract.functions.closeSwap(
+taker_closeSwap_tx_hash = commuto_swap_contract.functions.closeSwap(
     maker_as_buyer_swap_id
 ).transact(tx_details)
+taker_closeSwap_tx_receipt = w3.eth.get_transaction_receipt(taker_closeSwap_tx_hash)
+logger.info("Gas used: " + str(taker_closeSwap_tx_receipt["gasUsed"]))
 logger.info("Checking for SellerClosed event for swap with id " + str(maker_as_buyer_swap_id))
 SellerClosed_event_filter = commuto_swap_contract.events.SellerClosed.createFilter(fromBlock="latest",
                                                                                    argument_filters={
@@ -360,9 +382,11 @@ tx_details = {
     "from": maker_address
 }
 logger.info("Closing Maker as Buyer swap with id " + str(maker_as_buyer_swap_id) + " as Maker/Buyer")
-commuto_swap_contract.functions.closeSwap(
+maker_closeSwap_tx_hash = commuto_swap_contract.functions.closeSwap(
     maker_as_buyer_swap_id
 ).transact(tx_details)
+maker_closeSwap_tx_receipt = w3.eth.get_transaction_receipt(maker_closeSwap_tx_hash)
+logger.info("Gas used: " + str(maker_closeSwap_tx_receipt["gasUsed"]))
 logger.info("Checking for BuyerClosed event for swap with id " + str(maker_as_buyer_swap_id))
 BuyerClosed_event_filter = commuto_swap_contract.events.BuyerClosed.createFilter(fromBlock="latest", argument_filters={
     "swapID": maker_as_buyer_swap_id})
