@@ -12,7 +12,6 @@ logger.addHandler(c_handler)
 logger.setLevel(logging.DEBUG)
 
 # TODO: Start hardhat node
-# TODO: Estimate gas
 # Establish connection to web3 provider
 w3 = Web3(Web3.HTTPProvider("http://192.168.1.12:8545"))
 # Check connection

@@ -23,7 +23,6 @@ abstract contract ERC20 {
 //TODO: Better code comments
 //TODO: Allow custom payment methods, and multiple payment methods for one offer
 //TODO: Allow changing offer price
-//TODO: Getter methods for offers and swaps
 //TODO: Support adding supported ERC20 tokens by governance vote
 contract CommutoSwap {
     
@@ -110,6 +109,13 @@ contract CommutoSwap {
     
     mapping (bytes16 => Offer) private offers;
     mapping (bytes16 => Swap) private swaps;
+
+    function getOffer(bytes16 offerID) view public returns (Offer memory) {
+        return offers[offerID];
+    }
+    function getSwap(bytes16 swapID) view public returns (Swap memory) {
+        return swaps[swapID];
+    }
     
     constructor (address _serviceFeePool,
                  address _daiAddress,
