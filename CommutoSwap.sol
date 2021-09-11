@@ -23,7 +23,8 @@ abstract contract ERC20 {
 //TODO: Better code comments
 //TODO: Allow custom payment methods, and multiple payment methods for one offer
 //TODO: Allow changing offer price
-//TODO: Use localizable keys for error messages, and create an external English key to error message dictionary
+//TODO: Getter methods for offers and swaps
+//TODO: Support adding supported ERC20 tokens by governance vote
 contract CommutoSwap {
     
     address public owner;
@@ -63,7 +64,7 @@ contract CommutoSwap {
         bool isCreated;
         bool isTaken;
         address maker;
-        bytes interfaceAddress;
+        bytes interfaceId;
         StablecoinType stablecoinType;
         uint256 amountLowerBound;
         uint256 amountUpperBound;
@@ -78,9 +79,9 @@ contract CommutoSwap {
     struct Swap {
         bool isCreated;
         address maker;
-        bytes makerInterfaceAddress;
+        bytes makerInterfaceId;
         address taker;
-        bytes takerInterfaceAddress;
+        bytes takerInterfaceId;
         StablecoinType stablecoinType;
         uint256 amountLowerBound;
         uint256 amountUpperBound;
@@ -99,9 +100,9 @@ contract CommutoSwap {
         bool hasSellerClosed;
     }
     
-    event OfferOpened(bytes16 offerID);
+    event OfferOpened(bytes16 offerID, bytes interfaceId);
     event OfferCanceled(bytes16 offerID);
-    event OfferTaken(bytes16 offerID);
+    event OfferTaken(bytes16 offerID, bytes takerInterfaceId);
     event PaymentSent(bytes16 swapID);
     event PaymentReceived(bytes16 swapID);
     event BuyerClosed(bytes16 swapID);
@@ -180,7 +181,7 @@ contract CommutoSwap {
         newOffer.isTaken = false;
         newOffer.maker = msg.sender;
         offers[offerID] = newOffer;
-        emit OfferOpened(offerID);
+        emit OfferOpened(offerID, newOffer.interfaceId);
 
         //Lock required total amount in escrow
         require(totalAmount <= token.allowance(msg.sender, address(this)), "e13"); //"e13": "Token allowance must be >= required amount"
@@ -237,7 +238,7 @@ contract CommutoSwap {
         require(offers[offerID].isCreated, "e15"); //"e15": "An offer with the specified id does not exist",
         require(!swaps[offerID].isCreated, "e20"); //"e20": "The offer with the specified id has already been taken"
         require(offers[offerID].maker == newSwap.maker, "e21"); //"e21": "Maker addresses must match"
-        require(keccak256(offers[offerID].interfaceAddress) == keccak256(newSwap.makerInterfaceAddress), "e21.1"); //"e21.1": "Maker interface addresses must match",
+        require(keccak256(offers[offerID].interfaceId) == keccak256(newSwap.makerInterfaceId), "e21.1"); //"e21.1": "Maker interface ids must match",
         require(offers[offerID].stablecoinType == newSwap.stablecoinType, "e22"); //"e22": "Stablecoin types must match"
         require(offers[offerID].amountLowerBound == newSwap.amountLowerBound, "e23"); //"e23": "Lower bounds must match"
         require(offers[offerID].amountUpperBound == newSwap.amountUpperBound, "e24"); //"e24": "Upper bounds must match"
@@ -297,7 +298,7 @@ contract CommutoSwap {
         newSwap.hasBuyerClosed = false;
         newSwap.hasSellerClosed = false;
         swaps[offerID] = newSwap;
-        emit OfferTaken(offerID);
+        emit OfferTaken(offerID, newSwap.takerInterfaceId);
 
         //Lock required total amount in escrow
         require(totalAmount <= token.allowance(msg.sender, address(this)), "e13"); //"e13": "Token allowance must be >= required amount"

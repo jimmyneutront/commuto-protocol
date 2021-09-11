@@ -12,6 +12,7 @@ logger.addHandler(c_handler)
 logger.setLevel(logging.DEBUG)
 
 # TODO: Start hardhat node
+# TODO: Estimate gas
 # Establish connection to web3 provider
 w3 = Web3(Web3.HTTPProvider("http://192.168.1.12:8545"))
 # Check connection
@@ -92,7 +93,7 @@ maker_as_seller_offer = {
     "isCreated": True,
     "isTaken": True,
     "maker": maker_address,
-    "interfaceAddress": HexBytes("an interface address here".encode("utf-8").hex()),
+    "interfaceId": HexBytes("an interface Id here".encode("utf-8").hex()),
     "stablecoinType": 0,
     "amountLowerBound": 100,
     "amountUpperBound": 100,
@@ -114,10 +115,12 @@ commuto_swap_contract.functions.openOffer(
 ).transact(tx_details)
 logger.info("Checking for OfferOpened event for offer with id " + str(maker_as_seller_swap_id))
 OfferOpened_event_filter = commuto_swap_contract.events.OfferOpened.createFilter(fromBlock="latest", argument_filters={
-    "offerID": maker_as_seller_swap_id})
+    "offerID": maker_as_seller_swap_id,
+    "interfaceId": HexBytes("an interface Id here".encode("utf-8").hex())})
 events = OfferOpened_event_filter.get_new_entries()
-if not (len(events) == 1 and events[0]["args"]["offerID"] == maker_as_seller_swap_id and events[0][
-    "event"] == "OfferOpened"):
+if not (len(events) == 1 and events[0]["args"]["offerID"] == maker_as_seller_swap_id and events[0]["args"][
+    "interfaceId"] == HexBytes("an interface Id here".encode("utf-8").hex()) and events[0][
+            "event"] == "OfferOpened"):
     raise Exception("OfferOpened event for offer with id " + str(maker_as_seller_swap_id) + " not found")
 tx_details = {
     "from": taker_address
@@ -125,9 +128,9 @@ tx_details = {
 maker_as_seller_swap = {
     "isCreated": False,
     "maker": maker_address,
-    "makerInterfaceAddress": HexBytes("an interface address here".encode("utf-8").hex()),
+    "makerInterfaceId": HexBytes("an interface Id here".encode("utf-8").hex()),
     "taker": taker_address,
-    "takerInterfaceAddress": HexBytes("an interface address here".encode("utf-8").hex()),
+    "takerInterfaceId": HexBytes("an interface Id here".encode("utf-8").hex()),
     "stablecoinType": 0,
     "amountLowerBound": 100,
     "amountUpperBound": 100,
@@ -156,10 +159,12 @@ commuto_swap_contract.functions.takeOffer(
 ).transact(tx_details)
 logger.info("Checking for OfferTaken event for offer with id " + str(maker_as_seller_swap_id))
 OfferTaken_event_filter = commuto_swap_contract.events.OfferTaken.createFilter(fromBlock="latest", argument_filters={
-    "offerID": maker_as_seller_swap_id})
+    "offerID": maker_as_seller_swap_id,
+    "takerInterfaceId": HexBytes("an interface Id here".encode("utf-8").hex())})
 events = OfferTaken_event_filter.get_new_entries()
-if not (len(events) == 1 and events[0]["args"]["offerID"] == maker_as_seller_swap_id and events[0][
-    "event"] == "OfferTaken"):
+if not (len(events) == 1 and events[0]["args"]["offerID"] == maker_as_seller_swap_id and events[0]["args"][
+        "takerInterfaceId"] == HexBytes("an interface Id here".encode("utf-8").hex()) and events[0][
+            "event"] == "OfferTaken"):
     raise Exception("OfferTaken event for offer with id " + str(maker_as_seller_swap_id) + " not found")
 logger.info("Reporting payment sent for Maker as Seller swap with id " + str(maker_as_seller_swap_id))
 commuto_swap_contract.functions.reportPaymentSent(
@@ -238,7 +243,7 @@ maker_as_buyer_offer = {
     "isCreated": True,
     "isTaken": True,
     "maker": maker_address,
-    "interfaceAddress": HexBytes("an interface address here".encode("utf-8").hex()),
+    "interfaceId": HexBytes("an interface Id here".encode("utf-8").hex()),
     "stablecoinType": 0,
     "amountLowerBound": 100,
     "amountUpperBound": 100,
@@ -260,10 +265,12 @@ commuto_swap_contract.functions.openOffer(
 ).transact(tx_details)
 logger.info("Checking for OfferOpened event for offer with id " + str(maker_as_buyer_swap_id))
 OfferOpened_event_filter = commuto_swap_contract.events.OfferOpened.createFilter(fromBlock="latest", argument_filters={
-    "offerID": maker_as_buyer_swap_id})
+    "offerID": maker_as_buyer_swap_id,
+    "interfaceId": HexBytes("an interface Id here".encode("utf-8").hex())})
 events = OfferOpened_event_filter.get_new_entries()
-if not (len(events) == 1 and events[0]["args"]["offerID"] == maker_as_buyer_swap_id and events[0][
-    "event"] == "OfferOpened"):
+if not (len(events) == 1 and events[0]["args"]["offerID"] == maker_as_buyer_swap_id and events[0]["args"][
+    "interfaceId"] == HexBytes("an interface Id here".encode("utf-8").hex()) and events[0][
+            "event"] == "OfferOpened"):
     raise Exception("OfferOpened event for offer with id " + str(maker_as_buyer_swap_id) + " not found")
 tx_details = {
     "from": taker_address
@@ -271,9 +278,9 @@ tx_details = {
 maker_as_buyer_swap = {
     "isCreated": False,
     "maker": maker_address,
-    "makerInterfaceAddress": HexBytes("an interface address here".encode("utf-8").hex()),
+    "makerInterfaceId": HexBytes("an interface Id here".encode("utf-8").hex()),
     "taker": taker_address,
-    "takerInterfaceAddress": HexBytes("an interface address here".encode("utf-8").hex()),
+    "takerInterfaceId": HexBytes("an interface Id here".encode("utf-8").hex()),
     "stablecoinType": 0,
     "amountLowerBound": 100,
     "amountUpperBound": 100,
@@ -304,10 +311,12 @@ tx_details = {
     "from": maker_address
 }
 OfferTaken_event_filter = commuto_swap_contract.events.OfferTaken.createFilter(fromBlock="latest", argument_filters={
-    "offerID": maker_as_buyer_swap_id})
+    "offerID": maker_as_buyer_swap_id,
+    "takerInterfaceId": HexBytes("an interface Id here".encode("utf-8").hex())})
 events = OfferTaken_event_filter.get_new_entries()
-if not (len(events) == 1 and events[0]["args"]["offerID"] == maker_as_buyer_swap_id and events[0][
-    "event"] == "OfferTaken"):
+if not (len(events) == 1 and events[0]["args"]["offerID"] == maker_as_buyer_swap_id and events[0]["args"][
+        "takerInterfaceId"] == HexBytes("an interface Id here".encode("utf-8").hex()) and events[0][
+            "event"] == "OfferTaken"):
     raise Exception("OfferTaken event for offer with id " + str(maker_as_buyer_swap_id) + " not found")
 logger.info("Reporting payment sent for Maker as Buyer swap with id " + str(maker_as_buyer_swap_id))
 commuto_swap_contract.functions.reportPaymentSent(

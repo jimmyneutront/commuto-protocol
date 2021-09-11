@@ -21,7 +21,7 @@ commuto_swap_error_messages = {
     "e19": "Token transfer failed",
     "e20": "The offer with the specified id has already been taken",
     "e21": "Maker addresses must match",
-    "e21.1": "Maker interface addresses must match",
+    "e21.1": "Maker interface ids must match",
     "e22": "Stablecoin types must match",
     "e23": "Lower bounds must match",
     "e24": "Upper bounds must match",
