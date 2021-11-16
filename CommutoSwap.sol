@@ -244,7 +244,7 @@ contract CommutoSwap {
         require(offers[offerID].isCreated, "e15"); //"e15": "An offer with the specified id does not exist",
         require(!swaps[offerID].isCreated, "e20"); //"e20": "The offer with the specified id has already been taken"
         require(offers[offerID].maker == newSwap.maker, "e21"); //"e21": "Maker addresses must match"
-        require(keccak256(offers[offerID].interfaceId) == keccak256(newSwap.makerInterfaceId), "e21.1"); //"e21.1": "Maker interface ids must match",
+        require(sha256(offers[offerID].interfaceId) == sha256(newSwap.makerInterfaceId), "e21.1"); //"e21.1": "Maker interface ids must match",
         require(offers[offerID].stablecoinType == newSwap.stablecoinType, "e22"); //"e22": "Stablecoin types must match"
         require(offers[offerID].amountLowerBound == newSwap.amountLowerBound, "e23"); //"e23": "Lower bounds must match"
         require(offers[offerID].amountUpperBound == newSwap.amountUpperBound, "e24"); //"e24": "Upper bounds must match"
@@ -252,7 +252,7 @@ contract CommutoSwap {
         require(offers[offerID].amountLowerBound <= newSwap.takenSwapAmount, "e26"); //"e26": "Swap amount must be >= lower bound of offer amount"
         require(offers[offerID].amountUpperBound >= newSwap.takenSwapAmount, "e27"); //"e27": "Swap amount must be <= upper bound of offer amount"
         require(offers[offerID].direction == newSwap.direction, "e28"); //"e28": "Directions must match"
-        require(keccak256(offers[offerID].price) == keccak256(newSwap.price), "e29"); //"e29": "Prices must match"
+        require(sha256(offers[offerID].price) == sha256(newSwap.price), "e29"); //"e29": "Prices must match"
         require(offers[offerID].paymentMethod == newSwap.paymentMethod, "e30"); //"e30": "Payment methods must match"
         require(offers[offerID].protocolVersion == newSwap.protocolVersion, "e31"); //"e31": "Protocol versions must match"
         require(offers[offerID].extraData == newSwap.makerExtraData, "e32"); //"e32": "Maker extra data must match"
