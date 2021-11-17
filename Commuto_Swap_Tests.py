@@ -1,3 +1,4 @@
+from hashlib import sha256
 from hexbytes import HexBytes
 import logging
 from solcx import compile_files
@@ -20,7 +21,7 @@ logger.setLevel(logging.DEBUG)
 
 # TODO: Start hardhat node
 # Establish connection to web3 provider
-w3 = Web3(Web3.HTTPProvider("http://192.168.1.12:8545"))
+w3 = Web3(Web3.HTTPProvider("http://192.168.1.10:8545"))
 # Check connection
 logger.info("Is connected to Web3 provider: " + str(w3.isConnected()))
 if not w3.isConnected():
@@ -202,7 +203,7 @@ try:
         "price": HexBytes("a price here".encode("utf-8").hex()),
         "paymentMethod": 0,
         "protocolVersion": 1,
-        "extraData": Web3.keccak(text="A bunch of extra data in here")
+        "extraData": sha256("A bunch of extra data in here".encode()).digest()#Web3.keccak(text="A bunch of extra data in here")
     }
     commuto_swap_contract.functions.openOffer(
         newOfferID,
@@ -235,7 +236,7 @@ try:
         "price": HexBytes("a price here".encode("utf-8").hex()),
         "paymentMethod": 0,
         "protocolVersion": 1,
-        "extraData": Web3.keccak(text="A bunch of extra data in here")
+        "extraData": sha256("A bunch of extra data in here".encode()).digest()
     }
     commuto_swap_contract.functions.openOffer(
         newOfferID,
@@ -268,7 +269,7 @@ try:
         "price": HexBytes("a price here".encode("utf-8").hex()),
         "paymentMethod": 0,
         "protocolVersion": 1,
-        "extraData": Web3.keccak(text="A bunch of extra data in here")
+        "extraData": sha256("A bunch of extra data in here".encode()).digest()
     }
     commuto_swap_contract.functions.openOffer(
         newOfferID,
@@ -301,7 +302,7 @@ try:
         "price": HexBytes("a price here".encode("utf-8").hex()),
         "paymentMethod": 0,
         "protocolVersion": 1,
-        "extraData": Web3.keccak(text="A bunch of extra data in here")
+        "extraData": sha256("A bunch of extra data in here".encode()).digest()
     }
     commuto_swap_contract.functions.openOffer(
         newOfferID,
@@ -335,7 +336,7 @@ try:
         "price": HexBytes("a price here".encode("utf-8").hex()),
         "paymentMethod": 0,
         "protocolVersion": 1,
-        "extraData": Web3.keccak(text="A bunch of extra data in here")
+        "extraData": sha256("A bunch of extra data in here".encode()).digest()
     }
     commuto_swap_contract.functions.openOffer(
         newOfferID,
@@ -372,7 +373,7 @@ try:
         "price": HexBytes("a price here".encode("utf-8").hex()),
         "paymentMethod": 0,
         "protocolVersion": 1,
-        "extraData": Web3.keccak(text="A bunch of extra data in here")
+        "extraData": sha256("A bunch of extra data in here".encode()).digest()
     }
     test_dai_contract.functions.increaseAllowance(
         commuto_swap_deployment_tx_receipt.contractAddress,
@@ -412,7 +413,7 @@ try:
         "price": HexBytes("a price here".encode("utf-8").hex()),
         "paymentMethod": 0,
         "protocolVersion": 1,
-        "extraData": Web3.keccak(text="A bunch of extra data in here")
+        "extraData": sha256("A bunch of extra data in here".encode()).digest()
     }
     test_dai_contract.functions.increaseAllowance(
         commuto_swap_deployment_tx_receipt.contractAddress,
@@ -483,8 +484,8 @@ try:
         "price": HexBytes("a price here".encode("utf-8").hex()),
         "paymentMethod": 0,
         "protocolVersion": 1,
-        "makerExtraData": Web3.keccak(text="A bunch of extra data in here"),
-        "takerExtraData": Web3.keccak(text="A bunch of extra data in here"),
+        "makerExtraData": sha256("A bunch of extra data in here".encode()).digest(),
+        "takerExtraData": sha256("A bunch of extra data in here".encode()).digest(),
         "isPaymentSent": True,
         "isPaymentReceived": True,
         "hasBuyerClosed": True,
@@ -533,8 +534,8 @@ try:
         "price": HexBytes("a price here".encode("utf-8").hex()),
         "paymentMethod": 0,
         "protocolVersion": 1,
-        "makerExtraData": Web3.keccak(text="A bunch of extra data in here"),
-        "takerExtraData": Web3.keccak(text="A bunch of extra data in here"),
+        "makerExtraData": sha256("A bunch of extra data in here".encode()).digest(),
+        "takerExtraData": sha256("A bunch of extra data in here".encode()).digest(),
         "isPaymentSent": True,
         "isPaymentReceived": True,
         "hasBuyerClosed": True,
@@ -573,8 +574,8 @@ try:
         "price": HexBytes("a price here".encode("utf-8").hex()),
         "paymentMethod": 0,
         "protocolVersion": 1,
-        "makerExtraData": Web3.keccak(text="A bunch of extra data in here"),
-        "takerExtraData": Web3.keccak(text="A bunch of extra data in here"),
+        "makerExtraData": sha256("A bunch of extra data in here".encode()).digest(),
+        "takerExtraData": sha256("A bunch of extra data in here".encode()).digest(),
         "isPaymentSent": True,
         "isPaymentReceived": True,
         "hasBuyerClosed": True,
@@ -611,7 +612,7 @@ try:
         "price": HexBytes("a price here".encode("utf-8").hex()),
         "paymentMethod": 0,
         "protocolVersion": 1,
-        "extraData": Web3.keccak(text="A bunch of extra data in here")
+        "extraData": sha256("A bunch of extra data in here".encode()).digest()
     }
     test_dai_contract.functions.increaseAllowance(
         commuto_swap_deployment_tx_receipt.contractAddress,
@@ -641,8 +642,8 @@ try:
         "price": HexBytes("a price here".encode("utf-8").hex()),
         "paymentMethod": 0,
         "protocolVersion": 1,
-        "makerExtraData": Web3.keccak(text="A bunch of extra data in here"),
-        "takerExtraData": Web3.keccak(text="A bunch of extra data in here"),
+        "makerExtraData": sha256("A bunch of extra data in here".encode()).digest(),
+        "takerExtraData": sha256("A bunch of extra data in here".encode()).digest(),
         "isPaymentSent": True,
         "isPaymentReceived": True,
         "hasBuyerClosed": True,
@@ -681,8 +682,8 @@ try:
         "price": HexBytes("a price here".encode("utf-8").hex()),
         "paymentMethod": 0,
         "protocolVersion": 1,
-        "makerExtraData": Web3.keccak(text="A bunch of extra data in here"),
-        "takerExtraData": Web3.keccak(text="A bunch of extra data in here"),
+        "makerExtraData": sha256("A bunch of extra data in here".encode()).digest(),
+        "takerExtraData": sha256("A bunch of extra data in here".encode()).digest(),
         "isPaymentSent": True,
         "isPaymentReceived": True,
         "hasBuyerClosed": True,
@@ -721,8 +722,8 @@ try:
         "price": HexBytes("a price here".encode("utf-8").hex()),
         "paymentMethod": 0,
         "protocolVersion": 1,
-        "makerExtraData": Web3.keccak(text="A bunch of extra data in here"),
-        "takerExtraData": Web3.keccak(text="A bunch of extra data in here"),
+        "makerExtraData": sha256("A bunch of extra data in here".encode()).digest(),
+        "takerExtraData": sha256("A bunch of extra data in here".encode()).digest(),
         "isPaymentSent": True,
         "isPaymentReceived": True,
         "hasBuyerClosed": True,
@@ -761,8 +762,8 @@ try:
         "price": HexBytes("a price here".encode("utf-8").hex()),
         "paymentMethod": 0,
         "protocolVersion": 1,
-        "makerExtraData": Web3.keccak(text="A bunch of extra data in here"),
-        "takerExtraData": Web3.keccak(text="A bunch of extra data in here"),
+        "makerExtraData": sha256("A bunch of extra data in here".encode()).digest(),
+        "takerExtraData": sha256("A bunch of extra data in here".encode()).digest(),
         "isPaymentSent": True,
         "isPaymentReceived": True,
         "hasBuyerClosed": True,
@@ -801,8 +802,8 @@ try:
         "price": HexBytes("a price here".encode("utf-8").hex()),
         "paymentMethod": 0,
         "protocolVersion": 1,
-        "makerExtraData": Web3.keccak(text="A bunch of extra data in here"),
-        "takerExtraData": Web3.keccak(text="A bunch of extra data in here"),
+        "makerExtraData": sha256("A bunch of extra data in here".encode()).digest(),
+        "takerExtraData": sha256("A bunch of extra data in here".encode()).digest(),
         "isPaymentSent": True,
         "isPaymentReceived": True,
         "hasBuyerClosed": True,
@@ -841,8 +842,8 @@ try:
         "price": HexBytes("a price here".encode("utf-8").hex()),
         "paymentMethod": 0,
         "protocolVersion": 1,
-        "makerExtraData": Web3.keccak(text="A bunch of extra data in here"),
-        "takerExtraData": Web3.keccak(text="A bunch of extra data in here"),
+        "makerExtraData": sha256("A bunch of extra data in here".encode()).digest(),
+        "takerExtraData": sha256("A bunch of extra data in here".encode()).digest(),
         "isPaymentSent": True,
         "isPaymentReceived": True,
         "hasBuyerClosed": True,
@@ -884,8 +885,8 @@ try:
         "price": HexBytes("a price here".encode("utf-8").hex()),
         "paymentMethod": 0,
         "protocolVersion": 1,
-        "makerExtraData": Web3.keccak(text="A bunch of extra data in here"),
-        "takerExtraData": Web3.keccak(text="A bunch of extra data in here"),
+        "makerExtraData": sha256("A bunch of extra data in here".encode()).digest(),
+        "takerExtraData": sha256("A bunch of extra data in here".encode()).digest(),
         "isPaymentSent": True,
         "isPaymentReceived": True,
         "hasBuyerClosed": True,
@@ -927,8 +928,8 @@ try:
         "price": HexBytes("a price here".encode("utf-8").hex()),
         "paymentMethod": 0,
         "protocolVersion": 1,
-        "makerExtraData": Web3.keccak(text="A bunch of extra data in here"),
-        "takerExtraData": Web3.keccak(text="A bunch of extra data in here"),
+        "makerExtraData": sha256("A bunch of extra data in here".encode()).digest(),
+        "takerExtraData": sha256("A bunch of extra data in here".encode()).digest(),
         "isPaymentSent": True,
         "isPaymentReceived": True,
         "hasBuyerClosed": True,
@@ -968,8 +969,8 @@ try:
         "price": HexBytes("a price here".encode("utf-8").hex()),
         "paymentMethod": 0,
         "protocolVersion": 1,
-        "makerExtraData": Web3.keccak(text="A bunch of extra data in here"),
-        "takerExtraData": Web3.keccak(text="A bunch of extra data in here"),
+        "makerExtraData": sha256("A bunch of extra data in here".encode()).digest(),
+        "takerExtraData": sha256("A bunch of extra data in here".encode()).digest(),
         "isPaymentSent": True,
         "isPaymentReceived": True,
         "hasBuyerClosed": True,
@@ -1009,8 +1010,8 @@ try:
         "price": HexBytes("an incorrect price here".encode("utf-8").hex()),
         "paymentMethod": 0,
         "protocolVersion": 1,
-        "makerExtraData": Web3.keccak(text="A bunch of extra data in here"),
-        "takerExtraData": Web3.keccak(text="A bunch of extra data in here"),
+        "makerExtraData": sha256("A bunch of extra data in here".encode()).digest(),
+        "takerExtraData": sha256("A bunch of extra data in here".encode()).digest(),
         "isPaymentSent": True,
         "isPaymentReceived": True,
         "hasBuyerClosed": True,
@@ -1050,8 +1051,8 @@ try:
         "price": HexBytes("a price here".encode("utf-8").hex()),
         "paymentMethod": 1,
         "protocolVersion": 1,
-        "makerExtraData": Web3.keccak(text="A bunch of extra data in here"),
-        "takerExtraData": Web3.keccak(text="A bunch of extra data in here"),
+        "makerExtraData": sha256("A bunch of extra data in here".encode()).digest(),
+        "takerExtraData": sha256("A bunch of extra data in here".encode()).digest(),
         "isPaymentSent": True,
         "isPaymentReceived": True,
         "hasBuyerClosed": True,
@@ -1092,8 +1093,8 @@ try:
         "price": HexBytes("a price here".encode("utf-8").hex()),
         "paymentMethod": 0,
         "protocolVersion": 1,
-        "makerExtraData": Web3.keccak(text="A bunch of incorrect extra data in here"),
-        "takerExtraData": Web3.keccak(text="A bunch of extra data in here"),
+        "makerExtraData": sha256("A bunch of incorrect extra data in here".encode()).digest(),
+        "takerExtraData": sha256("A bunch of extra data in here".encode()).digest(),
         "isPaymentSent": True,
         "isPaymentReceived": True,
         "hasBuyerClosed": True,
@@ -1133,8 +1134,8 @@ try:
         "price": HexBytes("a price here".encode("utf-8").hex()),
         "paymentMethod": 0,
         "protocolVersion": 1,
-        "makerExtraData": Web3.keccak(text="A bunch of extra data in here"),
-        "takerExtraData": Web3.keccak(text="A bunch of extra data in here"),
+        "makerExtraData": sha256("A bunch of extra data in here".encode()).digest(),
+        "takerExtraData": sha256("A bunch of extra data in here".encode()).digest(),
         "isPaymentSent": True,
         "isPaymentReceived": True,
         "hasBuyerClosed": True,
@@ -1188,7 +1189,7 @@ try:
         "price": HexBytes("a price here".encode("utf-8").hex()),
         "paymentMethod": 0,
         "protocolVersion": 1,
-        "extraData": Web3.keccak(text="A bunch of extra data in here")
+        "extraData": sha256("A bunch of extra data in here".encode()).digest()
     }
     test_dai_contract.functions.increaseAllowance(
         commuto_swap_deployment_tx_receipt.contractAddress,
@@ -1219,8 +1220,8 @@ try:
         "price": HexBytes("a price here".encode("utf-8").hex()),
         "paymentMethod": 0,
         "protocolVersion": 1,
-        "makerExtraData": Web3.keccak(text="A bunch of extra data in here"),
-        "takerExtraData": Web3.keccak(text="A bunch of extra data in here"),
+        "makerExtraData": sha256("A bunch of extra data in here".encode()).digest(),
+        "takerExtraData": sha256("A bunch of extra data in here".encode()).digest(),
         "isPaymentSent": True,
         "isPaymentReceived": True,
         "hasBuyerClosed": True,
@@ -1265,7 +1266,7 @@ try:
         "price": HexBytes("a price here".encode("utf-8").hex()),
         "paymentMethod": 0,
         "protocolVersion": 1,
-        "extraData": Web3.keccak(text="A bunch of extra data in here")
+        "extraData": sha256("A bunch of extra data in here".encode()).digest()
     }
     test_dai_contract.functions.increaseAllowance(
         commuto_swap_deployment_tx_receipt.contractAddress,
@@ -1296,8 +1297,8 @@ try:
         "price": HexBytes("a price here".encode("utf-8").hex()),
         "paymentMethod": 0,
         "protocolVersion": 1,
-        "makerExtraData": Web3.keccak(text="A bunch of extra data in here"),
-        "takerExtraData": Web3.keccak(text="A bunch of extra data in here"),
+        "makerExtraData": sha256("A bunch of extra data in here".encode()).digest(),
+        "takerExtraData": sha256("A bunch of extra data in here".encode()).digest(),
         "isPaymentSent": True,
         "isPaymentReceived": True,
         "hasBuyerClosed": True,
@@ -1345,7 +1346,7 @@ try:
         "price": HexBytes("a price here".encode("utf-8").hex()),
         "paymentMethod": 0,
         "protocolVersion": 1,
-        "extraData": Web3.keccak(text="A bunch of extra data in here")
+        "extraData": sha256("A bunch of extra data in here".encode()).digest()
     }
     test_dai_contract.functions.increaseAllowance(
         commuto_swap_deployment_tx_receipt.contractAddress,
@@ -1376,8 +1377,8 @@ try:
         "price": HexBytes("a price here".encode("utf-8").hex()),
         "paymentMethod": 0,
         "protocolVersion": 1,
-        "makerExtraData": Web3.keccak(text="A bunch of extra data in here"),
-        "takerExtraData": Web3.keccak(text="A bunch of extra data in here"),
+        "makerExtraData": sha256("A bunch of extra data in here".encode()).digest(),
+        "takerExtraData": sha256("A bunch of extra data in here".encode()).digest(),
         "isPaymentSent": True,
         "isPaymentReceived": True,
         "hasBuyerClosed": True,
@@ -1441,7 +1442,7 @@ try:
         "price": HexBytes("a price here".encode("utf-8").hex()),
         "paymentMethod": 0,
         "protocolVersion": 1,
-        "extraData": Web3.keccak(text="A bunch of extra data in here")
+        "extraData": sha256("A bunch of extra data in here".encode()).digest()
     }
     test_dai_contract.functions.increaseAllowance(
         commuto_swap_deployment_tx_receipt.contractAddress,
@@ -1472,8 +1473,8 @@ try:
         "price": HexBytes("a price here".encode("utf-8").hex()),
         "paymentMethod": 0,
         "protocolVersion": 1,
-        "makerExtraData": Web3.keccak(text="A bunch of extra data in here"),
-        "takerExtraData": Web3.keccak(text="A bunch of extra data in here"),
+        "makerExtraData": sha256("A bunch of extra data in here".encode()).digest(),
+        "takerExtraData": sha256("A bunch of extra data in here".encode()).digest(),
         "isPaymentSent": True,
         "isPaymentReceived": True,
         "hasBuyerClosed": True,
@@ -1521,7 +1522,7 @@ try:
         "price": HexBytes("a price here".encode("utf-8").hex()),
         "paymentMethod": 0,
         "protocolVersion": 1,
-        "extraData": Web3.keccak(text="A bunch of extra data in here")
+        "extraData": sha256("A bunch of extra data in here".encode()).digest()
     }
     test_dai_contract.functions.increaseAllowance(
         commuto_swap_deployment_tx_receipt.contractAddress,
@@ -1552,8 +1553,8 @@ try:
         "price": HexBytes("a price here".encode("utf-8").hex()),
         "paymentMethod": 0,
         "protocolVersion": 1,
-        "makerExtraData": Web3.keccak(text="A bunch of extra data in here"),
-        "takerExtraData": Web3.keccak(text="A bunch of extra data in here"),
+        "makerExtraData": sha256("A bunch of extra data in here".encode()).digest(),
+        "takerExtraData": sha256("A bunch of extra data in here".encode()).digest(),
         "isPaymentSent": True,
         "isPaymentReceived": True,
         "hasBuyerClosed": True,
@@ -1606,7 +1607,7 @@ try:
         "price": HexBytes("a price here".encode("utf-8").hex()),
         "paymentMethod": 0,
         "protocolVersion": 1,
-        "extraData": Web3.keccak(text="A bunch of extra data in here")
+        "extraData": sha256("A bunch of extra data in here".encode()).digest()
     }
     test_dai_contract.functions.increaseAllowance(
         commuto_swap_deployment_tx_receipt.contractAddress,
@@ -1637,8 +1638,8 @@ try:
         "price": HexBytes("a price here".encode("utf-8").hex()),
         "paymentMethod": 0,
         "protocolVersion": 1,
-        "makerExtraData": Web3.keccak(text="A bunch of extra data in here"),
-        "takerExtraData": Web3.keccak(text="A bunch of extra data in here"),
+        "makerExtraData": sha256("A bunch of extra data in here".encode()).digest(),
+        "takerExtraData": sha256("A bunch of extra data in here".encode()).digest(),
         "isPaymentSent": True,
         "isPaymentReceived": True,
         "hasBuyerClosed": True,
@@ -1689,7 +1690,7 @@ try:
         "price": HexBytes("a price here".encode("utf-8").hex()),
         "paymentMethod": 0,
         "protocolVersion": 1,
-        "extraData": Web3.keccak(text="A bunch of extra data in here")
+        "extraData": sha256("A bunch of extra data in here".encode()).digest()
     }
     test_dai_contract.functions.increaseAllowance(
         commuto_swap_deployment_tx_receipt.contractAddress,
@@ -1720,8 +1721,8 @@ try:
         "price": HexBytes("a price here".encode("utf-8").hex()),
         "paymentMethod": 0,
         "protocolVersion": 1,
-        "makerExtraData": Web3.keccak(text="A bunch of extra data in here"),
-        "takerExtraData": Web3.keccak(text="A bunch of extra data in here"),
+        "makerExtraData": sha256("A bunch of extra data in here".encode()).digest(),
+        "takerExtraData": sha256("A bunch of extra data in here".encode()).digest(),
         "isPaymentSent": True,
         "isPaymentReceived": True,
         "hasBuyerClosed": True,
@@ -1785,7 +1786,7 @@ try:
         "price": HexBytes("a price here".encode("utf-8").hex()),
         "paymentMethod": 0,
         "protocolVersion": 1,
-        "extraData": Web3.keccak(text="A bunch of extra data in here")
+        "extraData": sha256("A bunch of extra data in here".encode()).digest()
     }
     test_dai_contract.functions.increaseAllowance(
         commuto_swap_deployment_tx_receipt.contractAddress,
@@ -1815,8 +1816,8 @@ try:
         "price": HexBytes("a price here".encode("utf-8").hex()),
         "paymentMethod": 0,
         "protocolVersion": 1,
-        "makerExtraData": Web3.keccak(text="A bunch of extra data in here"),
-        "takerExtraData": Web3.keccak(text="A bunch of extra data in here"),
+        "makerExtraData": sha256("A bunch of extra data in here".encode()).digest(),
+        "takerExtraData": sha256("A bunch of extra data in here".encode()).digest(),
         "isPaymentSent": True,
         "isPaymentReceived": True,
         "hasBuyerClosed": True,

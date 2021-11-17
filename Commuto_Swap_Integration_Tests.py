@@ -1,3 +1,4 @@
+from hashlib import sha256
 from hexbytes import HexBytes
 import logging
 from solcx import compile_files
@@ -13,7 +14,7 @@ logger.setLevel(logging.DEBUG)
 
 # TODO: Start hardhat node
 # Establish connection to web3 provider
-w3 = Web3(Web3.HTTPProvider("http://192.168.1.12:8545"))
+w3 = Web3(Web3.HTTPProvider("http://192.168.1.10:8545"))
 # Check connection
 logger.info("Is connected to Web3 provider: " + str(w3.isConnected()))
 if not w3.isConnected():
@@ -101,7 +102,7 @@ maker_as_seller_offer = {
     "price": HexBytes("a price here".encode("utf-8").hex()),
     "paymentMethod": 0,
     "protocolVersion": 1,
-    "extraData": Web3.keccak(text="A bunch of extra data in here")
+    "extraData": sha256("A bunch of extra data in here".encode()).digest()
 }
 test_dai_contract.functions.increaseAllowance(
     commuto_swap_deployment_tx_receipt.contractAddress,
@@ -142,8 +143,8 @@ maker_as_seller_swap = {
     "price": HexBytes("a price here".encode("utf-8").hex()),
     "paymentMethod": 0,
     "protocolVersion": 1,
-    "makerExtraData": Web3.keccak(text="A bunch of extra data in here"),
-    "takerExtraData": Web3.keccak(text="A bunch of extra data in here"),
+    "makerExtraData": sha256("A bunch of extra data in here".encode()).digest(),
+    "takerExtraData": sha256("A bunch of extra data in here".encode()).digest(),
     "isPaymentSent": True,
     "isPaymentReceived": True,
     "hasBuyerClosed": True,
@@ -263,7 +264,7 @@ maker_as_buyer_offer = {
     "price": HexBytes("a price here".encode("utf-8").hex()),
     "paymentMethod": 0,
     "protocolVersion": 1,
-    "extraData": Web3.keccak(text="A bunch of extra data in here")
+    "extraData": sha256("A bunch of extra data in here".encode()).digest()
 }
 test_dai_contract.functions.increaseAllowance(
     commuto_swap_deployment_tx_receipt.contractAddress,
@@ -304,8 +305,8 @@ maker_as_buyer_swap = {
     "price": HexBytes("a price here".encode("utf-8").hex()),
     "paymentMethod": 0,
     "protocolVersion": 1,
-    "makerExtraData": Web3.keccak(text="A bunch of extra data in here"),
-    "takerExtraData": Web3.keccak(text="A bunch of extra data in here"),
+    "makerExtraData": sha256("A bunch of extra data in here".encode()).digest(),
+    "takerExtraData": sha256("A bunch of extra data in here".encode()).digest(),
     "isPaymentSent": True,
     "isPaymentReceived": True,
     "hasBuyerClosed": True,
