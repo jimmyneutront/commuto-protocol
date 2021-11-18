@@ -20,10 +20,11 @@ abstract contract ERC20 {
   function approve(address spender, uint value) public virtual returns (bool ok);
 }
 
-//TODO: Better code comments
-//TODO: Allow custom payment methods, and multiple payment methods for one offer
 //TODO: Allow changing offer price
+//TODO: Allow custom payment methods, and multiple payment methods for one offer
 //TODO: Support adding supported ERC20 tokens by governance vote
+//TODO: Deal with contract size limitation
+//TODO: Better code comments
 contract CommutoSwap {
     
     address public owner;
@@ -49,6 +50,13 @@ contract CommutoSwap {
         BUSD,
         USDT
     }
+
+    mapping (bytes => bool) private supportedFiats;
+
+    function setFiatSupport(bytes calldata fiatCurrency, bool support) public {
+        require(msg.sender == owner, "e45");
+        supportedFiats[fiatCurrency] = support;
+    }
     
     //The payment method with which the buyer will send FIAT and the seller will receive FIAT
     enum PaymentMethod {
@@ -70,6 +78,7 @@ contract CommutoSwap {
         uint256 securityDepositAmount;
         SwapDirection direction;
         bytes price;
+        bytes fiatCurrency;
         PaymentMethod paymentMethod;
         uint256 protocolVersion;
         bytes32 extraData;
@@ -89,6 +98,7 @@ contract CommutoSwap {
         uint256 serviceFeeAmount;
         SwapDirection direction;
         bytes price;
+        bytes fiatCurrency;
         PaymentMethod paymentMethod;
         uint256 protocolVersion;
         bytes32 makerExtraData;
@@ -144,6 +154,7 @@ contract CommutoSwap {
         require(SafeMath.mul(newOffer.securityDepositAmount, 10) >= newOffer.amountLowerBound, "e8"); //"e8": "The security deposit must be at least 10% of the minimum swap amount"
         uint256 serviceFeeAmountLowerBound = SafeMath.div(newOffer.amountLowerBound, 100);
         require(serviceFeeAmountLowerBound > 0, "e9"); //"e9": "Service fee amount must be greater than zero"
+        require(supportedFiats[newOffer.fiatCurrency] == true, "e46"); //"e46": "Fiat currency must be supported in supportedFiats"
         require(newOffer.protocolVersion >= protocolVersion, "e10"); //"e10": "Offers can only be created for the most recent protocol version"
         
         //Find proper stablecoin contract
@@ -253,6 +264,7 @@ contract CommutoSwap {
         require(offers[offerID].amountUpperBound >= newSwap.takenSwapAmount, "e27"); //"e27": "Swap amount must be <= upper bound of offer amount"
         require(offers[offerID].direction == newSwap.direction, "e28"); //"e28": "Directions must match"
         require(sha256(offers[offerID].price) == sha256(newSwap.price), "e29"); //"e29": "Prices must match"
+        require(sha256(offers[offerID].fiatCurrency) == sha256(newSwap.fiatCurrency), "e47"); //"e47": "Fiat currencies must match"
         require(offers[offerID].paymentMethod == newSwap.paymentMethod, "e30"); //"e30": "Payment methods must match"
         require(offers[offerID].protocolVersion == newSwap.protocolVersion, "e31"); //"e31": "Protocol versions must match"
         require(offers[offerID].extraData == newSwap.makerExtraData, "e32"); //"e32": "Maker extra data must match"

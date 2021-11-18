@@ -80,6 +80,10 @@ commuto_swap_contract = w3.eth.contract(
     abi=commuto_swap_abi
 )
 logger.info("Commuto_Swap contract deployment completed")
+logger.info("Adding USD to supportedFiats")
+tx_hash = commuto_swap_contract.functions.setFiatSupport("USD".encode("utf-8"), True).transact()
+w3.eth.wait_for_transaction_receipt(tx_hash)
+logger.info("Added USD to supportedFiats")
 logger.info("Running Commuto_Swap Integration Tests")
 # Testing Maker as Seller swap
 maker_initial_dai_balance = test_dai_contract.functions.balanceOf(maker_address).call()
@@ -100,6 +104,7 @@ maker_as_seller_offer = {
     "securityDepositAmount": 10,
     "direction": 1,
     "price": HexBytes("a price here".encode("utf-8").hex()),
+    "fiatCurrency": "USD".encode("utf-8"),
     "paymentMethod": 0,
     "protocolVersion": 1,
     "extraData": sha256("A bunch of extra data in here".encode()).digest()
@@ -141,6 +146,7 @@ maker_as_seller_swap = {
     "serviceFeeAmount": 1,
     "direction": 1,
     "price": HexBytes("a price here".encode("utf-8").hex()),
+    "fiatCurrency": "USD".encode("utf-8"),
     "paymentMethod": 0,
     "protocolVersion": 1,
     "makerExtraData": sha256("A bunch of extra data in here".encode()).digest(),
@@ -262,6 +268,7 @@ maker_as_buyer_offer = {
     "securityDepositAmount": 10,
     "direction": 0,
     "price": HexBytes("a price here".encode("utf-8").hex()),
+    "fiatCurrency": "USD".encode("utf-8"),
     "paymentMethod": 0,
     "protocolVersion": 1,
     "extraData": sha256("A bunch of extra data in here".encode()).digest()
@@ -303,6 +310,7 @@ maker_as_buyer_swap = {
     "serviceFeeAmount": 1,
     "direction": 0,
     "price": HexBytes("a price here".encode("utf-8").hex()),
+    "fiatCurrency": "USD".encode("utf-8"),
     "paymentMethod": 0,
     "protocolVersion": 1,
     "makerExtraData": sha256("A bunch of extra data in here".encode()).digest(),

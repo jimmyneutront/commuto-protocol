@@ -45,4 +45,7 @@ commuto_swap_error_messages = {
     "e42": "Service fee transfer failed",
     "e43": "Seller has already closed swap",
     "e44": "Only swap maker or taker can call this function",
+    "e45": "Only owner can set fiat currency support",
+    "e46": "Fiat currency must be supported in supportedFiats",
+    "e47": "Fiat currencies must match"
 }
