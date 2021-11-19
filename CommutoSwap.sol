@@ -51,13 +51,41 @@ contract CommutoSwap {
         USDT
     }
 
+    /*A mapping of fiat symbols to boolean values indicating whether they are supported or not, and an array containing
+    all supported fiat symbols. Both a mapping and an array are used because map value lookups are inexpensive and keep
+    user costs down, but an array is necsssary so that one can always obtain a complete list of supported fiat
+    currencies.
+    */
     mapping (bytes => bool) private supportedFiats;
+    bytes[] private supportedFiatsSymbols;
 
+    //Set the supported state of a fiat currency
     function setFiatSupport(bytes calldata fiatCurrency, bool support) public {
         require(msg.sender == owner, "e45");
+        bool foundFiat = false;
+        for (uint i = 0; i < supportedFiatsSymbols.length; i++) {
+            if (sha256(supportedFiatsSymbols[i]) == sha256(fiatCurrency) && support == false) {
+                foundFiat = true;
+                delete supportedFiatsSymbols[i];
+                supportedFiatsSymbols[i] = supportedFiatsSymbols[supportedFiatsSymbols.length - 1];
+                supportedFiatsSymbols.pop();
+                break;
+            }
+            else if (sha256(supportedFiatsSymbols[i]) == sha256(fiatCurrency) && support == true) {
+                foundFiat = true;
+            }
+        }
+        if (foundFiat == true && support == true) {
+            supportedFiatsSymbols.push(fiatCurrency);
+        }
         supportedFiats[fiatCurrency] = support;
     }
-    
+
+    //Get a copy of the array of supported fiat currency symbols
+    function getSupportedFiats() view public returns (bytes[] memory) {
+        return supportedFiatsSymbols;
+    }
+
     //The payment method with which the buyer will send FIAT and the seller will receive FIAT
     enum PaymentMethod {
         MPESA,
