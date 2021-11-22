@@ -20,8 +20,8 @@ abstract contract ERC20 {
   function approve(address spender, uint value) public virtual returns (bool ok);
 }
 
-//TODO: Allow changing offer price
-//TODO: Allow custom payment methods, and multiple payment methods for one offer
+//TODO: Allow changing offer price and settlement methods
+//TODO: Only charge security deposit amount when making offer, and allow funding only once taken
 //TODO: Support adding supported ERC20 tokens by governance vote
 //TODO: Deal with contract size limitation
 //TODO: Better code comments
@@ -51,48 +51,39 @@ contract CommutoSwap {
         USDT
     }
 
-    /*A mapping of fiat symbols to boolean values indicating whether they are supported or not, and an array containing
-    all supported fiat symbols. Both a mapping and an array are used because map value lookups are inexpensive and keep
-    user costs down, but an array is necsssary so that one can always obtain a complete list of supported fiat
-    currencies.
+    /*A mapping of settlement method names to boolean values indicating whether they are supported or not, and an array
+    containing the names of all supported settlement methods. Both a mapping and an array are necessary because map
+    value lookups are inexpensive and keep user costs down, but an array is necessary so that one can always obtain a
+    complete list of supported settlement methods.
     */
-    mapping (bytes => bool) private supportedFiats;
-    bytes[] private supportedFiatsSymbols;
+    mapping (bytes => bool) private settlementMethods;
+    bytes[] private supportedSettlementMethods;
 
-    //Set the supported state of a fiat currency
-    function setFiatSupport(bytes calldata fiatCurrency, bool support) public {
-        require(msg.sender == owner, "e45");
-        bool foundFiat = false;
-        for (uint i = 0; i < supportedFiatsSymbols.length; i++) {
-            if (sha256(supportedFiatsSymbols[i]) == sha256(fiatCurrency) && support == false) {
-                foundFiat = true;
-                delete supportedFiatsSymbols[i];
-                supportedFiatsSymbols[i] = supportedFiatsSymbols[supportedFiatsSymbols.length - 1];
-                supportedFiatsSymbols.pop();
+    //Set the supported state of a settlement method
+    function setSettlementMethodSupport(bytes calldata settlementMethod, bool support) public {
+        require(msg.sender == owner, "e45"); //"e45": "Only owner can set settlement method support",
+        bool foundSettlementMethod = false;
+        for (uint i = 0; i < supportedSettlementMethods.length; i++) {
+            if (sha256(supportedSettlementMethods[i]) == sha256(settlementMethod) && support == false) {
+                foundSettlementMethod = true;
+                delete supportedSettlementMethods[i];
+                supportedSettlementMethods[i] = supportedSettlementMethods[supportedSettlementMethods.length - 1];
+                supportedSettlementMethods.pop();
                 break;
             }
-            else if (sha256(supportedFiatsSymbols[i]) == sha256(fiatCurrency) && support == true) {
-                foundFiat = true;
+            else if (sha256(supportedSettlementMethods[i]) == sha256(settlementMethod) && support == true) {
+                foundSettlementMethod = true;
             }
         }
-        if (foundFiat == true && support == true) {
-            supportedFiatsSymbols.push(fiatCurrency);
+        if (foundSettlementMethod == false && support == true) {
+            supportedSettlementMethods.push(settlementMethod);
         }
-        supportedFiats[fiatCurrency] = support;
+        settlementMethods[settlementMethod] = support;
     }
 
-    //Get a copy of the array of supported fiat currency symbols
-    function getSupportedFiats() view public returns (bytes[] memory) {
-        return supportedFiatsSymbols;
-    }
-
-    //The payment method with which the buyer will send FIAT and the seller will receive FIAT
-    enum PaymentMethod {
-        MPESA,
-        WECHAT,
-        NEQUI,
-        ZELLE,
-        SEPA_INSTANT
+    //Get a copy of the array of supported settlement methods
+    function getSupportedSettlementMethods() view public returns (bytes[] memory) {
+        return supportedSettlementMethods;
     }
     
     struct Offer {
@@ -106,8 +97,7 @@ contract CommutoSwap {
         uint256 securityDepositAmount;
         SwapDirection direction;
         bytes price;
-        bytes fiatCurrency;
-        PaymentMethod paymentMethod;
+        bytes[] settlementMethods;
         uint256 protocolVersion;
         bytes32 extraData;
     }
@@ -126,8 +116,7 @@ contract CommutoSwap {
         uint256 serviceFeeAmount;
         SwapDirection direction;
         bytes price;
-        bytes fiatCurrency;
-        PaymentMethod paymentMethod;
+        bytes settlementMethod;
         uint256 protocolVersion;
         bytes32 makerExtraData;
         bytes32 takerExtraData;
@@ -138,6 +127,7 @@ contract CommutoSwap {
     }
     
     event OfferOpened(bytes16 offerID, bytes interfaceId);
+    event PriceChanged(bytes16 offerID);
     event OfferCanceled(bytes16 offerID);
     event OfferTaken(bytes16 offerID, bytes takerInterfaceId);
     event PaymentSent(bytes16 swapID);
@@ -146,11 +136,13 @@ contract CommutoSwap {
     event SellerClosed(bytes16 swapID);
     
     mapping (bytes16 => Offer) private offers;
+    mapping (bytes16 => mapping (bytes => bool)) private offerSettlementMethods;
     mapping (bytes16 => Swap) private swaps;
 
     function getOffer(bytes16 offerID) view public returns (Offer memory) {
         return offers[offerID];
     }
+
     function getSwap(bytes16 swapID) view public returns (Swap memory) {
         return swaps[swapID];
     }
@@ -174,6 +166,11 @@ contract CommutoSwap {
     }
 
     //Create a new swap offer
+    /*
+    Note that openOffer will not prevent a maker from creating an offer with unsupported settlement methods, to keep gas
+    costs low. However, a taker will not be able to take an offer with unsupported settlement methods, so the maker
+    should be careful not to create such invalid offers.
+    */
     function openOffer(bytes16 offerID, Offer memory newOffer) public {
         //Validate arguments
         require(!offers[offerID].isCreated, "e5"); //"An offer with the specified id already exists"
@@ -182,7 +179,6 @@ contract CommutoSwap {
         require(SafeMath.mul(newOffer.securityDepositAmount, 10) >= newOffer.amountLowerBound, "e8"); //"e8": "The security deposit must be at least 10% of the minimum swap amount"
         uint256 serviceFeeAmountLowerBound = SafeMath.div(newOffer.amountLowerBound, 100);
         require(serviceFeeAmountLowerBound > 0, "e9"); //"e9": "Service fee amount must be greater than zero"
-        require(supportedFiats[newOffer.fiatCurrency] == true, "e46"); //"e46": "Fiat currency must be supported in supportedFiats"
         require(newOffer.protocolVersion >= protocolVersion, "e10"); //"e10": "Offers can only be created for the most recent protocol version"
         
         //Find proper stablecoin contract
@@ -226,6 +222,9 @@ contract CommutoSwap {
         newOffer.isTaken = false;
         newOffer.maker = msg.sender;
         offers[offerID] = newOffer;
+        for (uint i = 0; i < newOffer.settlementMethods.length; i++) {
+            offerSettlementMethods[offerID][newOffer.settlementMethods[i]] = true;
+        }
         emit OfferOpened(offerID, newOffer.interfaceId);
 
         //Lock required total amount in escrow
@@ -233,11 +232,12 @@ contract CommutoSwap {
         require(token.transferFrom(msg.sender, address(this), totalAmount), "e14"); //"e14": "Token transfer to Commuto Protocol failed"
     }
 
+    //TODO: Set settlement methods to false
     //Cancel open swap offer
     function cancelOffer(bytes16 offerID) public {
         //Validate arguments
         require(offers[offerID].isCreated, "e15"); //"e15": "An offer with the specified id does not exist"
-        require(!offers[offerID].isTaken, "e16"); //"e16": "Offer is taken and cannot be canceled"
+        require(!offers[offerID].isTaken, "e16"); //"e16": "Offer is taken and cannot be mutated"
         require(offers[offerID].maker == msg.sender, "e17"); //"e17": "Offers can only be canceled by offer maker"
 
         //Find proper stablecoin contract
@@ -278,6 +278,8 @@ contract CommutoSwap {
     }
 
     //Take a swap offer
+    //TODO: Test for settlement method support in general
+    //TODO: Test for settlement method support for specific offer
     function takeOffer(bytes16 offerID, Swap memory newSwap) public {
         //Validate arguments
         require(offers[offerID].isCreated, "e15"); //"e15": "An offer with the specified id does not exist",
@@ -292,8 +294,8 @@ contract CommutoSwap {
         require(offers[offerID].amountUpperBound >= newSwap.takenSwapAmount, "e27"); //"e27": "Swap amount must be <= upper bound of offer amount"
         require(offers[offerID].direction == newSwap.direction, "e28"); //"e28": "Directions must match"
         require(sha256(offers[offerID].price) == sha256(newSwap.price), "e29"); //"e29": "Prices must match"
-        require(sha256(offers[offerID].fiatCurrency) == sha256(newSwap.fiatCurrency), "e47"); //"e47": "Fiat currencies must match"
-        require(offers[offerID].paymentMethod == newSwap.paymentMethod, "e30"); //"e30": "Payment methods must match"
+        require(settlementMethods[newSwap.settlementMethod] == true, "e46"); //"e46": "Settlement method must be supported"
+        require(offerSettlementMethods[offerID][newSwap.settlementMethod] == true, "e30"); //"e30": "Settlement method must be accepted by maker"
         require(offers[offerID].protocolVersion == newSwap.protocolVersion, "e31"); //"e31": "Protocol versions must match"
         require(offers[offerID].extraData == newSwap.makerExtraData, "e32"); //"e32": "Maker extra data must match"
 

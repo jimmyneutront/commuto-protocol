@@ -67,7 +67,6 @@ logger.info("Deploying dummy ERC20 contracts")
 logger.info("Deploying dummy DAI contract")
 dai_deployment_tx_hash = undeployed_test_dai_contract.constructor().transact()
 logger.info("Deployed DAI contract, awaiting tx mining")
-# TODO: Fix receipt typo
 dai_deployment_tx_recipt = w3.eth.wait_for_transaction_receipt(dai_deployment_tx_hash)
 logger.info("DAI contract deployed with address " + str(dai_deployment_tx_recipt.contractAddress))
 test_dai_contract = w3.eth.contract(
@@ -177,10 +176,12 @@ commuto_swap_contract = w3.eth.contract(
     abi=commuto_swap_abi
 )
 logger.info("Commuto_Swap contract deployment completed")
-logger.info("Adding USD to supportedFiats")
-tx_hash = commuto_swap_contract.functions.setFiatSupport("USD".encode("utf-8"), True).transact()
+logger.info("Adding USD-SWIFT and EUR-SEPA to settlementMethods")
+tx_hash = commuto_swap_contract.functions.setSettlementMethodSupport("USD-SWIFT".encode("utf-8"), True).transact()
 w3.eth.wait_for_transaction_receipt(tx_hash)
-logger.info("Added USD to supportedFiats")
+tx_hash = commuto_swap_contract.functions.setSettlementMethodSupport("EUR-SEPA".encode("utf-8"), True).transact()
+w3.eth.wait_for_transaction_receipt(tx_hash)
+logger.info("Added USD-SWIFT and EUR-SEPA to settlementMethods")
 
 maker_address = w3.eth.accounts[0]
 taker_address = w3.eth.accounts[1]
@@ -205,10 +206,9 @@ try:
         "securityDepositAmount": 100,
         "direction": 1,
         "price": HexBytes("a price here".encode("utf-8").hex()),
-        "fiatCurrency": "USD".encode("utf-8"),
-        "paymentMethod": 0,
+        "settlementMethods": ["USD-SWIFT".encode("utf-8"),],
         "protocolVersion": 1,
-        "extraData": sha256("A bunch of extra data in here".encode()).digest()#Web3.keccak(text="A bunch of extra data in here")
+        "extraData": sha256("A bunch of extra data in here".encode()).digest()
     }
     commuto_swap_contract.functions.openOffer(
         newOfferID,
@@ -239,8 +239,7 @@ try:
         "securityDepositAmount": 100,
         "direction": 1,
         "price": HexBytes("a price here".encode("utf-8").hex()),
-        "fiatCurrency": "USD".encode("utf-8"),
-        "paymentMethod": 0,
+        "settlementMethods": ["USD-SWIFT".encode("utf-8"),],
         "protocolVersion": 1,
         "extraData": sha256("A bunch of extra data in here".encode()).digest()
     }
@@ -273,8 +272,7 @@ try:
         "securityDepositAmount": 1,
         "direction": 1,
         "price": HexBytes("a price here".encode("utf-8").hex()),
-        "fiatCurrency": "USD".encode("utf-8"),
-        "paymentMethod": 0,
+        "settlementMethods": ["USD-SWIFT".encode("utf-8"),],
         "protocolVersion": 1,
         "extraData": sha256("A bunch of extra data in here".encode()).digest()
     }
@@ -307,8 +305,7 @@ try:
         "securityDepositAmount": 10,
         "direction": 1,
         "price": HexBytes("a price here".encode("utf-8").hex()),
-        "fiatCurrency": "USD".encode("utf-8"),
-        "paymentMethod": 0,
+        "settlementMethods": ["USD-SWIFT".encode("utf-8"),],
         "protocolVersion": 1,
         "extraData": sha256("A bunch of extra data in here".encode()).digest()
     }
@@ -342,8 +339,7 @@ try:
         "securityDepositAmount": 10,
         "direction": 1,
         "price": HexBytes("a price here".encode("utf-8").hex()),
-        "fiatCurrency": "USD".encode("utf-8"),
-        "paymentMethod": 0,
+        "settlementMethods": ["USD-SWIFT".encode("utf-8"),],
         "protocolVersion": 1,
         "extraData": sha256("A bunch of extra data in here".encode()).digest()
     }
@@ -358,48 +354,10 @@ except ValueError as e:
         logger.info("Test " + test_id + " passed")
     else:
         raise e
-try:
-    test_id = "1.5"
-    logger.info("Test " + test_id + ": Ensuring offer has supported fiat currency")
-    tx_details = {
-        "from": maker_address
-    }
-    newOfferID = HexBytes(uuid4().bytes)
-    newOffer = {
-        "isCreated": True,
-        "isTaken": True,
-        "maker": maker_address,
-        "interfaceId": HexBytes("an interface Id here".encode("utf-8").hex()),
-        "stablecoinType": 0,
-        "amountLowerBound": 100,
-        "amountUpperBound": 100,
-        "securityDepositAmount": 10,
-        "direction": 1,
-        "price": HexBytes("a price here".encode("utf-8").hex()),
-        "fiatCurrency": "NEX".encode("utf-8"),
-        "paymentMethod": 0,
-        "protocolVersion": 1,
-        "extraData": sha256("A bunch of extra data in here".encode()).digest()
-    }
-    test_dai_contract.functions.increaseAllowance(
-        commuto_swap_deployment_tx_receipt.contractAddress,
-        111,
-    ).transact(tx_details)
-    commuto_swap_contract.functions.openOffer(
-        newOfferID,
-        newOffer,
-    ).transact(tx_details)
-    raise (Exception("Test " + test_id + " failed without raising exception"))
-except ValueError as e:
-    #"e46": "Fiat currency must be supported in supportedFiats"
-    if "e46" in str(e):
-        logger.info("Test " + test_id + " passed")
-    else:
-        raise e
 newOfferID = HexBytes(uuid4().bytes)
 #TODO: Test for more event emissions
 try:
-    test_id = "1.6"
+    test_id = "1.5"
     logger.info("Test " + test_id + ": Ensuring openOffer emits OfferOpened event upon success")
     OfferOpened_event_filter = commuto_swap_contract.events.OfferOpened.createFilter(fromBlock="latest",
                                                                                      argument_filters={
@@ -418,8 +376,7 @@ try:
         "securityDepositAmount": 10,
         "direction": 1,
         "price": HexBytes("a price here".encode("utf-8").hex()),
-        "fiatCurrency": "USD".encode("utf-8"),
-        "paymentMethod": 0,
+        "settlementMethods": ["USD-SWIFT".encode("utf-8"),],
         "protocolVersion": 1,
         "extraData": sha256("A bunch of extra data in here".encode()).digest()
     }
@@ -443,7 +400,7 @@ try:
 except ValueError as e:
     raise e
 try:
-    test_id = "1.7"
+    test_id = "1.6"
     logger.info("Test " + test_id + ": Ensuring multiple offers cannot be created with the same id")
     tx_details = {
         "from": maker_address
@@ -459,8 +416,7 @@ try:
         "securityDepositAmount": 10,
         "direction": 1,
         "price": HexBytes("a price here".encode("utf-8").hex()),
-        "fiatCurrency": "USD".encode("utf-8"),
-        "paymentMethod": 0,
+        "settlementMethods": ["USD-SWIFT".encode("utf-8"),],
         "protocolVersion": 1,
         "extraData": sha256("A bunch of extra data in here".encode()).digest()
     }
@@ -506,12 +462,11 @@ try:
     ).transact(tx_details)
     raise (Exception("Test " + test_id + " failed without raising exception"))
 except ValueError as e:
-    # "e17":"Offers can only be canceled by offer maker"
+    # "e17":"Offers can only be mutated by offer maker"
     if "e17" in str(e):
         logger.info("Test " + test_id + " passed")
     else:
         raise e
-#TODO: Add fiatCurrency property to swap objects
 try:
     test_id = "2.2"
     logger.info("Test " + test_id + ": Ensuring that taken offers cannot be canceled")
@@ -532,8 +487,7 @@ try:
         "serviceFeeAmount": 1,
         "direction": 1,
         "price": HexBytes("a price here".encode("utf-8").hex()),
-        "fiatCurrency": "USD".encode("utf-8"),
-        "paymentMethod": 0,
+        "settlementMethod": "USD-SWIFT".encode("utf-8"),
         "protocolVersion": 1,
         "makerExtraData": sha256("A bunch of extra data in here".encode()).digest(),
         "takerExtraData": sha256("A bunch of extra data in here".encode()).digest(),
@@ -558,7 +512,7 @@ try:
     ).transact(tx_details)
     raise (Exception("Test " + test_id + " failed without raising exception"))
 except ValueError as e:
-    # "e16":"Offer is taken and cannot be canceled"
+    # "e16":"Offer is taken and cannot be mutated"
     if "e16" in str(e):
         logger.info("Test " + test_id + " passed")
     else:
@@ -583,8 +537,7 @@ try:
         "serviceFeeAmount": 1,
         "direction": 1,
         "price": HexBytes("a price here".encode("utf-8").hex()),
-        "fiatCurrency": "USD".encode("utf-8"),
-        "paymentMethod": 0,
+        "settlementMethod": "USD-SWIFT".encode("utf-8"),
         "protocolVersion": 1,
         "makerExtraData": sha256("A bunch of extra data in here".encode()).digest(),
         "takerExtraData": sha256("A bunch of extra data in here".encode()).digest(),
@@ -624,8 +577,7 @@ try:
         "serviceFeeAmount": 1,
         "direction": 1,
         "price": HexBytes("a price here".encode("utf-8").hex()),
-        "fiatCurrency": "USD".encode("utf-8"),
-        "paymentMethod": 0,
+        "settlementMethod": "USD-SWIFT".encode("utf-8"),
         "protocolVersion": 1,
         "makerExtraData": sha256("A bunch of extra data in here".encode()).digest(),
         "takerExtraData": sha256("A bunch of extra data in here".encode()).digest(),
@@ -663,8 +615,7 @@ try:
         "securityDepositAmount": 10,
         "direction": 1,
         "price": HexBytes("a price here".encode("utf-8").hex()),
-        "fiatCurrency": "USD".encode("utf-8"),
-        "paymentMethod": 0,
+        "settlementMethods": ["USD-SWIFT".encode("utf-8"),],
         "protocolVersion": 1,
         "extraData": sha256("A bunch of extra data in here".encode()).digest()
     }
@@ -694,8 +645,7 @@ try:
         "serviceFeeAmount": 1,
         "direction": 1,
         "price": HexBytes("a price here".encode("utf-8").hex()),
-        "fiatCurrency": "USD".encode("utf-8"),
-        "paymentMethod": 0,
+        "settlementMethod": "USD-SWIFT".encode("utf-8"),
         "protocolVersion": 1,
         "makerExtraData": sha256("A bunch of extra data in here".encode()).digest(),
         "takerExtraData": sha256("A bunch of extra data in here".encode()).digest(),
@@ -735,8 +685,7 @@ try:
         "serviceFeeAmount": 1,
         "direction": 1,
         "price": HexBytes("a price here".encode("utf-8").hex()),
-        "fiatCurrency": "USD".encode("utf-8"),
-        "paymentMethod": 0,
+        "settlementMethod": "USD-SWIFT".encode("utf-8"),
         "protocolVersion": 1,
         "makerExtraData": sha256("A bunch of extra data in here".encode()).digest(),
         "takerExtraData": sha256("A bunch of extra data in here".encode()).digest(),
@@ -776,8 +725,7 @@ try:
         "serviceFeeAmount": 1,
         "direction": 1,
         "price": HexBytes("a price here".encode("utf-8").hex()),
-        "fiatCurrency": "USD".encode("utf-8"),
-        "paymentMethod": 0,
+        "settlementMethod": "USD-SWIFT".encode("utf-8"),
         "protocolVersion": 1,
         "makerExtraData": sha256("A bunch of extra data in here".encode()).digest(),
         "takerExtraData": sha256("A bunch of extra data in here".encode()).digest(),
@@ -817,8 +765,7 @@ try:
         "serviceFeeAmount": 1,
         "direction": 1,
         "price": HexBytes("a price here".encode("utf-8").hex()),
-        "fiatCurrency": "USD".encode("utf-8"),
-        "paymentMethod": 0,
+        "settlementMethod": "USD-SWIFT".encode("utf-8"),
         "protocolVersion": 1,
         "makerExtraData": sha256("A bunch of extra data in here".encode()).digest(),
         "takerExtraData": sha256("A bunch of extra data in here".encode()).digest(),
@@ -858,8 +805,7 @@ try:
         "serviceFeeAmount": 1,
         "direction": 1,
         "price": HexBytes("a price here".encode("utf-8").hex()),
-        "fiatCurrency": "USD".encode("utf-8"),
-        "paymentMethod": 0,
+        "settlementMethod": "USD-SWIFT".encode("utf-8"),
         "protocolVersion": 1,
         "makerExtraData": sha256("A bunch of extra data in here".encode()).digest(),
         "takerExtraData": sha256("A bunch of extra data in here".encode()).digest(),
@@ -899,8 +845,7 @@ try:
         "serviceFeeAmount": 1,
         "direction": 1,
         "price": HexBytes("a price here".encode("utf-8").hex()),
-        "fiatCurrency": "USD".encode("utf-8"),
-        "paymentMethod": 0,
+        "settlementMethod": "USD-SWIFT".encode("utf-8"),
         "protocolVersion": 1,
         "makerExtraData": sha256("A bunch of extra data in here".encode()).digest(),
         "takerExtraData": sha256("A bunch of extra data in here".encode()).digest(),
@@ -943,8 +888,7 @@ try:
         "serviceFeeAmount": 1,
         "direction": 1,
         "price": HexBytes("a price here".encode("utf-8").hex()),
-        "fiatCurrency": "USD".encode("utf-8"),
-        "paymentMethod": 0,
+        "settlementMethod": "USD-SWIFT".encode("utf-8"),
         "protocolVersion": 1,
         "makerExtraData": sha256("A bunch of extra data in here".encode()).digest(),
         "takerExtraData": sha256("A bunch of extra data in here".encode()).digest(),
@@ -987,8 +931,7 @@ try:
         "serviceFeeAmount": 1,
         "direction": 1,
         "price": HexBytes("a price here".encode("utf-8").hex()),
-        "fiatCurrency": "USD".encode("utf-8"),
-        "paymentMethod": 0,
+        "settlementMethod": "USD-SWIFT".encode("utf-8"),
         "protocolVersion": 1,
         "makerExtraData": sha256("A bunch of extra data in here".encode()).digest(),
         "takerExtraData": sha256("A bunch of extra data in here".encode()).digest(),
@@ -1029,8 +972,7 @@ try:
         "serviceFeeAmount": 1,
         "direction": 0,
         "price": HexBytes("a price here".encode("utf-8").hex()),
-        "fiatCurrency": "USD".encode("utf-8"),
-        "paymentMethod": 0,
+        "settlementMethod": "USD-SWIFT".encode("utf-8"),
         "protocolVersion": 1,
         "makerExtraData": sha256("A bunch of extra data in here".encode()).digest(),
         "takerExtraData": sha256("A bunch of extra data in here".encode()).digest(),
@@ -1071,8 +1013,7 @@ try:
         "serviceFeeAmount": 1,
         "direction": 1,
         "price": HexBytes("an incorrect price here".encode("utf-8").hex()),
-        "fiatCurrency": "USD".encode("utf-8"),
-        "paymentMethod": 0,
+        "settlementMethod": "USD-SWIFT".encode("utf-8"),
         "protocolVersion": 1,
         "makerExtraData": sha256("A bunch of extra data in here".encode()).digest(),
         "takerExtraData": sha256("A bunch of extra data in here".encode()).digest(),
@@ -1095,7 +1036,7 @@ except ValueError as e:
 try:
     test_id = "3.12"
     logger.info(
-        "Test " + test_id + ": Ensuring takeOffer requires matching fiat currencies")
+        "Test " + test_id + ": Ensuring takeOffer requires supported settlement method")
     tx_details = {
         "from": taker_address
     }
@@ -1113,8 +1054,7 @@ try:
         "serviceFeeAmount": 1,
         "direction": 1,
         "price": HexBytes("a price here".encode("utf-8").hex()),
-        "fiatCurrency": "NEX".encode("utf-8"),
-        "paymentMethod": 0,
+        "settlementMethod": "NEX-Random".encode("utf-8"),
         "protocolVersion": 1,
         "makerExtraData": sha256("A bunch of extra data in here".encode()).digest(),
         "takerExtraData": sha256("A bunch of extra data in here".encode()).digest(),
@@ -1129,15 +1069,15 @@ try:
     ).transact(tx_details)
     raise (Exception("Test " + test_id + " failed without raising exception"))
 except ValueError as e:
-    # "e47": "Fiat currencies must match"
-    if "e47" in str(e):
+    # "e46": "Settlement method must be supported"
+    if "e46" in str(e):
         logger.info("Test " + test_id + " passed")
     else:
         raise e
 try:
     test_id = "3.13"
     logger.info(
-        "Test " + test_id + ": Ensuring takeOffer requires matching payment methods")
+        "Test " + test_id + ": Ensuring takeOffer requires settlement method accepted by maker")
     tx_details = {
         "from": taker_address
     }
@@ -1155,8 +1095,7 @@ try:
         "serviceFeeAmount": 1,
         "direction": 1,
         "price": HexBytes("a price here".encode("utf-8").hex()),
-        "fiatCurrency": "USD".encode("utf-8"),
-        "paymentMethod": 1,
+        "settlementMethod": "EUR-SEPA".encode("utf-8"),
         "protocolVersion": 1,
         "makerExtraData": sha256("A bunch of extra data in here".encode()).digest(),
         "takerExtraData": sha256("A bunch of extra data in here".encode()).digest(),
@@ -1171,7 +1110,7 @@ try:
     ).transact(tx_details)
     raise (Exception("Test " + test_id + " failed without raising exception"))
 except ValueError as e:
-    # "e30":"Payment methods must match"
+    # "e30": "Settlement method must be accepted by maker"
     if "e30" in str(e):
         logger.info("Test " + test_id + " passed")
     else:
@@ -1198,8 +1137,7 @@ try:
         "serviceFeeAmount": 1,
         "direction": 1,
         "price": HexBytes("a price here".encode("utf-8").hex()),
-        "fiatCurrency": "USD".encode("utf-8"),
-        "paymentMethod": 0,
+        "settlementMethod": "USD-SWIFT".encode("utf-8"),
         "protocolVersion": 1,
         "makerExtraData": sha256("A bunch of incorrect extra data in here".encode()).digest(),
         "takerExtraData": sha256("A bunch of extra data in here".encode()).digest(),
@@ -1240,8 +1178,7 @@ try:
         "serviceFeeAmount": 1,
         "direction": 1,
         "price": HexBytes("a price here".encode("utf-8").hex()),
-        "fiatCurrency": "USD".encode("utf-8"),
-        "paymentMethod": 0,
+        "settlementMethod": "USD-SWIFT".encode("utf-8"),
         "protocolVersion": 1,
         "makerExtraData": sha256("A bunch of extra data in here".encode()).digest(),
         "takerExtraData": sha256("A bunch of extra data in here".encode()).digest(),
@@ -1296,8 +1233,7 @@ try:
         "securityDepositAmount": 10,
         "direction": 0,
         "price": HexBytes("a price here".encode("utf-8").hex()),
-        "fiatCurrency": "USD".encode("utf-8"),
-        "paymentMethod": 0,
+        "settlementMethods": ["USD-SWIFT".encode("utf-8"),],
         "protocolVersion": 1,
         "extraData": sha256("A bunch of extra data in here".encode()).digest()
     }
@@ -1328,8 +1264,7 @@ try:
         "serviceFeeAmount": 1,
         "direction": 0,
         "price": HexBytes("a price here".encode("utf-8").hex()),
-        "fiatCurrency": "USD".encode("utf-8"),
-        "paymentMethod": 0,
+        "settlementMethod": "USD-SWIFT".encode("utf-8"),
         "protocolVersion": 1,
         "makerExtraData": sha256("A bunch of extra data in here".encode()).digest(),
         "takerExtraData": sha256("A bunch of extra data in here".encode()).digest(),
@@ -1375,8 +1310,7 @@ try:
         "securityDepositAmount": 10,
         "direction": 1,
         "price": HexBytes("a price here".encode("utf-8").hex()),
-        "fiatCurrency": "USD".encode("utf-8"),
-        "paymentMethod": 0,
+        "settlementMethods": ["USD-SWIFT".encode("utf-8"),],
         "protocolVersion": 1,
         "extraData": sha256("A bunch of extra data in here".encode()).digest()
     }
@@ -1407,8 +1341,7 @@ try:
         "serviceFeeAmount": 1,
         "direction": 1,
         "price": HexBytes("a price here".encode("utf-8").hex()),
-        "fiatCurrency": "USD".encode("utf-8"),
-        "paymentMethod": 0,
+        "settlementMethod": "USD-SWIFT".encode("utf-8"),
         "protocolVersion": 1,
         "makerExtraData": sha256("A bunch of extra data in here".encode()).digest(),
         "takerExtraData": sha256("A bunch of extra data in here".encode()).digest(),
@@ -1457,8 +1390,7 @@ try:
         "securityDepositAmount": 10,
         "direction": 1,
         "price": HexBytes("a price here".encode("utf-8").hex()),
-        "fiatCurrency": "USD".encode("utf-8"),
-        "paymentMethod": 0,
+        "settlementMethods": ["USD-SWIFT".encode("utf-8"),],
         "protocolVersion": 1,
         "extraData": sha256("A bunch of extra data in here".encode()).digest()
     }
@@ -1489,8 +1421,7 @@ try:
         "serviceFeeAmount": 1,
         "direction": 1,
         "price": HexBytes("a price here".encode("utf-8").hex()),
-        "fiatCurrency": "USD".encode("utf-8"),
-        "paymentMethod": 0,
+        "settlementMethod": "USD-SWIFT".encode("utf-8"),
         "protocolVersion": 1,
         "makerExtraData": sha256("A bunch of extra data in here".encode()).digest(),
         "takerExtraData": sha256("A bunch of extra data in here".encode()).digest(),
@@ -1555,8 +1486,7 @@ try:
         "securityDepositAmount": 10,
         "direction": 1,
         "price": HexBytes("a price here".encode("utf-8").hex()),
-        "fiatCurrency": "USD".encode("utf-8"),
-        "paymentMethod": 0,
+        "settlementMethods": ["USD-SWIFT".encode("utf-8"),],
         "protocolVersion": 1,
         "extraData": sha256("A bunch of extra data in here".encode()).digest()
     }
@@ -1587,8 +1517,7 @@ try:
         "serviceFeeAmount": 1,
         "direction": 1,
         "price": HexBytes("a price here".encode("utf-8").hex()),
-        "fiatCurrency": "USD".encode("utf-8"),
-        "paymentMethod": 0,
+        "settlementMethod": "USD-SWIFT".encode("utf-8"),
         "protocolVersion": 1,
         "makerExtraData": sha256("A bunch of extra data in here".encode()).digest(),
         "takerExtraData": sha256("A bunch of extra data in here".encode()).digest(),
@@ -1637,8 +1566,7 @@ try:
         "securityDepositAmount": 10,
         "direction": 1,
         "price": HexBytes("a price here".encode("utf-8").hex()),
-        "fiatCurrency": "USD".encode("utf-8"),
-        "paymentMethod": 0,
+        "settlementMethods": ["USD-SWIFT".encode("utf-8"),],
         "protocolVersion": 1,
         "extraData": sha256("A bunch of extra data in here".encode()).digest()
     }
@@ -1669,8 +1597,7 @@ try:
         "serviceFeeAmount": 1,
         "direction": 1,
         "price": HexBytes("a price here".encode("utf-8").hex()),
-        "fiatCurrency": "USD".encode("utf-8"),
-        "paymentMethod": 0,
+        "settlementMethod": "USD-SWIFT".encode("utf-8"),
         "protocolVersion": 1,
         "makerExtraData": sha256("A bunch of extra data in here".encode()).digest(),
         "takerExtraData": sha256("A bunch of extra data in here".encode()).digest(),
@@ -1724,8 +1651,7 @@ try:
         "securityDepositAmount": 10,
         "direction": 0,
         "price": HexBytes("a price here".encode("utf-8").hex()),
-        "fiatCurrency": "USD".encode("utf-8"),
-        "paymentMethod": 0,
+        "settlementMethods": ["USD-SWIFT".encode("utf-8"),],
         "protocolVersion": 1,
         "extraData": sha256("A bunch of extra data in here".encode()).digest()
     }
@@ -1756,8 +1682,7 @@ try:
         "serviceFeeAmount": 1,
         "direction": 0,
         "price": HexBytes("a price here".encode("utf-8").hex()),
-        "fiatCurrency": "USD".encode("utf-8"),
-        "paymentMethod": 0,
+        "settlementMethod": "USD-SWIFT".encode("utf-8"),
         "protocolVersion": 1,
         "makerExtraData": sha256("A bunch of extra data in here".encode()).digest(),
         "takerExtraData": sha256("A bunch of extra data in here".encode()).digest(),
@@ -1809,8 +1734,7 @@ try:
         "securityDepositAmount": 10,
         "direction": 1,
         "price": HexBytes("a price here".encode("utf-8").hex()),
-        "fiatCurrency": "USD".encode("utf-8"),
-        "paymentMethod": 0,
+        "settlementMethods": ["USD-SWIFT".encode("utf-8"),],
         "protocolVersion": 1,
         "extraData": sha256("A bunch of extra data in here".encode()).digest()
     }
@@ -1841,8 +1765,7 @@ try:
         "serviceFeeAmount": 1,
         "direction": 1,
         "price": HexBytes("a price here".encode("utf-8").hex()),
-        "fiatCurrency": "USD".encode("utf-8"),
-        "paymentMethod": 0,
+        "settlementMethod": "USD-SWIFT".encode("utf-8"),
         "protocolVersion": 1,
         "makerExtraData": sha256("A bunch of extra data in here".encode()).digest(),
         "takerExtraData": sha256("A bunch of extra data in here".encode()).digest(),
@@ -1907,8 +1830,7 @@ try:
         "securityDepositAmount": 10,
         "direction": 1,
         "price": HexBytes("a price here".encode("utf-8").hex()),
-        "fiatCurrency": "USD".encode("utf-8"),
-        "paymentMethod": 0,
+        "settlementMethods": ["USD-SWIFT".encode("utf-8"),],
         "protocolVersion": 1,
         "extraData": sha256("A bunch of extra data in here".encode()).digest()
     }
@@ -1938,8 +1860,7 @@ try:
         "serviceFeeAmount": 1,
         "direction": 1,
         "price": HexBytes("a price here".encode("utf-8").hex()),
-        "fiatCurrency": "USD".encode("utf-8"),
-        "paymentMethod": 0,
+        "settlementMethod": "USD-SWIFT".encode("utf-8"),
         "protocolVersion": 1,
         "makerExtraData": sha256("A bunch of extra data in here".encode()).digest(),
         "takerExtraData": sha256("A bunch of extra data in here".encode()).digest(),
