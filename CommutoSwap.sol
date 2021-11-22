@@ -222,6 +222,7 @@ contract CommutoSwap {
         newOffer.isTaken = false;
         newOffer.maker = msg.sender;
         offers[offerID] = newOffer;
+        //Record supported settlement methods
         for (uint i = 0; i < newOffer.settlementMethods.length; i++) {
             offerSettlementMethods[offerID][newOffer.settlementMethods[i]] = true;
         }
@@ -232,7 +233,6 @@ contract CommutoSwap {
         require(token.transferFrom(msg.sender, address(this), totalAmount), "e14"); //"e14": "Token transfer to Commuto Protocol failed"
     }
 
-    //TODO: Set settlement methods to false
     //Cancel open swap offer
     function cancelOffer(bytes16 offerID) public {
         //Validate arguments
@@ -273,13 +273,15 @@ contract CommutoSwap {
 
         //Delete offer, refund STBL and notify
         delete offers[offerID];
+        //Delete records of supported settlement methods
+        for (uint i = 0; i < offers[offerID].settlementMethods.length; i++) {
+            offerSettlementMethods[offerID][offers[offerID].settlementMethods[i]] = false;
+        }
         emit OfferCanceled(offerID);
         require(token.transfer(offers[offerID].maker, totalAmount), "e19"); //"e19": "Token transfer failed"
     }
 
     //Take a swap offer
-    //TODO: Test for settlement method support in general
-    //TODO: Test for settlement method support for specific offer
     function takeOffer(bytes16 offerID, Swap memory newSwap) public {
         //Validate arguments
         require(offers[offerID].isCreated, "e15"); //"e15": "An offer with the specified id does not exist",
