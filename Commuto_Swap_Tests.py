@@ -519,6 +519,172 @@ except ValueError as e:
         raise e
 try:
     test_id = "3.0"
+    logger.info("Test " + test_id + ": Ensuring editOffer checks for offer existence")
+    tx_details = {
+        "from": maker_address
+    }
+    editedOffer = {
+        "isCreated": True,
+        "isTaken": True,
+        "maker": maker_address,
+        "interfaceId": HexBytes("an interface Id here".encode("utf-8").hex()),
+        "stablecoinType": 0,
+        "amountLowerBound": 100,
+        "amountUpperBound": 100,
+        "securityDepositAmount": 10,
+        "direction": 1,
+        "price": HexBytes("a price here".encode("utf-8").hex()),
+        "settlementMethods": ["USD-SWIFT".encode("utf-8"),],
+        "protocolVersion": 1,
+        "extraData": sha256("A bunch of extra data in here".encode()).digest()
+    }
+    commuto_swap_contract.functions.editOffer(
+        uuid4().bytes,
+        editedOffer,
+        True,
+        True,
+    ).transact(tx_details)
+    raise (Exception("Test " + test_id + " failed without raising exception"))
+except ValueError as e:
+    # "e15": "An offer with the specified id does not exist"
+    if "e15" in str(e):
+        logger.info("Test " + test_id + " passed")
+    else:
+        raise e
+try:
+    test_id = "3.1"
+    logger.info("Test " + test_id + ": Ensuring editOffer checks for offer existence")
+    tx_details = {
+        "from": maker_address
+    }
+    editedOffer = {
+        "isCreated": True,
+        "isTaken": True,
+        "maker": maker_address,
+        "interfaceId": HexBytes("an interface Id here".encode("utf-8").hex()),
+        "stablecoinType": 0,
+        "amountLowerBound": 100,
+        "amountUpperBound": 100,
+        "securityDepositAmount": 10,
+        "direction": 1,
+        "price": HexBytes("a price here".encode("utf-8").hex()),
+        "settlementMethods": ["USD-SWIFT".encode("utf-8"),],
+        "protocolVersion": 1,
+        "extraData": sha256("A bunch of extra data in here".encode()).digest()
+    }
+    commuto_swap_contract.functions.editOffer(
+        newOfferID,
+        editedOffer,
+        True,
+        True,
+    ).transact(tx_details)
+    raise (Exception("Test " + test_id + " failed without raising exception"))
+except ValueError as e:
+    # "e16": "Offer is taken and cannot be mutated"
+    if "e16" in str(e):
+        logger.info("Test " + test_id + " passed")
+    else:
+        raise e
+iDOfOfferToEdit = HexBytes(uuid4().bytes)
+try:
+    test_id = "3.2"
+    logger.info("Test " + test_id + ": Ensuring editOffer can only be called by offer maker")
+    tx_details = {
+        "from": maker_address
+    }
+    offerToEdit = {
+        "isCreated": True,
+        "isTaken": True,
+        "maker": maker_address,
+        "interfaceId": HexBytes("an interface Id here".encode("utf-8").hex()),
+        "stablecoinType": 0,
+        "amountLowerBound": 100,
+        "amountUpperBound": 100,
+        "securityDepositAmount": 10,
+        "direction": 1,
+        "price": HexBytes("a price here".encode("utf-8").hex()),
+        "settlementMethods": ["USD-SWIFT".encode("utf-8"), ],
+        "protocolVersion": 1,
+        "extraData": sha256("A bunch of extra data in here".encode()).digest()
+    }
+    test_dai_contract.functions.increaseAllowance(
+        commuto_swap_deployment_tx_receipt.contractAddress,
+        111,
+    ).transact(tx_details)
+    commuto_swap_contract.functions.openOffer(
+        iDOfOfferToEdit,
+        offerToEdit,
+    ).transact(tx_details)
+    tx_details = {
+        "from": taker_address
+    }
+    editedOffer = {
+        "isCreated": True,
+        "isTaken": True,
+        "maker": maker_address,
+        "interfaceId": HexBytes("an interface Id here".encode("utf-8").hex()),
+        "stablecoinType": 0,
+        "amountLowerBound": 100,
+        "amountUpperBound": 100,
+        "securityDepositAmount": 10,
+        "direction": 1,
+        "price": HexBytes("a price here".encode("utf-8").hex()),
+        "settlementMethods": ["USD-SWIFT".encode("utf-8"),],
+        "protocolVersion": 1,
+        "extraData": sha256("A bunch of extra data in here".encode()).digest()
+    }
+    commuto_swap_contract.functions.editOffer(
+        iDOfOfferToEdit,
+        editedOffer,
+        True,
+        True,
+    ).transact(tx_details)
+    raise (Exception("Test " + test_id + " failed without raising exception"))
+except ValueError as e:
+    # "e17": "Offers can only be mutated by offer maker"
+    if "e17" in str(e):
+        logger.info("Test " + test_id + " passed")
+    else:
+        raise e
+try:
+    test_id = "3.3"
+    logger.info("Test " + test_id + ": Ensuring editOffer checks for offer existence")
+    tx_details = {
+        "from": maker_address
+    }
+    editedOffer = {
+        "isCreated": True,
+        "isTaken": True,
+        "maker": maker_address,
+        "interfaceId": HexBytes("an interface Id here".encode("utf-8").hex()),
+        "stablecoinType": 0,
+        "amountLowerBound": 100,
+        "amountUpperBound": 100,
+        "securityDepositAmount": 10,
+        "direction": 1,
+        "price": HexBytes("an edited price here".encode("utf-8").hex()),
+        "settlementMethods": ["EUR-SEPA".encode("utf-8"),],
+        "protocolVersion": 1,
+        "extraData": sha256("A bunch of extra data in here".encode()).digest()
+    }
+    commuto_swap_contract.functions.editOffer(
+        iDOfOfferToEdit,
+        editedOffer,
+        True,
+        True,
+    ).transact(tx_details)
+    offer = commuto_swap_contract.functions.getOffer(
+        iDOfOfferToEdit,
+    ).call()
+    if offer[9] == HexBytes("an edited price here".encode("utf-8").hex()) and \
+            offer[10] == ["EUR-SEPA".encode("utf-8"),]:
+        logger.info("Test " + test_id + " passed")
+    else:
+        raise (Exception("Test " + test_id + " failed due do offer editing failure"))
+except ValueError as e:
+    raise e
+try:
+    test_id = "4.0"
     logger.info("Test " + test_id + ": Ensuring takeOffer checks for offer existence")
     tx_details = {
         "from": taker_address
@@ -558,7 +724,7 @@ except ValueError as e:
     else:
         raise e
 try:
-    test_id = "3.1"
+    test_id = "4.1"
     logger.info("Test " + test_id + ": Ensuring takeOffer checks that offer is not taken")
     tx_details = {
         "from": taker_address
@@ -599,7 +765,7 @@ except ValueError as e:
         raise e
 newOfferID = HexBytes(uuid4().bytes)
 try:
-    test_id = "3.2"
+    test_id = "4.2"
     logger.info("Test " + test_id + ": Ensuring takeOffer checks for matching maker addresses")
     tx_details = {
         "from": maker_address
@@ -666,7 +832,7 @@ except ValueError as e:
     else:
         raise e
 try:
-    test_id = "3.3"
+    test_id = "4.3"
     logger.info("Test " + test_id + ": Ensuring takeOffer checks for matching makerInterfaceId fields")
     tx_details = {
         "from": taker_address
@@ -706,7 +872,7 @@ except ValueError as e:
     else:
         raise e
 try:
-    test_id = "3.4"
+    test_id = "4.4"
     logger.info("Test " + test_id + ": Ensuring takeOffer checks for matching stable coin types")
     tx_details = {
         "from": taker_address
@@ -746,7 +912,7 @@ except ValueError as e:
     else:
         raise e
 try:
-    test_id = "3.5"
+    test_id = "4.5"
     logger.info("Test " + test_id + ": Ensuring takeOffer checks for matching lower bounds")
     tx_details = {
         "from": taker_address
@@ -786,7 +952,7 @@ except ValueError as e:
     else:
         raise e
 try:
-    test_id = "3.6"
+    test_id = "4.6"
     logger.info("Test " + test_id + ": Ensuring takeOffer checks for matching upper bounds")
     tx_details = {
         "from": taker_address
@@ -826,7 +992,7 @@ except ValueError as e:
     else:
         raise e
 try:
-    test_id = "3.7"
+    test_id = "4.7"
     logger.info("Test " + test_id + ": Ensuring takeOffer checks for matching security deposit amounts")
     tx_details = {
         "from": taker_address
@@ -866,7 +1032,7 @@ except ValueError as e:
     else:
         raise e
 try:
-    test_id = "3.8"
+    test_id = "4.8"
     logger.info(
         "Test " + test_id + ": Ensuring takeOffer requires takenSwapAmount to be greater than or equal to "
         + "amountLowerBound"
@@ -909,7 +1075,7 @@ except ValueError as e:
     else:
         raise e
 try:
-    test_id = "3.9"
+    test_id = "4.9"
     logger.info(
         "Test " + test_id + ": Ensuring takeOffer requires takenSwapAmount to be less than or equal to "
         + "amountUpperBound"
@@ -952,7 +1118,7 @@ except ValueError as e:
     else:
         raise e
 try:
-    test_id = "3.10"
+    test_id = "4.10"
     logger.info(
         "Test " + test_id + ": Ensuring takeOffer requires matching directions")
     tx_details = {
@@ -993,7 +1159,7 @@ except ValueError as e:
     else:
         raise e
 try:
-    test_id = "3.11"
+    test_id = "4.11"
     logger.info(
         "Test " + test_id + ": Ensuring takeOffer requires matching prices")
     tx_details = {
@@ -1034,7 +1200,7 @@ except ValueError as e:
     else:
         raise e
 try:
-    test_id = "3.12"
+    test_id = "4.12"
     logger.info(
         "Test " + test_id + ": Ensuring takeOffer requires supported settlement method")
     tx_details = {
@@ -1075,7 +1241,7 @@ except ValueError as e:
     else:
         raise e
 try:
-    test_id = "3.13"
+    test_id = "4.13"
     logger.info(
         "Test " + test_id + ": Ensuring takeOffer requires settlement method accepted by maker")
     tx_details = {
@@ -1117,7 +1283,7 @@ except ValueError as e:
         raise e
 # TODO: Test swap protocol check
 try:
-    test_id = "3.14"
+    test_id = "4.14"
     logger.info(
         "Test " + test_id + ": Ensuring takeOffer requires matching maker data")
     tx_details = {
@@ -1158,7 +1324,7 @@ except ValueError as e:
     else:
         raise e
 try:
-    test_id = "3.15"
+    test_id = "4.15"
     logger.info(
         "Test " + test_id + ": Ensuring takeOffer checks for stablecoin allowance")
     tx_details = {
@@ -1199,7 +1365,7 @@ except ValueError as e:
     else:
         raise e
 try:
-    test_id = "4.0"
+    test_id = "5.0"
     logger.info("Test " + test_id + ": Ensuring reportPaymentSent checks for swap existence")
     tx_details = {
         "from": taker_address
@@ -1215,7 +1381,7 @@ except ValueError as e:
     else:
         raise e
 try:
-    test_id = "4.1"
+    test_id = "5.1"
     logger.info("Test " + test_id + ": Ensuring reportPaymentSent cannot be called by taker/seller")
     newOfferID = HexBytes(uuid4().bytes)
     # Maker is buyer
@@ -1292,7 +1458,7 @@ except ValueError as e:
     else:
         raise e
 try:
-    test_id = "4.2"
+    test_id = "5.2"
     logger.info("Test " + test_id + ": Ensuring reportPaymentSent cannot be called by maker/seller")
     newOfferID = HexBytes(uuid4().bytes)
     # Maker is seller
@@ -1372,7 +1538,7 @@ except ValueError as e:
     else:
         raise e
 try:
-    test_id = "4.3"
+    test_id = "5.3"
     logger.info("Test " + test_id + ": Ensuring reportPaymentSent cannot be called more than once")
     newOfferID = HexBytes(uuid4().bytes)
     # Maker is seller
@@ -1452,7 +1618,7 @@ except ValueError as e:
     else:
         raise e
 try:
-    test_id = "5.0"
+    test_id = "6.0"
     logger.info("Test " + test_id + ": Ensuring reportPaymentReceived checks for swap existence")
     tx_details = {
         "from": maker_address
@@ -1468,7 +1634,7 @@ except ValueError as e:
     else:
         raise e
 try:
-    test_id = "5.1"
+    test_id = "6.1"
     logger.info("Test " + test_id + ": Ensuring reportPaymentReceived reverts if reportPaymentSent hasn't been called")
     newOfferID = HexBytes(uuid4().bytes)
     # Maker is seller
@@ -1548,7 +1714,7 @@ except ValueError as e:
     else:
         raise e
 try:
-    test_id = "5.2"
+    test_id = "6.2"
     logger.info("Test " + test_id + ": Ensuring reportPaymentReceived cannot be called more than once")
     newOfferID = HexBytes(uuid4().bytes)
     # Maker is seller
@@ -1633,7 +1799,7 @@ except ValueError as e:
     else:
         raise e
 try:
-    test_id = "5.3"
+    test_id = "6.3"
     logger.info("Test " + test_id + ": Ensuring reportPaymentReceived cannot be called by the maker/buyer")
     newOfferID = HexBytes(uuid4().bytes)
     # Maker is buyer
@@ -1716,7 +1882,7 @@ except ValueError as e:
     else:
         raise e
 try:
-    test_id = "5.4"
+    test_id = "6.4"
     logger.info("Test " + test_id + ": Ensuring reportPaymentReceived cannot be called by the taker/buyer")
     newOfferID = HexBytes(uuid4().bytes)
     # Maker is seller
@@ -1796,7 +1962,7 @@ except ValueError as e:
     else:
         raise e
 try:
-    test_id = "6.0"
+    test_id = "7.0"
     logger.info("Test " + test_id + " Ensuring closeSwap checks for swap existence")
     tx_details = {
         "from": maker_address
@@ -1813,7 +1979,7 @@ except ValueError as e:
         raise e
 newOfferID = HexBytes(uuid4().bytes)
 try:
-    test_id = "6.1"
+    test_id = "7.1"
     logger.info("Test " + test_id + ": Ensuring closeSwap reverts unless payment for swap is sent")
     # Maker is seller
     tx_details = {
@@ -1888,7 +2054,7 @@ except ValueError as e:
     else:
         raise e
 try:
-    test_id = "6.2"
+    test_id = "7.2"
     logger.info("Test " + test_id + ": Ensuring closeSwap can only be called by the maker and taker")
     tx_details = {
         "from": taker_address
@@ -1916,7 +2082,7 @@ except ValueError as e:
     else:
         raise e
 try:
-    test_id = "6.3"
+    test_id = "7.3"
     logger.info("Test " + test_id + ": Ensuring that buyer cannot call closeSwap more than once")
     tx_details = {
         "from": taker_address
@@ -1935,7 +2101,7 @@ except ValueError as e:
     else:
         raise e
 try:
-    test_id = "6.4"
+    test_id = "7.4"
     logger.info("Test " + test_id + ": Ensuring that seller cannot call closeSwap more than once")
     tx_details = {
         "from": maker_address

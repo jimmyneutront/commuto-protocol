@@ -20,7 +20,6 @@ abstract contract ERC20 {
   function approve(address spender, uint value) public virtual returns (bool ok);
 }
 
-//TODO: Allow changing offer price and settlement methods
 //TODO: Only charge security deposit amount when making offer, and allow funding only once taken
 //TODO: Support adding supported ERC20 tokens by governance vote
 //TODO: Deal with contract size limitation
@@ -233,12 +232,36 @@ contract CommutoSwap {
         require(token.transferFrom(msg.sender, address(this), totalAmount), "e14"); //"e14": "Token transfer to Commuto Protocol failed"
     }
 
+    //Edit the price and supported settlement methods of an open swap offer
+    function editOffer(bytes16 offerID, Offer memory editedOffer, bool editPrice, bool editSettlementMethods) public {
+        //Validate arguments
+        require(offers[offerID].isCreated, "e15"); //"e15": "An offer with the specified id does not exist"
+        require(!offers[offerID].isTaken, "e16"); //"e16": "Offer is taken and cannot be mutated"
+        require(offers[offerID].maker == msg.sender, "e17"); //"e17": "Offers can only be mutated by offer maker"
+
+        if (editPrice) {
+            offers[offerID].price = editedOffer.price;
+        }
+
+        if (editSettlementMethods) {
+            //Delete records of supported settlement methods in preparation for updated info
+            for (uint i = 0; i < offers[offerID].settlementMethods.length; i++) {
+                offerSettlementMethods[offerID][offers[offerID].settlementMethods[i]] = false;
+            }
+            //Record new supported settlement methods
+            for (uint i = 0; i < editedOffer.settlementMethods.length; i++) {
+                offerSettlementMethods[offerID][editedOffer.settlementMethods[i]] = true;
+            }
+            offers[offerID].settlementMethods = editedOffer.settlementMethods;
+        }
+    }
+
     //Cancel open swap offer
     function cancelOffer(bytes16 offerID) public {
         //Validate arguments
         require(offers[offerID].isCreated, "e15"); //"e15": "An offer with the specified id does not exist"
         require(!offers[offerID].isTaken, "e16"); //"e16": "Offer is taken and cannot be mutated"
-        require(offers[offerID].maker == msg.sender, "e17"); //"e17": "Offers can only be canceled by offer maker"
+        require(offers[offerID].maker == msg.sender, "e17"); //"e17": "Offers can only be mutated by offer maker"
 
         //Find proper stablecoin contract
         ERC20 token;
