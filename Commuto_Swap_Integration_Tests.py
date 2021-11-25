@@ -112,7 +112,7 @@ maker_as_seller_offer = {
 }
 test_dai_contract.functions.increaseAllowance(
     commuto_swap_deployment_tx_receipt.contractAddress,
-    111,
+    11,
 ).transact(tx_details)
 logger.info("Opening Maker as Seller offer with id " + str(maker_as_seller_swap_id))
 openOffer_tx_hash = commuto_swap_contract.functions.openOffer(
@@ -135,6 +135,7 @@ tx_details = {
 }
 maker_as_seller_swap = {
     "isCreated": False,
+    "requiresFill": True,
     "maker": maker_address,
     "makerInterfaceId": HexBytes("an interface Id here".encode("utf-8").hex()),
     "taker": taker_address,
@@ -176,6 +177,32 @@ if not (len(events) == 1 and events[0]["args"]["offerID"] == maker_as_seller_swa
         "takerInterfaceId"] == HexBytes("an interface Id here".encode("utf-8").hex()) and events[0][
             "event"] == "OfferTaken"):
     raise Exception("OfferTaken event for offer with id " + str(maker_as_seller_swap_id) + " not found")
+
+tx_details = {
+    "from": maker_address
+}
+test_dai_contract.functions.increaseAllowance(
+    commuto_swap_deployment_tx_receipt.contractAddress,
+    100
+).transact(tx_details)
+logger.info("Funding Maker as Seller swap with id " + str(maker_as_seller_swap_id))
+fundSwap_tx_hash = commuto_swap_contract.functions.fillSwap(
+    maker_as_seller_swap_id
+).transact(tx_details)
+fundSwap_tx_receipt = w3.eth.get_transaction_receipt(fundSwap_tx_hash)
+logger.info("Gas used: " + str(fundSwap_tx_receipt["gasUsed"]))
+logger.info("Checking for SwapFilled event for swap with id " + str(maker_as_seller_swap_id))
+SwapFilled_event_filter = commuto_swap_contract.events.SwapFilled.createFilter(fromBlock="latest", argument_filters={
+    "swapID":maker_as_seller_swap_id
+})
+events = SwapFilled_event_filter.get_new_entries()
+if not (len(events) == 1 and events[0]["args"]["swapID"] == maker_as_seller_swap_id and events[0]["event"] ==
+        "SwapFilled"):
+    raise Exception("SwapFilled event for swap with id " + str(maker_as_seller_swap_id) + " not found")
+
+tx_details = {
+    "from": taker_address
+}
 logger.info("Reporting payment sent for Maker as Seller swap with id " + str(maker_as_seller_swap_id))
 reportPaymentSent_tx_hash = commuto_swap_contract.functions.reportPaymentSent(
     maker_as_seller_swap_id
@@ -298,6 +325,7 @@ tx_details = {
 }
 maker_as_buyer_swap = {
     "isCreated": False,
+    "requiresFill": False,
     "maker": maker_address,
     "makerInterfaceId": HexBytes("an interface Id here".encode("utf-8").hex()),
     "taker": taker_address,

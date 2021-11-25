@@ -382,7 +382,7 @@ try:
     }
     test_dai_contract.functions.increaseAllowance(
         commuto_swap_deployment_tx_receipt.contractAddress,
-        111,
+        11,
     ).transact(tx_details)
     logger.info("Test " + test_id + ": Creating test offer with uuid " + str(newOfferID))
     commuto_swap_contract.functions.openOffer(
@@ -422,7 +422,7 @@ try:
     }
     test_dai_contract.functions.increaseAllowance(
         commuto_swap_deployment_tx_receipt.contractAddress,
-        111,
+        11,
     ).transact(tx_details)
     commuto_swap_contract.functions.openOffer(
         newOfferID,
@@ -475,6 +475,7 @@ try:
     }
     newSwap = {
         "isCreated": False,
+        "requiresFill": True,
         "maker": maker_address,
         "makerInterfaceId": HexBytes("an interface Id here".encode("utf-8").hex()),
         "taker": taker_address,
@@ -609,7 +610,7 @@ try:
     }
     test_dai_contract.functions.increaseAllowance(
         commuto_swap_deployment_tx_receipt.contractAddress,
-        111,
+        11,
     ).transact(tx_details)
     commuto_swap_contract.functions.openOffer(
         iDOfOfferToEdit,
@@ -648,7 +649,7 @@ except ValueError as e:
         raise e
 try:
     test_id = "3.3"
-    logger.info("Test " + test_id + ": Ensuring editOffer checks for offer existence")
+    logger.info("Test " + test_id + ": Ensuring editOffer functions properly")
     tx_details = {
         "from": maker_address
     }
@@ -680,7 +681,7 @@ try:
             offer[10] == ["EUR-SEPA".encode("utf-8"),]:
         logger.info("Test " + test_id + " passed")
     else:
-        raise (Exception("Test " + test_id + " failed due do offer editing failure"))
+        raise (Exception("Test " + test_id + " failed due to offer editing failure"))
 except ValueError as e:
     raise e
 try:
@@ -691,6 +692,7 @@ try:
     }
     newSwap = {
         "isCreated": False,
+        "requiresFill": True,
         "maker": maker_address,
         "makerInterfaceId": HexBytes("an interface Id here".encode("utf-8").hex()),
         "taker": taker_address,
@@ -731,6 +733,7 @@ try:
     }
     newSwap = {
         "isCreated": False,
+        "requiresFill": True,
         "maker": maker_address,
         "makerInterfaceId": HexBytes("an interface Id here".encode("utf-8").hex()),
         "taker": taker_address,
@@ -787,7 +790,7 @@ try:
     }
     test_dai_contract.functions.increaseAllowance(
         commuto_swap_deployment_tx_receipt.contractAddress,
-        111,
+        11,
     ).transact(tx_details)
     logger.info("Test " + test_id + ": Creating test offer with uuid " + str(newOfferID))
     commuto_swap_contract.functions.openOffer(
@@ -799,6 +802,7 @@ try:
     }
     newSwap = {
         "isCreated": False,
+        "requiresFill": True,
         "maker": taker_address,
         "makerInterfaceId": HexBytes("an interface Id here".encode("utf-8").hex()),
         "taker": taker_address,
@@ -839,6 +843,7 @@ try:
     }
     newSwap = {
         "isCreated": False,
+        "requiresFill": True,
         "maker": maker_address,
         "makerInterfaceId": HexBytes("an incorrect interface Id here".encode("utf-8").hex()),
         "taker": taker_address,
@@ -879,6 +884,7 @@ try:
     }
     newSwap = {
         "isCreated": False,
+        "requiresFill": True,
         "maker": maker_address,
         "makerInterfaceId": HexBytes("an interface Id here".encode("utf-8").hex()),
         "taker": taker_address,
@@ -919,6 +925,7 @@ try:
     }
     newSwap = {
         "isCreated": False,
+        "requiresFill": True,
         "maker": maker_address,
         "makerInterfaceId": HexBytes("an interface Id here".encode("utf-8").hex()),
         "taker": taker_address,
@@ -959,6 +966,7 @@ try:
     }
     newSwap = {
         "isCreated": False,
+        "requiresFill": True,
         "maker": maker_address,
         "makerInterfaceId": HexBytes("an interface Id here".encode("utf-8").hex()),
         "taker": taker_address,
@@ -999,6 +1007,7 @@ try:
     }
     newSwap = {
         "isCreated": False,
+        "requiresFill": True,
         "maker": maker_address,
         "makerInterfaceId": HexBytes("an interface Id here".encode("utf-8").hex()),
         "taker": taker_address,
@@ -1042,6 +1051,7 @@ try:
     }
     newSwap = {
         "isCreated": False,
+        "requiresFill": True,
         "maker": maker_address,
         "makerInterfaceId": HexBytes("an interface Id here".encode("utf-8").hex()),
         "taker": taker_address,
@@ -1085,6 +1095,7 @@ try:
     }
     newSwap = {
         "isCreated": False,
+        "requiresFill": True,
         "maker": maker_address,
         "makerInterfaceId": HexBytes("an interface Id here".encode("utf-8").hex()),
         "taker": taker_address,
@@ -1126,6 +1137,7 @@ try:
     }
     newSwap = {
         "isCreated": False,
+        "requiresFill": True,
         "maker": maker_address,
         "makerInterfaceId": HexBytes("an interface Id here".encode("utf-8").hex()),
         "taker": taker_address,
@@ -1167,6 +1179,7 @@ try:
     }
     newSwap = {
         "isCreated": False,
+        "requiresFill": True,
         "maker": maker_address,
         "makerInterfaceId": HexBytes("an interface Id here".encode("utf-8").hex()),
         "taker": taker_address,
@@ -1208,6 +1221,7 @@ try:
     }
     newSwap = {
         "isCreated": False,
+        "requiresFill": True,
         "maker": maker_address,
         "makerInterfaceId": HexBytes("an interface Id here".encode("utf-8").hex()),
         "taker": taker_address,
@@ -1249,6 +1263,7 @@ try:
     }
     newSwap = {
         "isCreated": False,
+        "requiresFill": True,
         "maker": maker_address,
         "makerInterfaceId": HexBytes("an interface Id here".encode("utf-8").hex()),
         "taker": taker_address,
@@ -1291,6 +1306,7 @@ try:
     }
     newSwap = {
         "isCreated": False,
+        "requiresFill": True,
         "maker": maker_address,
         "makerInterfaceId": HexBytes("an interface Id here".encode("utf-8").hex()),
         "taker": taker_address,
@@ -1332,6 +1348,7 @@ try:
     }
     newSwap = {
         "isCreated": False,
+        "requiresFill": True,
         "maker": maker_address,
         "makerInterfaceId": HexBytes("an interface Id here".encode("utf-8").hex()),
         "taker": taker_address,
@@ -1366,6 +1383,93 @@ except ValueError as e:
         raise e
 try:
     test_id = "5.0"
+    logger.info("Test " + test_id + ": Ensuring fillSwap checks for swap existence")
+    tx_details = {
+        "from": maker_address
+    }
+    commuto_swap_contract.functions.fillSwap(
+        HexBytes(uuid4().bytes)
+    ).transact(tx_details)
+    raise (Exception("Test " + test_id + " failed without raising exception"))
+except ValueError as e:
+    # "e33": "A swap with the specified id does not exist"
+    if "e33" in str(e):
+        logger.info("Test " + test_id + " passed")
+    else:
+        raise e
+try:
+    test_id = "5.1"
+    logger.info("Test " + test_id + ": Ensuring fillSwap can only be called by maker")
+    tx_details = {
+        "from": taker_address
+    }
+    newSwap = {
+        "isCreated": False,
+        "requiresFill": True,
+        "maker": maker_address,
+        "makerInterfaceId": HexBytes("an interface Id here".encode("utf-8").hex()),
+        "taker": taker_address,
+        "takerInterfaceId": HexBytes("an interface Id here".encode("utf-8").hex()),
+        "stablecoinType": 0,
+        "amountLowerBound": 100,
+        "amountUpperBound": 100,
+        "securityDepositAmount": 10,
+        "takenSwapAmount": 100,
+        "serviceFeeAmount": 1,
+        "direction": 1,
+        "price": HexBytes("a price here".encode("utf-8").hex()),
+        "settlementMethod": "USD-SWIFT".encode("utf-8"),
+        "protocolVersion": 1,
+        "makerExtraData": sha256("A bunch of extra data in here".encode()).digest(),
+        "takerExtraData": sha256("A bunch of extra data in here".encode()).digest(),
+        "isPaymentSent": True,
+        "isPaymentReceived": True,
+        "hasBuyerClosed": True,
+        "hasSellerClosed": True,
+    }
+    test_dai_contract.functions.increaseAllowance(
+        commuto_swap_deployment_tx_receipt.contractAddress,
+        11,
+    ).transact(tx_details)
+    commuto_swap_contract.functions.takeOffer(
+        newOfferID,
+        newSwap,
+    ).transact(tx_details)
+    commuto_swap_contract.functions.fillSwap(
+        newOfferID
+    ).transact(tx_details)
+    raise (Exception("Test " + test_id + " failed without raising exception"))
+except ValueError as e:
+    # "e47": "Only maker and seller can fill swap"
+    if "e47" in str(e):
+        logger.info("Test " + test_id + " passed")
+    else:
+        raise e
+try:
+    test_id = "5.2"
+    logger.info("Test " + test_id + ": Ensuring fillSwap can only be called on swaps that require filling")
+    tx_details = {
+        "from": maker_address
+    }
+    test_dai_contract.functions.increaseAllowance(
+        commuto_swap_deployment_tx_receipt.contractAddress,
+        100,
+    ).transact(tx_details)
+    commuto_swap_contract.functions.fillSwap(
+        newOfferID
+    ).transact(tx_details)
+    commuto_swap_contract.functions.fillSwap(
+        newOfferID
+    ).transact(tx_details)
+    raise (Exception("Test " + test_id + " failed without raising exception"))
+except ValueError as e:
+    # "e18": "Swap does not require filling"
+    if "e18" in str(e):
+        logger.info("Test " + test_id + " passed")
+    else:
+        raise e
+try:
+    test_id = "6.0"
     logger.info("Test " + test_id + ": Ensuring reportPaymentSent checks for swap existence")
     tx_details = {
         "from": taker_address
@@ -1381,7 +1485,85 @@ except ValueError as e:
     else:
         raise e
 try:
-    test_id = "5.1"
+    test_id = "6.1"
+    logger.info("Test " + test_id + ": Ensuring reportPaymentSent cannot be called until swap is filled")
+    newOfferID = HexBytes(uuid4().bytes)
+    #Maker is seller
+    tx_details = {
+        "from": maker_address,
+    }
+    newOffer = {
+        "isCreated": True,
+        "isTaken": True,
+        "maker": maker_address,
+        "interfaceId": HexBytes("an interface Id here".encode("utf-8").hex()),
+        "stablecoinType": 0,
+        "amountLowerBound": 100,
+        "amountUpperBound": 100,
+        "securityDepositAmount": 10,
+        "direction": 1,
+        "price": HexBytes("a price here".encode("utf-8").hex()),
+        "settlementMethods": ["USD-SWIFT".encode("utf-8"), ],
+        "protocolVersion": 1,
+        "extraData": sha256("A bunch of extra data in here".encode()).digest()
+    }
+    test_dai_contract.functions.increaseAllowance(
+        commuto_swap_deployment_tx_receipt.contractAddress,
+        11,
+    ).transact(tx_details)
+    logger.info("Test " + test_id + ": Creating test offer with uuid " + str(newOfferID))
+    commuto_swap_contract.functions.openOffer(
+        newOfferID,
+        newOffer,
+    ).transact(tx_details)
+    #Taker is buyer
+    tx_details = {
+        "from": taker_address
+    }
+    newSwap = {
+        "isCreated": False,
+        "requiresFill": True,
+        "maker": maker_address,
+        "makerInterfaceId": HexBytes("an interface Id here".encode("utf-8").hex()),
+        "taker": taker_address,
+        "takerInterfaceId": HexBytes("an interface Id here".encode("utf-8").hex()),
+        "stablecoinType": 0,
+        "amountLowerBound": 100,
+        "amountUpperBound": 100,
+        "securityDepositAmount": 10,
+        "takenSwapAmount": 100,
+        "serviceFeeAmount": 1,
+        "direction": 1,
+        "price": HexBytes("a price here".encode("utf-8").hex()),
+        "settlementMethod": "USD-SWIFT".encode("utf-8"),
+        "protocolVersion": 1,
+        "makerExtraData": sha256("A bunch of extra data in here".encode()).digest(),
+        "takerExtraData": sha256("A bunch of extra data in here".encode()).digest(),
+        "isPaymentSent": True,
+        "isPaymentReceived": True,
+        "hasBuyerClosed": True,
+        "hasSellerClosed": True,
+    }
+    test_dai_contract.functions.increaseAllowance(
+        commuto_swap_deployment_tx_receipt.contractAddress,
+        11,
+    ).transact(tx_details)
+    commuto_swap_contract.functions.takeOffer(
+        newOfferID,
+        newSwap,
+    ).transact(tx_details)
+    commuto_swap_contract.functions.reportPaymentSent(
+        newOfferID
+    ).transact(tx_details)
+    raise (Exception("Test " + test_id + " failed without raising exception"))
+except ValueError as e:
+    # "e48": "The swap must be filled before payment is sent"
+    if "e48" in str(e):
+        logger.info("Test " + test_id + " passed")
+    else:
+        raise e
+try:
+    test_id = "6.2"
     logger.info("Test " + test_id + ": Ensuring reportPaymentSent cannot be called by taker/seller")
     newOfferID = HexBytes(uuid4().bytes)
     # Maker is buyer
@@ -1418,6 +1600,7 @@ try:
     }
     newSwap = {
         "isCreated": False,
+        "requiresFill": True,
         "maker": maker_address,
         "makerInterfaceId": HexBytes("an interface Id here".encode("utf-8").hex()),
         "taker": taker_address,
@@ -1458,7 +1641,7 @@ except ValueError as e:
     else:
         raise e
 try:
-    test_id = "5.2"
+    test_id = "6.3"
     logger.info("Test " + test_id + ": Ensuring reportPaymentSent cannot be called by maker/seller")
     newOfferID = HexBytes(uuid4().bytes)
     # Maker is seller
@@ -1482,7 +1665,7 @@ try:
     }
     test_dai_contract.functions.increaseAllowance(
         commuto_swap_deployment_tx_receipt.contractAddress,
-        111,
+        11,
     ).transact(tx_details)
     logger.info("Test " + test_id + ": Creating test offer with uuid " + str(newOfferID))
     commuto_swap_contract.functions.openOffer(
@@ -1495,6 +1678,7 @@ try:
     }
     newSwap = {
         "isCreated": False,
+        "requiresFill": True,
         "maker": maker_address,
         "makerInterfaceId": HexBytes("an interface Id here".encode("utf-8").hex()),
         "taker": taker_address,
@@ -1527,6 +1711,13 @@ try:
     tx_details = {
         "from": maker_address,
     }
+    test_dai_contract.functions.increaseAllowance(
+        commuto_swap_deployment_tx_receipt.contractAddress,
+        100,
+    ).transact(tx_details)
+    commuto_swap_contract.functions.fillSwap(
+        newOfferID
+    ).transact(tx_details)
     commuto_swap_contract.functions.reportPaymentSent(
         newOfferID
     ).transact(tx_details)
@@ -1538,7 +1729,7 @@ except ValueError as e:
     else:
         raise e
 try:
-    test_id = "5.3"
+    test_id = "6.4"
     logger.info("Test " + test_id + ": Ensuring reportPaymentSent cannot be called more than once")
     newOfferID = HexBytes(uuid4().bytes)
     # Maker is seller
@@ -1562,7 +1753,7 @@ try:
     }
     test_dai_contract.functions.increaseAllowance(
         commuto_swap_deployment_tx_receipt.contractAddress,
-        111,
+        11,
     ).transact(tx_details)
     logger.info("Test " + test_id + ": Creating test offer with uuid " + str(newOfferID))
     commuto_swap_contract.functions.openOffer(
@@ -1575,6 +1766,7 @@ try:
     }
     newSwap = {
         "isCreated": False,
+        "requiresFill": True,
         "maker": maker_address,
         "makerInterfaceId": HexBytes("an interface Id here".encode("utf-8").hex()),
         "taker": taker_address,
@@ -1604,6 +1796,19 @@ try:
         newOfferID,
         newSwap,
     ).transact(tx_details)
+    tx_details = {
+        "from": maker_address,
+    }
+    test_dai_contract.functions.increaseAllowance(
+        commuto_swap_deployment_tx_receipt.contractAddress,
+        100,
+    ).transact(tx_details)
+    commuto_swap_contract.functions.fillSwap(
+        newOfferID
+    ).transact(tx_details)
+    tx_details = {
+        "from": taker_address,
+    }
     commuto_swap_contract.functions.reportPaymentSent(
         newOfferID
     ).transact(tx_details)
@@ -1618,7 +1823,7 @@ except ValueError as e:
     else:
         raise e
 try:
-    test_id = "6.0"
+    test_id = "7.0"
     logger.info("Test " + test_id + ": Ensuring reportPaymentReceived checks for swap existence")
     tx_details = {
         "from": maker_address
@@ -1634,7 +1839,7 @@ except ValueError as e:
     else:
         raise e
 try:
-    test_id = "6.1"
+    test_id = "7.1"
     logger.info("Test " + test_id + ": Ensuring reportPaymentReceived reverts if reportPaymentSent hasn't been called")
     newOfferID = HexBytes(uuid4().bytes)
     # Maker is seller
@@ -1658,7 +1863,7 @@ try:
     }
     test_dai_contract.functions.increaseAllowance(
         commuto_swap_deployment_tx_receipt.contractAddress,
-        111,
+        11,
     ).transact(tx_details)
     logger.info("Test " + test_id + ": Creating test offer with uuid " + str(newOfferID))
     commuto_swap_contract.functions.openOffer(
@@ -1671,6 +1876,7 @@ try:
     }
     newSwap = {
         "isCreated": False,
+        "requiresFill": True,
         "maker": maker_address,
         "makerInterfaceId": HexBytes("an interface Id here".encode("utf-8").hex()),
         "taker": taker_address,
@@ -1701,8 +1907,15 @@ try:
         newSwap,
     ).transact(tx_details)
     tx_details = {
-        "from": maker_address
+        "from": maker_address,
     }
+    test_dai_contract.functions.increaseAllowance(
+        commuto_swap_deployment_tx_receipt.contractAddress,
+        100,
+    ).transact(tx_details)
+    commuto_swap_contract.functions.fillSwap(
+        newOfferID
+    ).transact(tx_details)
     commuto_swap_contract.functions.reportPaymentReceived(
         newOfferID
     ).transact(tx_details)
@@ -1714,7 +1927,7 @@ except ValueError as e:
     else:
         raise e
 try:
-    test_id = "6.2"
+    test_id = "7.2"
     logger.info("Test " + test_id + ": Ensuring reportPaymentReceived cannot be called more than once")
     newOfferID = HexBytes(uuid4().bytes)
     # Maker is seller
@@ -1738,7 +1951,7 @@ try:
     }
     test_dai_contract.functions.increaseAllowance(
         commuto_swap_deployment_tx_receipt.contractAddress,
-        111,
+        11,
     ).transact(tx_details)
     logger.info("Test " + test_id + ": Creating test offer with uuid " + str(newOfferID))
     commuto_swap_contract.functions.openOffer(
@@ -1751,6 +1964,7 @@ try:
     }
     newSwap = {
         "isCreated": False,
+        "requiresFill": True,
         "maker": maker_address,
         "makerInterfaceId": HexBytes("an interface Id here".encode("utf-8").hex()),
         "taker": taker_address,
@@ -1780,6 +1994,19 @@ try:
         newOfferID,
         newSwap,
     ).transact(tx_details)
+    tx_details = {
+        "from": maker_address,
+    }
+    test_dai_contract.functions.increaseAllowance(
+        commuto_swap_deployment_tx_receipt.contractAddress,
+        100,
+    ).transact(tx_details)
+    commuto_swap_contract.functions.fillSwap(
+        newOfferID
+    ).transact(tx_details)
+    tx_details = {
+        "from": taker_address,
+    }
     commuto_swap_contract.functions.reportPaymentSent(
         newOfferID
     ).transact(tx_details)
@@ -1799,7 +2026,7 @@ except ValueError as e:
     else:
         raise e
 try:
-    test_id = "6.3"
+    test_id = "7.3"
     logger.info("Test " + test_id + ": Ensuring reportPaymentReceived cannot be called by the maker/buyer")
     newOfferID = HexBytes(uuid4().bytes)
     # Maker is buyer
@@ -1836,6 +2063,7 @@ try:
     }
     newSwap = {
         "isCreated": False,
+        "requiresFill": True,
         "maker": maker_address,
         "makerInterfaceId": HexBytes("an interface Id here".encode("utf-8").hex()),
         "taker": taker_address,
@@ -1882,7 +2110,7 @@ except ValueError as e:
     else:
         raise e
 try:
-    test_id = "6.4"
+    test_id = "7.4"
     logger.info("Test " + test_id + ": Ensuring reportPaymentReceived cannot be called by the taker/buyer")
     newOfferID = HexBytes(uuid4().bytes)
     # Maker is seller
@@ -1906,7 +2134,7 @@ try:
     }
     test_dai_contract.functions.increaseAllowance(
         commuto_swap_deployment_tx_receipt.contractAddress,
-        111,
+        11,
     ).transact(tx_details)
     logger.info("Test " + test_id + ": Creating test offer with uuid " + str(newOfferID))
     commuto_swap_contract.functions.openOffer(
@@ -1919,6 +2147,7 @@ try:
     }
     newSwap = {
         "isCreated": False,
+        "requiresFill": True,
         "maker": maker_address,
         "makerInterfaceId": HexBytes("an interface Id here".encode("utf-8").hex()),
         "taker": taker_address,
@@ -1948,6 +2177,19 @@ try:
         newOfferID,
         newSwap,
     ).transact(tx_details)
+    tx_details = {
+        "from": maker_address,
+    }
+    test_dai_contract.functions.increaseAllowance(
+        commuto_swap_deployment_tx_receipt.contractAddress,
+        100,
+    ).transact(tx_details)
+    commuto_swap_contract.functions.fillSwap(
+        newOfferID
+    ).transact(tx_details)
+    tx_details = {
+        "from": taker_address,
+    }
     commuto_swap_contract.functions.reportPaymentSent(
         newOfferID
     ).transact(tx_details)
@@ -1962,7 +2204,7 @@ except ValueError as e:
     else:
         raise e
 try:
-    test_id = "7.0"
+    test_id = "8.0"
     logger.info("Test " + test_id + " Ensuring closeSwap checks for swap existence")
     tx_details = {
         "from": maker_address
@@ -1979,8 +2221,8 @@ except ValueError as e:
         raise e
 newOfferID = HexBytes(uuid4().bytes)
 try:
-    test_id = "7.1"
-    logger.info("Test " + test_id + ": Ensuring closeSwap reverts unless payment for swap is sent")
+    test_id = "8.1"
+    logger.info("Test " + test_id + ": Ensuring closeSwap reverts unless payment for swap is received")
     # Maker is seller
     tx_details = {
         "from": maker_address
@@ -2002,7 +2244,7 @@ try:
     }
     test_dai_contract.functions.increaseAllowance(
         commuto_swap_deployment_tx_receipt.contractAddress,
-        111,
+        11,
     ).transact(tx_details)
     logger.info("Test " + test_id + ": Creating test offer with uuid " + str(newOfferID))
     commuto_swap_contract.functions.openOffer(
@@ -2014,6 +2256,7 @@ try:
     }
     newSwap = {
         "isCreated": False,
+        "requiresFill": True,
         "maker": maker_address,
         "makerInterfaceId": HexBytes("an interface Id here".encode("utf-8").hex()),
         "taker": taker_address,
@@ -2054,8 +2297,18 @@ except ValueError as e:
     else:
         raise e
 try:
-    test_id = "7.2"
+    test_id = "8.2"
     logger.info("Test " + test_id + ": Ensuring closeSwap can only be called by the maker and taker")
+    tx_details = {
+        "from": maker_address,
+    }
+    test_dai_contract.functions.increaseAllowance(
+        commuto_swap_deployment_tx_receipt.contractAddress,
+        100,
+    ).transact(tx_details)
+    commuto_swap_contract.functions.fillSwap(
+        newOfferID
+    ).transact(tx_details)
     tx_details = {
         "from": taker_address
     }
@@ -2082,7 +2335,7 @@ except ValueError as e:
     else:
         raise e
 try:
-    test_id = "7.3"
+    test_id = "8.3"
     logger.info("Test " + test_id + ": Ensuring that buyer cannot call closeSwap more than once")
     tx_details = {
         "from": taker_address
@@ -2101,7 +2354,7 @@ except ValueError as e:
     else:
         raise e
 try:
-    test_id = "7.4"
+    test_id = "8.4"
     logger.info("Test " + test_id + ": Ensuring that seller cannot call closeSwap more than once")
     tx_details = {
         "from": maker_address

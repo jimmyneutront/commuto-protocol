@@ -17,7 +17,7 @@ commuto_swap_error_messages = {
     "e15": "An offer with the specified id does not exist",
     "e16": "Offer is taken and cannot be mutated",
     "e17": "Offers can only be mutated by offer maker",
-    "e18": "Offer has invalid direction",
+    "e18": "Swap does not require filling",
     "e19": "Token transfer failed",
     "e20": "The offer with the specified id has already been taken",
     "e21": "Maker addresses must match",
@@ -47,4 +47,6 @@ commuto_swap_error_messages = {
     "e44": "Only swap maker or taker can call this function",
     "e45": "Only owner can set settlement method support",
     "e46": "Settlement method must be supported",
+    "e47": "Only maker and seller can fill swap",
+    "e48": "The swap must be filled before payment is sent",
 }

@@ -20,7 +20,6 @@ abstract contract ERC20 {
   function approve(address spender, uint value) public virtual returns (bool ok);
 }
 
-//TODO: Only charge security deposit amount when making offer, and allow funding only once taken
 //TODO: Support adding supported ERC20 tokens by governance vote
 //TODO: Deal with contract size limitation
 //TODO: Better code comments
@@ -103,6 +102,7 @@ contract CommutoSwap {
 
     struct Swap {
         bool isCreated;
+        bool requiresFill;
         address maker;
         bytes makerInterfaceId;
         address taker;
@@ -129,6 +129,7 @@ contract CommutoSwap {
     event PriceChanged(bytes16 offerID);
     event OfferCanceled(bytes16 offerID);
     event OfferTaken(bytes16 offerID, bytes takerInterfaceId);
+    event SwapFilled(bytes16 swapID);
     event PaymentSent(bytes16 swapID);
     event PaymentReceived(bytes16 swapID);
     event BuyerClosed(bytes16 swapID);
@@ -179,6 +180,7 @@ contract CommutoSwap {
         uint256 serviceFeeAmountLowerBound = SafeMath.div(newOffer.amountLowerBound, 100);
         require(serviceFeeAmountLowerBound > 0, "e9"); //"e9": "Service fee amount must be greater than zero"
         require(newOffer.protocolVersion >= protocolVersion, "e10"); //"e10": "Offers can only be created for the most recent protocol version"
+        require(newOffer.direction == SwapDirection.BUY || newOffer.direction == SwapDirection.SELL, "e12"); //"e12": "You must specify a supported direction"
         
         //Find proper stablecoin contract
         /*
@@ -200,13 +202,17 @@ contract CommutoSwap {
             revert("e11"); //"e11": "You must specify a supported stablecoin"
         }
 
-        //Calculate required total amount
+        //Calculate currently required deposit amount
         uint256 serviceFeeAmountUpperBound = SafeMath.div(newOffer.amountUpperBound, 100);
         /*
         Slither complains that "totalAmount" is never initialized. However, compilation fails if this declaration takes place
         within the if/else statements, so it must remain here. Additionally, if initialization doesn't take place within
         the if/else statements, the function reverts because a supported direction has not been specified.
         */
+
+        uint256 depositAmount = SafeMath.add(newOffer.securityDepositAmount, serviceFeeAmountUpperBound);
+
+        /*
         uint256 totalAmount;
         if(newOffer.direction == SwapDirection.SELL) {
             totalAmount = SafeMath.add(SafeMath.add(newOffer.amountUpperBound, newOffer.securityDepositAmount), serviceFeeAmountUpperBound);
@@ -214,7 +220,7 @@ contract CommutoSwap {
             totalAmount = SafeMath.add(newOffer.securityDepositAmount, serviceFeeAmountUpperBound);
         } else {
             revert("e12"); //"e12": "You must specify a supported direction"
-        }
+        }*/
 
         //Finish and notify of offer creation
         newOffer.isCreated = true;
@@ -228,8 +234,8 @@ contract CommutoSwap {
         emit OfferOpened(offerID, newOffer.interfaceId);
 
         //Lock required total amount in escrow
-        require(totalAmount <= token.allowance(msg.sender, address(this)), "e13"); //"e13": "Token allowance must be >= required amount"
-        require(token.transferFrom(msg.sender, address(this), totalAmount), "e14"); //"e14": "Token transfer to Commuto Protocol failed"
+        require(depositAmount <= token.allowance(msg.sender, address(this)), "e13"); //"e13": "Token allowance must be >= required amount"
+        require(token.transferFrom(msg.sender, address(this), depositAmount), "e14"); //"e14": "Token transfer to Commuto Protocol failed"
     }
 
     //Edit the price and supported settlement methods of an open swap offer
@@ -285,6 +291,10 @@ contract CommutoSwap {
         within the if/else statements, so it must remain here. Additionally, if initialization doesn't take place within
         the if/else statements, the function reverts because the specified offer has an invalid direction.
         */
+
+        uint256 depositAmount = SafeMath.add(offers[offerID].securityDepositAmount, serviceFeeAmountUpperBound);
+
+        /*
         uint256 totalAmount;
         if(offers[offerID].direction == SwapDirection.SELL) {
             totalAmount = SafeMath.add(SafeMath.add(offers[offerID].amountUpperBound, offers[offerID].securityDepositAmount), serviceFeeAmountUpperBound);
@@ -292,7 +302,7 @@ contract CommutoSwap {
             totalAmount = SafeMath.add(offers[offerID].securityDepositAmount, serviceFeeAmountUpperBound);
         } else {
             revert("e18"); //"e18": "Offer has invalid direction"
-        }
+        }*/
 
         //Delete offer, refund STBL and notify
         delete offers[offerID];
@@ -301,7 +311,7 @@ contract CommutoSwap {
             offerSettlementMethods[offerID][offers[offerID].settlementMethods[i]] = false;
         }
         emit OfferCanceled(offerID);
-        require(token.transfer(offers[offerID].maker, totalAmount), "e19"); //"e19": "Token transfer failed"
+        require(token.transfer(offers[offerID].maker, depositAmount), "e19"); //"e19": "Token transfer failed"
     }
 
     //Take a swap offer
@@ -353,11 +363,13 @@ contract CommutoSwap {
         */
         uint256 totalAmount;
         if(newSwap.direction == SwapDirection.SELL) {
-            //Taker is Buyer
+            //Taker is Buyer, maker is seller and must fill swap
             totalAmount = SafeMath.add(newSwap.securityDepositAmount, newSwap.serviceFeeAmount);
+            newSwap.requiresFill = true;
         } else if (newSwap.direction == SwapDirection.BUY) {
-            //Taker is seller
+            //Taker is seller, maker is buyer and does not need to fill swap
             totalAmount = SafeMath.add(SafeMath.add(newSwap.takenSwapAmount, newSwap.securityDepositAmount), newSwap.serviceFeeAmount);
+            newSwap.requiresFill = false;
         } else {
             revert("e12"); //"e12": "You must specify a supported direction"
         }
@@ -378,10 +390,47 @@ contract CommutoSwap {
         require(token.transferFrom(msg.sender, address(this), totalAmount), "e14"); //"e14": "Token transfer to Commuto Protocol failed"
     }
 
+    //Fill swap (deposit takenSwapAmount of STBL) as maker and seller
+    function fillSwap(bytes16 swapID) public {
+        //Validate arguments
+        require(swaps[swapID].isCreated, "e33"); //"e33": "A swap with the specified id does not exist"
+        require(swaps[swapID].requiresFill && swaps[swapID].direction == SwapDirection.SELL, "e18"); //"e18": "Swap does not require filling"
+        require(swaps[swapID].maker == msg.sender, "e47"); //"e47": "Only maker and seller can fill swap"
+
+        //Update swap state
+        swaps[swapID].requiresFill = false;
+        emit SwapFilled(swapID);
+
+        //Find proper stablecoin contract
+        /*
+        Slither complains that "token" is never initialized. However, compilation fails if this declaration takes place
+        within the if/else statements, so it must remain here. Additionally, if initialization doesn't take place within
+        the if/else statements, the function reverts because a supported stablecoin has not been specified.
+        */
+        ERC20 token;
+
+        if(swaps[swapID].stablecoinType == StablecoinType.DAI) {
+            token = ERC20(daiAddress);
+        } else if (swaps[swapID].stablecoinType == StablecoinType.USDC) {
+            token = ERC20(usdcAddress);
+        } else if (swaps[swapID].stablecoinType == StablecoinType.BUSD) {
+            token = ERC20(busdAddress);
+        } else if (swaps[swapID].stablecoinType == StablecoinType.USDT) {
+            token = ERC20(usdtAddress);
+        } else {
+            revert("e11"); //"e11": "You must specify a supported stablecoin"
+        }
+
+        //Lock taken swap amount in escrow
+        require(swaps[swapID].takenSwapAmount <= token.allowance(msg.sender, address(this)), "e13"); //"e13": "Token allowance must be >= required amount"
+        require(token.transferFrom(msg.sender, address(this), swaps[swapID].takenSwapAmount), "e14"); //"e14": "Token transfer to Commuto Protocol failed"
+    }
+
     //Report payment sent for swap
     function reportPaymentSent(bytes16 swapID) public {
         //Validate arguments
         require(swaps[swapID].isCreated, "e33"); //"e33": "A swap with the specified id does not exist"
+        require(!swaps[swapID].requiresFill, "e48"); //"e48": "The swap must be filled before payment is sent"
         require(!swaps[swapID].isPaymentSent, "e34"); //"e34": "Payment sending has already been reported for swap with specified id"
         if(swaps[swapID].direction == SwapDirection.BUY) {
             require(swaps[swapID].maker == msg.sender, "e35"); //"e35": "Payment sending can only be reported by buyer"
@@ -471,12 +520,11 @@ contract CommutoSwap {
             require(token.transfer(swaps[swapID].taker, returnAmount), "e19"); //"e19": "Token transfer failed"
             require(token.transfer(serviceFeePool, swaps[swapID].serviceFeeAmount), "e42"); //"e42": "Service fee transfer failed"
         }
-        //If caller is seller and maker, return amountUpperBound - takenSwapAmount, security deposit and serviceFeeUpperBound - serviceFeeAmount, and send service fee to pool
+        //If caller is seller and maker, return security deposit and serviceFeeUpperBound - serviceFeeAmount, and send service fee to pool
         else if (swaps[swapID].direction == SwapDirection.SELL && swaps[swapID].maker == msg.sender) {
             require(!swaps[swapID].hasSellerClosed, "e43"); //"e43": "Seller has already closed swap"
-            uint256 swapRemainder = SafeMath.sub(swaps[swapID].amountUpperBound, swaps[swapID].takenSwapAmount);
             uint256 serviceFeeAmountUpperBound = SafeMath.div(swaps[swapID].amountUpperBound, 100);
-            returnAmount = SafeMath.add(SafeMath.add(swapRemainder, swaps[swapID].securityDepositAmount), SafeMath.sub(serviceFeeAmountUpperBound, swaps[swapID].serviceFeeAmount));
+            returnAmount = SafeMath.add(swaps[swapID].securityDepositAmount, SafeMath.sub(serviceFeeAmountUpperBound, swaps[swapID].serviceFeeAmount));
             swaps[swapID].hasSellerClosed = true;
             emit SellerClosed(swapID);
             require(token.transfer(swaps[swapID].maker, returnAmount), "e19"); //"e19": "Token transfer failed"
