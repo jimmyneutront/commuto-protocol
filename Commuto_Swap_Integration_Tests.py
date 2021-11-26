@@ -14,7 +14,7 @@ logger.setLevel(logging.DEBUG)
 
 # TODO: Start hardhat node
 # Establish connection to web3 provider
-w3 = Web3(Web3.HTTPProvider("http://192.168.1.10:8545"))
+w3 = Web3(Web3.HTTPProvider("http://192.168.0.195:8545"))
 # Check connection
 logger.info("Is connected to Web3 provider: " + str(w3.isConnected()))
 if not w3.isConnected():
@@ -86,6 +86,11 @@ w3.eth.wait_for_transaction_receipt(tx_hash)
 tx_hash = commuto_swap_contract.functions.setSettlementMethodSupport("EUR-SEPA".encode("utf-8"), True).transact()
 w3.eth.wait_for_transaction_receipt(tx_hash)
 logger.info("Added USD-SWIFT and EUR-SEPA to settlementMethods")
+logger.info("Adding stablecoin contract addresses to stablecoins")
+tx_hash = commuto_swap_contract.functions.setStablecoinSupport(dai_deployment_tx_receipt.contractAddress, True)\
+    .transact()
+w3.eth.wait_for_transaction_receipt(tx_hash)
+logger.info("Added stablecoin contract addresses to stablecoins")
 logger.info("Running Commuto_Swap Integration Tests")
 # Testing Maker as Seller swap
 maker_initial_dai_balance = test_dai_contract.functions.balanceOf(maker_address).call()
@@ -100,7 +105,7 @@ maker_as_seller_offer = {
     "isTaken": True,
     "maker": maker_address,
     "interfaceId": HexBytes("an interface Id here".encode("utf-8").hex()),
-    "stablecoinType": 0,
+    "stablecoin": dai_deployment_tx_receipt.contractAddress,
     "amountLowerBound": 100,
     "amountUpperBound": 100,
     "securityDepositAmount": 10,
@@ -140,7 +145,7 @@ maker_as_seller_swap = {
     "makerInterfaceId": HexBytes("an interface Id here".encode("utf-8").hex()),
     "taker": taker_address,
     "takerInterfaceId": HexBytes("an interface Id here".encode("utf-8").hex()),
-    "stablecoinType": 0,
+    "stablecoin": dai_deployment_tx_receipt.contractAddress,
     "amountLowerBound": 100,
     "amountUpperBound": 100,
     "securityDepositAmount": 10,
@@ -289,7 +294,7 @@ maker_as_buyer_offer = {
     "isTaken": True,
     "maker": maker_address,
     "interfaceId": HexBytes("an interface Id here".encode("utf-8").hex()),
-    "stablecoinType": 0,
+    "stablecoin": dai_deployment_tx_receipt.contractAddress,
     "amountLowerBound": 100,
     "amountUpperBound": 100,
     "securityDepositAmount": 10,
@@ -330,7 +335,7 @@ maker_as_buyer_swap = {
     "makerInterfaceId": HexBytes("an interface Id here".encode("utf-8").hex()),
     "taker": taker_address,
     "takerInterfaceId": HexBytes("an interface Id here".encode("utf-8").hex()),
-    "stablecoinType": 0,
+    "stablecoin": dai_deployment_tx_receipt.contractAddress,
     "amountLowerBound": 100,
     "amountUpperBound": 100,
     "securityDepositAmount": 10,

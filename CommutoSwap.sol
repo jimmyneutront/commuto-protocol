@@ -20,8 +20,8 @@ abstract contract ERC20 {
   function approve(address spender, uint value) public virtual returns (bool ok);
 }
 
-//TODO: Support adding supported ERC20 tokens by governance vote
 //TODO: Deal with contract size limitation
+//TODO: Fee percentage set by token holders
 //TODO: Better code comments
 contract CommutoSwap {
     
@@ -71,6 +71,7 @@ contract CommutoSwap {
             }
             else if (sha256(supportedSettlementMethods[i]) == sha256(settlementMethod) && support == true) {
                 foundSettlementMethod = true;
+                break;
             }
         }
         if (foundSettlementMethod == false && support == true) {
@@ -83,13 +84,47 @@ contract CommutoSwap {
     function getSupportedSettlementMethods() view public returns (bytes[] memory) {
         return supportedSettlementMethods;
     }
+
+    /*A mapping of stablecoin contract addresses to boolean values indicating whether they are supported or not, and an
+    array containing the contract addresses of all supported stablecoins.
+    */
+    mapping (address => bool) private stablecoins;
+    address[] private supportedStablecoins;
+
+    //Set the supported state of a settlement method
+    function setStablecoinSupport(address stablecoin, bool support) public {
+        require(msg.sender == owner, "e49"); //"e49": "Only owner can set stablecoin support"
+        bool foundStablecoin = false;
+        for (uint i = 0; i < supportedStablecoins.length; i++) {
+            if (supportedStablecoins[i] == stablecoin && support == false) {
+                foundStablecoin = true;
+                delete supportedStablecoins[i];
+                supportedStablecoins[i] = supportedStablecoins[supportedStablecoins.length - 1];
+                supportedStablecoins.pop();
+                break;
+            }
+            else if (supportedStablecoins[i] == stablecoin && support == true) {
+                foundStablecoin = true;
+                break;
+            }
+        }
+        if (foundStablecoin == false && support == true) {
+            supportedStablecoins.push(stablecoin);
+        }
+        stablecoins[stablecoin] = support;
+    }
+
+    //Get a copy of the array of supported stablecoins
+    function getSupportedStablecoins() view public returns (address[] memory) {
+        return supportedStablecoins;
+    }
     
     struct Offer {
         bool isCreated;
         bool isTaken;
         address maker;
         bytes interfaceId;
-        StablecoinType stablecoinType;
+        address stablecoin;
         uint256 amountLowerBound;
         uint256 amountUpperBound;
         uint256 securityDepositAmount;
@@ -107,7 +142,7 @@ contract CommutoSwap {
         bytes makerInterfaceId;
         address taker;
         bytes takerInterfaceId;
-        StablecoinType stablecoinType;
+        address stablecoin;
         uint256 amountLowerBound;
         uint256 amountUpperBound;
         uint256 securityDepositAmount;
@@ -189,17 +224,11 @@ contract CommutoSwap {
         the if/else statements, the function reverts because a supported stablecoin has not been specified.
         */
         ERC20 token;
-        
-        if(newOffer.stablecoinType == StablecoinType.DAI) {
-            token = ERC20(daiAddress);
-        } else if (newOffer.stablecoinType == StablecoinType.USDC) {
-            token = ERC20(usdcAddress);
-        } else if (newOffer.stablecoinType == StablecoinType.BUSD) {
-            token = ERC20(busdAddress);
-        } else if (newOffer.stablecoinType == StablecoinType.USDT) {
-            token = ERC20(usdtAddress);
+
+        if(stablecoins[newOffer.stablecoin] == true) {
+            token = ERC20(newOffer.stablecoin);
         } else {
-            revert("e11"); //"e11": "You must specify a supported stablecoin"
+            revert("e11");
         }
 
         //Calculate currently required deposit amount
@@ -270,19 +299,7 @@ contract CommutoSwap {
         require(offers[offerID].maker == msg.sender, "e17"); //"e17": "Offers can only be mutated by offer maker"
 
         //Find proper stablecoin contract
-        ERC20 token;
-
-        if(offers[offerID].stablecoinType == StablecoinType.DAI) {
-            token = ERC20(daiAddress);
-        } else if (offers[offerID].stablecoinType == StablecoinType.USDC) {
-            token = ERC20(usdcAddress);
-        } else if (offers[offerID].stablecoinType == StablecoinType.BUSD) {
-            token = ERC20(busdAddress);
-        } else if (offers[offerID].stablecoinType == StablecoinType.USDT) {
-            token = ERC20(usdtAddress);
-        } else {
-            revert("e11"); //"e11": "You must specify a supported stablecoin"
-        }
+        ERC20 token = ERC20(offers[offerID].stablecoin);
 
         //Calculate total amount in escrow
         uint256 serviceFeeAmountUpperBound = SafeMath.div(offers[offerID].amountUpperBound, 100);
@@ -293,16 +310,6 @@ contract CommutoSwap {
         */
 
         uint256 depositAmount = SafeMath.add(offers[offerID].securityDepositAmount, serviceFeeAmountUpperBound);
-
-        /*
-        uint256 totalAmount;
-        if(offers[offerID].direction == SwapDirection.SELL) {
-            totalAmount = SafeMath.add(SafeMath.add(offers[offerID].amountUpperBound, offers[offerID].securityDepositAmount), serviceFeeAmountUpperBound);
-        } else if (offers[offerID].direction == SwapDirection.BUY) {
-            totalAmount = SafeMath.add(offers[offerID].securityDepositAmount, serviceFeeAmountUpperBound);
-        } else {
-            revert("e18"); //"e18": "Offer has invalid direction"
-        }*/
 
         //Delete offer, refund STBL and notify
         delete offers[offerID];
@@ -321,7 +328,7 @@ contract CommutoSwap {
         require(!swaps[offerID].isCreated, "e20"); //"e20": "The offer with the specified id has already been taken"
         require(offers[offerID].maker == newSwap.maker, "e21"); //"e21": "Maker addresses must match"
         require(sha256(offers[offerID].interfaceId) == sha256(newSwap.makerInterfaceId), "e21.1"); //"e21.1": "Maker interface ids must match",
-        require(offers[offerID].stablecoinType == newSwap.stablecoinType, "e22"); //"e22": "Stablecoin types must match"
+        require(offers[offerID].stablecoin == newSwap.stablecoin, "e22"); //"e22": "Stablecoins must match"
         require(offers[offerID].amountLowerBound == newSwap.amountLowerBound, "e23"); //"e23": "Lower bounds must match"
         require(offers[offerID].amountUpperBound == newSwap.amountUpperBound, "e24"); //"e24": "Upper bounds must match"
         require(offers[offerID].securityDepositAmount == newSwap.securityDepositAmount, "e25"); //"e25": "Security deposit amounts must match"
@@ -335,24 +342,7 @@ contract CommutoSwap {
         require(offers[offerID].extraData == newSwap.makerExtraData, "e32"); //"e32": "Maker extra data must match"
 
         //Find proper stablecoin contract
-        /*
-        Slither complains that "token" is never initialized. However, compilation fails if this declaration takes place
-        within the if/else statements, so it must remain here. Additionally, if initialization doesn't take place within
-        the if/else statements, the function reverts because a supported stablecoin has not been specified.
-        */
-        ERC20 token;
-
-        if(newSwap.stablecoinType == StablecoinType.DAI) {
-            token = ERC20(daiAddress);
-        } else if (newSwap.stablecoinType == StablecoinType.USDC) {
-            token = ERC20(usdcAddress);
-        } else if (newSwap.stablecoinType == StablecoinType.BUSD) {
-            token = ERC20(busdAddress);
-        } else if (newSwap.stablecoinType == StablecoinType.USDT) {
-            token = ERC20(usdtAddress);
-        } else {
-            revert("e11"); //"e11": "You must specify a supported stablecoin"
-        }
+        ERC20 token = ERC20(offers[offerID].stablecoin);
 
         //Calculate required total amount
         newSwap.serviceFeeAmount = SafeMath.div(newSwap.takenSwapAmount, 100);
@@ -402,24 +392,7 @@ contract CommutoSwap {
         emit SwapFilled(swapID);
 
         //Find proper stablecoin contract
-        /*
-        Slither complains that "token" is never initialized. However, compilation fails if this declaration takes place
-        within the if/else statements, so it must remain here. Additionally, if initialization doesn't take place within
-        the if/else statements, the function reverts because a supported stablecoin has not been specified.
-        */
-        ERC20 token;
-
-        if(swaps[swapID].stablecoinType == StablecoinType.DAI) {
-            token = ERC20(daiAddress);
-        } else if (swaps[swapID].stablecoinType == StablecoinType.USDC) {
-            token = ERC20(usdcAddress);
-        } else if (swaps[swapID].stablecoinType == StablecoinType.BUSD) {
-            token = ERC20(busdAddress);
-        } else if (swaps[swapID].stablecoinType == StablecoinType.USDT) {
-            token = ERC20(usdtAddress);
-        } else {
-            revert("e11"); //"e11": "You must specify a supported stablecoin"
-        }
+        ERC20 token = ERC20(swaps[swapID].stablecoin);
 
         //Lock taken swap amount in escrow
         require(swaps[swapID].takenSwapAmount <= token.allowance(msg.sender, address(this)), "e13"); //"e13": "Token allowance must be >= required amount"
@@ -471,24 +444,7 @@ contract CommutoSwap {
         require(swaps[swapID].isPaymentReceived, "e40"); //"e40": "Payment receiving has not been reported for swap with specified id"
 
         //Find proper stablecoin contract
-        /*
-        Slither complains that "token" is never initialized. However, compilation fails if this declaration takes place
-        within the if/else statements, so it must remain here. Additionally, if initialization doesn't take place within
-        the if/else statements, the function reverts because a supported stablecoin has not been specified.
-        */
-        ERC20 token;
-
-        if(swaps[swapID].stablecoinType == StablecoinType.DAI) {
-            token = ERC20(daiAddress);
-        } else if (swaps[swapID].stablecoinType == StablecoinType.USDC) {
-            token = ERC20(usdcAddress);
-        } else if (swaps[swapID].stablecoinType == StablecoinType.BUSD) {
-            token = ERC20(busdAddress);
-        } else if (swaps[swapID].stablecoinType == StablecoinType.USDT) {
-            token = ERC20(usdtAddress);
-        } else {
-            revert("e11"); //"e11": "You must specify a supported stablecoin"
-        }
+        ERC20 token = ERC20(swaps[swapID].stablecoin);
 
         uint256 returnAmount;
 

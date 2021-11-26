@@ -22,7 +22,7 @@ commuto_swap_error_messages = {
     "e20": "The offer with the specified id has already been taken",
     "e21": "Maker addresses must match",
     "e21.1": "Maker interface ids must match",
-    "e22": "Stablecoin types must match",
+    "e22": "Stablecoins must match",
     "e23": "Lower bounds must match",
     "e24": "Upper bounds must match",
     "e25": "Security deposit amounts must match",
@@ -49,4 +49,5 @@ commuto_swap_error_messages = {
     "e46": "Settlement method must be supported",
     "e47": "Only maker and seller can fill swap",
     "e48": "The swap must be filled before payment is sent",
+    "e49": "Only owner can set stablecoin support",
 }

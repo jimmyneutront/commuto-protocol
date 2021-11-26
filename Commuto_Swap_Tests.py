@@ -21,7 +21,7 @@ logger.setLevel(logging.DEBUG)
 
 # TODO: Start hardhat node
 # Establish connection to web3 provider
-w3 = Web3(Web3.HTTPProvider("http://192.168.1.10:8545"))
+w3 = Web3(Web3.HTTPProvider("http://192.168.0.195:8545"))
 # Check connection
 logger.info("Is connected to Web3 provider: " + str(w3.isConnected()))
 if not w3.isConnected():
@@ -67,40 +67,40 @@ logger.info("Deploying dummy ERC20 contracts")
 logger.info("Deploying dummy DAI contract")
 dai_deployment_tx_hash = undeployed_test_dai_contract.constructor().transact()
 logger.info("Deployed DAI contract, awaiting tx mining")
-dai_deployment_tx_recipt = w3.eth.wait_for_transaction_receipt(dai_deployment_tx_hash)
-logger.info("DAI contract deployed with address " + str(dai_deployment_tx_recipt.contractAddress))
+dai_deployment_tx_receipt = w3.eth.wait_for_transaction_receipt(dai_deployment_tx_hash)
+logger.info("DAI contract deployed with address " + str(dai_deployment_tx_receipt.contractAddress))
 test_dai_contract = w3.eth.contract(
-    address=dai_deployment_tx_recipt.contractAddress,
+    address=dai_deployment_tx_receipt.contractAddress,
     abi=test_dai_abi
 )
 
 logger.info("Deploying dummy USDC contract")
 usdc_deployment_tx_hash = undeployed_test_usdc_contract.constructor().transact()
 logger.info("Deployed USDC contract, awaiting tx mining")
-usdc_deployment_tx_recipt = w3.eth.wait_for_transaction_receipt(usdc_deployment_tx_hash)
-logger.info("USDC contract deployed with address " + str(usdc_deployment_tx_recipt.contractAddress))
+usdc_deployment_tx_receipt = w3.eth.wait_for_transaction_receipt(usdc_deployment_tx_hash)
+logger.info("USDC contract deployed with address " + str(usdc_deployment_tx_receipt.contractAddress))
 test_usdc_contract = w3.eth.contract(
-    address=usdc_deployment_tx_recipt.contractAddress,
+    address=usdc_deployment_tx_receipt.contractAddress,
     abi=test_usdc_abi
 )
 
 logger.info("Deploying dummy BUSD contract")
 busd_deployment_tx_hash = undeployed_test_busd_contract.constructor().transact()
 logger.info("Deployed BUSD contract, awaiting tx mining")
-busd_deployment_tx_recipt = w3.eth.wait_for_transaction_receipt(busd_deployment_tx_hash)
-logger.info("BUSD contract deployed with address " + str(busd_deployment_tx_recipt.contractAddress))
+busd_deployment_tx_receipt = w3.eth.wait_for_transaction_receipt(busd_deployment_tx_hash)
+logger.info("BUSD contract deployed with address " + str(busd_deployment_tx_receipt.contractAddress))
 test_busd_contract = w3.eth.contract(
-    address=busd_deployment_tx_recipt.contractAddress,
+    address=busd_deployment_tx_receipt.contractAddress,
     abi=test_busd_abi
 )
 
 logger.info("Deploying dummy USDT contract")
 usdt_deployment_tx_hash = undeployed_test_usdt_contract.constructor().transact()
 logger.info("Deployed USDT contract, awaiting tx mining")
-usdt_deployment_tx_recipt = w3.eth.wait_for_transaction_receipt(usdt_deployment_tx_hash)
-logger.info("USDT contract deployed with address " + str(usdt_deployment_tx_recipt.contractAddress))
+usdt_deployment_tx_receipt = w3.eth.wait_for_transaction_receipt(usdt_deployment_tx_hash)
+logger.info("USDT contract deployed with address " + str(usdt_deployment_tx_receipt.contractAddress))
 test_usdt_contract = w3.eth.contract(
-    address=usdt_deployment_tx_recipt.contractAddress,
+    address=usdt_deployment_tx_receipt.contractAddress,
     abi=test_usdt_abi
 )
 logger.info("Dummy ERC20 contract deployment completed")
@@ -163,10 +163,10 @@ logger.info(
 )
 commuto_swap_deployment_tx_hash = undeployed_commuto_swap_contract.constructor(
     w3.eth.accounts[2],
-    dai_deployment_tx_recipt.contractAddress,
-    usdc_deployment_tx_recipt.contractAddress,
-    busd_deployment_tx_recipt.contractAddress,
-    usdt_deployment_tx_recipt.contractAddress,
+    dai_deployment_tx_receipt.contractAddress,
+    usdc_deployment_tx_receipt.contractAddress,
+    busd_deployment_tx_receipt.contractAddress,
+    usdt_deployment_tx_receipt.contractAddress,
 ).transact()
 logger.info("Deployed Commuto_Swap contract, awaiting tx mining")
 commuto_swap_deployment_tx_receipt = w3.eth.wait_for_transaction_receipt(commuto_swap_deployment_tx_hash)
@@ -182,6 +182,20 @@ w3.eth.wait_for_transaction_receipt(tx_hash)
 tx_hash = commuto_swap_contract.functions.setSettlementMethodSupport("EUR-SEPA".encode("utf-8"), True).transact()
 w3.eth.wait_for_transaction_receipt(tx_hash)
 logger.info("Added USD-SWIFT and EUR-SEPA to settlementMethods")
+logger.info("Adding stablecoin contract addresses to stablecoins")
+tx_hash = commuto_swap_contract.functions.setStablecoinSupport(dai_deployment_tx_receipt.contractAddress, True)\
+    .transact()
+w3.eth.wait_for_transaction_receipt(tx_hash)
+tx_hash = commuto_swap_contract.functions.setStablecoinSupport(usdc_deployment_tx_receipt.contractAddress, True)\
+    .transact()
+w3.eth.wait_for_transaction_receipt(tx_hash)
+tx_hash = commuto_swap_contract.functions.setStablecoinSupport(busd_deployment_tx_receipt.contractAddress, True)\
+    .transact()
+w3.eth.wait_for_transaction_receipt(tx_hash)
+tx_hash = commuto_swap_contract.functions.setStablecoinSupport(usdt_deployment_tx_receipt.contractAddress, True)\
+    .transact()
+w3.eth.wait_for_transaction_receipt(tx_hash)
+logger.info("Added stablecoin contract addresses to stablecoins")
 
 maker_address = w3.eth.accounts[0]
 taker_address = w3.eth.accounts[1]
@@ -200,7 +214,7 @@ try:
         "isTaken": True,
         "maker": maker_address,
         "interfaceId": HexBytes("an interface Id here".encode("utf-8").hex()),
-        "stablecoinType": 0,
+        "stablecoin": dai_deployment_tx_receipt.contractAddress,
         "amountLowerBound": 0,
         "amountUpperBound": 1000,
         "securityDepositAmount": 100,
@@ -233,7 +247,7 @@ try:
         "isTaken": True,
         "maker": maker_address,
         "interfaceId": HexBytes("an interface Id here".encode("utf-8").hex()),
-        "stablecoinType": 0,
+        "stablecoin": dai_deployment_tx_receipt.contractAddress,
         "amountLowerBound": 2,
         "amountUpperBound": 1,
         "securityDepositAmount": 100,
@@ -266,7 +280,7 @@ try:
         "isTaken": True,
         "maker": maker_address,
         "interfaceId": HexBytes("an interface Id here".encode("utf-8").hex()),
-        "stablecoinType": 0,
+        "stablecoin": dai_deployment_tx_receipt.contractAddress,
         "amountLowerBound": 11,
         "amountUpperBound": 100,
         "securityDepositAmount": 1,
@@ -299,7 +313,7 @@ try:
         "isTaken": True,
         "maker": maker_address,
         "interfaceId": HexBytes("an interface Id here".encode("utf-8").hex()),
-        "stablecoinType": 0,
+        "stablecoin": dai_deployment_tx_receipt.contractAddress,
         "amountLowerBound": 9,
         "amountUpperBound": 100,
         "securityDepositAmount": 10,
@@ -333,7 +347,7 @@ try:
         "isTaken": True,
         "maker": maker_address,
         "interfaceId": HexBytes("an interface Id here".encode("utf-8").hex()),
-        "stablecoinType": 0,
+        "stablecoin": dai_deployment_tx_receipt.contractAddress,
         "amountLowerBound": 100,
         "amountUpperBound": 100,
         "securityDepositAmount": 10,
@@ -370,7 +384,7 @@ try:
         "isTaken": True,
         "maker": maker_address,
         "interfaceId": HexBytes("an interface Id here".encode("utf-8").hex()),
-        "stablecoinType": 0,
+        "stablecoin": dai_deployment_tx_receipt.contractAddress,
         "amountLowerBound": 100,
         "amountUpperBound": 100,
         "securityDepositAmount": 10,
@@ -410,7 +424,7 @@ try:
         "isTaken": True,
         "maker": maker_address,
         "interfaceId": HexBytes("an interface Id here".encode("utf-8").hex()),
-        "stablecoinType": 0,
+        "stablecoin": dai_deployment_tx_receipt.contractAddress,
         "amountLowerBound": 100,
         "amountUpperBound": 100,
         "securityDepositAmount": 10,
@@ -480,7 +494,7 @@ try:
         "makerInterfaceId": HexBytes("an interface Id here".encode("utf-8").hex()),
         "taker": taker_address,
         "takerInterfaceId": HexBytes("an interface Id here".encode("utf-8").hex()),
-        "stablecoinType": 0,
+        "stablecoin": dai_deployment_tx_receipt.contractAddress,
         "amountLowerBound": 100,
         "amountUpperBound": 100,
         "securityDepositAmount": 10,
@@ -529,7 +543,7 @@ try:
         "isTaken": True,
         "maker": maker_address,
         "interfaceId": HexBytes("an interface Id here".encode("utf-8").hex()),
-        "stablecoinType": 0,
+        "stablecoin": dai_deployment_tx_receipt.contractAddress,
         "amountLowerBound": 100,
         "amountUpperBound": 100,
         "securityDepositAmount": 10,
@@ -563,7 +577,7 @@ try:
         "isTaken": True,
         "maker": maker_address,
         "interfaceId": HexBytes("an interface Id here".encode("utf-8").hex()),
-        "stablecoinType": 0,
+        "stablecoin": dai_deployment_tx_receipt.contractAddress,
         "amountLowerBound": 100,
         "amountUpperBound": 100,
         "securityDepositAmount": 10,
@@ -598,7 +612,7 @@ try:
         "isTaken": True,
         "maker": maker_address,
         "interfaceId": HexBytes("an interface Id here".encode("utf-8").hex()),
-        "stablecoinType": 0,
+        "stablecoin": dai_deployment_tx_receipt.contractAddress,
         "amountLowerBound": 100,
         "amountUpperBound": 100,
         "securityDepositAmount": 10,
@@ -624,7 +638,7 @@ try:
         "isTaken": True,
         "maker": maker_address,
         "interfaceId": HexBytes("an interface Id here".encode("utf-8").hex()),
-        "stablecoinType": 0,
+        "stablecoin": dai_deployment_tx_receipt.contractAddress,
         "amountLowerBound": 100,
         "amountUpperBound": 100,
         "securityDepositAmount": 10,
@@ -658,7 +672,7 @@ try:
         "isTaken": True,
         "maker": maker_address,
         "interfaceId": HexBytes("an interface Id here".encode("utf-8").hex()),
-        "stablecoinType": 0,
+        "stablecoin": dai_deployment_tx_receipt.contractAddress,
         "amountLowerBound": 100,
         "amountUpperBound": 100,
         "securityDepositAmount": 10,
@@ -697,7 +711,7 @@ try:
         "makerInterfaceId": HexBytes("an interface Id here".encode("utf-8").hex()),
         "taker": taker_address,
         "takerInterfaceId": HexBytes("an interface Id here".encode("utf-8").hex()),
-        "stablecoinType": 0,
+        "stablecoin": dai_deployment_tx_receipt.contractAddress,
         "amountLowerBound": 100,
         "amountUpperBound": 100,
         "securityDepositAmount": 10,
@@ -738,7 +752,7 @@ try:
         "makerInterfaceId": HexBytes("an interface Id here".encode("utf-8").hex()),
         "taker": taker_address,
         "takerInterfaceId": HexBytes("an interface Id here".encode("utf-8").hex()),
-        "stablecoinType": 0,
+        "stablecoin": dai_deployment_tx_receipt.contractAddress,
         "amountLowerBound": 100,
         "amountUpperBound": 100,
         "securityDepositAmount": 10,
@@ -778,7 +792,7 @@ try:
         "isTaken": True,
         "maker": maker_address,
         "interfaceId": HexBytes("an interface Id here".encode("utf-8").hex()),
-        "stablecoinType": 0,
+        "stablecoin": dai_deployment_tx_receipt.contractAddress,
         "amountLowerBound": 100,
         "amountUpperBound": 100,
         "securityDepositAmount": 10,
@@ -807,7 +821,7 @@ try:
         "makerInterfaceId": HexBytes("an interface Id here".encode("utf-8").hex()),
         "taker": taker_address,
         "takerInterfaceId": HexBytes("an interface Id here".encode("utf-8").hex()),
-        "stablecoinType": 0,
+        "stablecoin": dai_deployment_tx_receipt.contractAddress,
         "amountLowerBound": 100,
         "amountUpperBound": 100,
         "securityDepositAmount": 10,
@@ -848,7 +862,7 @@ try:
         "makerInterfaceId": HexBytes("an incorrect interface Id here".encode("utf-8").hex()),
         "taker": taker_address,
         "takerInterfaceId": HexBytes("an interface Id here".encode("utf-8").hex()),
-        "stablecoinType": 0,
+        "stablecoin": dai_deployment_tx_receipt.contractAddress,
         "amountLowerBound": 100,
         "amountUpperBound": 100,
         "securityDepositAmount": 10,
@@ -878,7 +892,7 @@ except ValueError as e:
         raise e
 try:
     test_id = "4.4"
-    logger.info("Test " + test_id + ": Ensuring takeOffer checks for matching stable coin types")
+    logger.info("Test " + test_id + ": Ensuring takeOffer checks for matching stablecoin types")
     tx_details = {
         "from": taker_address
     }
@@ -889,7 +903,7 @@ try:
         "makerInterfaceId": HexBytes("an interface Id here".encode("utf-8").hex()),
         "taker": taker_address,
         "takerInterfaceId": HexBytes("an interface Id here".encode("utf-8").hex()),
-        "stablecoinType": 1,
+        "stablecoin": usdc_deployment_tx_receipt.contractAddress,
         "amountLowerBound": 100,
         "amountUpperBound": 100,
         "securityDepositAmount": 10,
@@ -930,7 +944,7 @@ try:
         "makerInterfaceId": HexBytes("an interface Id here".encode("utf-8").hex()),
         "taker": taker_address,
         "takerInterfaceId": HexBytes("an interface Id here".encode("utf-8").hex()),
-        "stablecoinType": 0,
+        "stablecoin": dai_deployment_tx_receipt.contractAddress,
         "amountLowerBound": 200,
         "amountUpperBound": 100,
         "securityDepositAmount": 10,
@@ -971,7 +985,7 @@ try:
         "makerInterfaceId": HexBytes("an interface Id here".encode("utf-8").hex()),
         "taker": taker_address,
         "takerInterfaceId": HexBytes("an interface Id here".encode("utf-8").hex()),
-        "stablecoinType": 0,
+        "stablecoin": dai_deployment_tx_receipt.contractAddress,
         "amountLowerBound": 100,
         "amountUpperBound": 200,
         "securityDepositAmount": 10,
@@ -1012,7 +1026,7 @@ try:
         "makerInterfaceId": HexBytes("an interface Id here".encode("utf-8").hex()),
         "taker": taker_address,
         "takerInterfaceId": HexBytes("an interface Id here".encode("utf-8").hex()),
-        "stablecoinType": 0,
+        "stablecoin": dai_deployment_tx_receipt.contractAddress,
         "amountLowerBound": 100,
         "amountUpperBound": 100,
         "securityDepositAmount": 20,
@@ -1056,7 +1070,7 @@ try:
         "makerInterfaceId": HexBytes("an interface Id here".encode("utf-8").hex()),
         "taker": taker_address,
         "takerInterfaceId": HexBytes("an interface Id here".encode("utf-8").hex()),
-        "stablecoinType": 0,
+        "stablecoin": dai_deployment_tx_receipt.contractAddress,
         "amountLowerBound": 100,
         "amountUpperBound": 100,
         "securityDepositAmount": 10,
@@ -1100,7 +1114,7 @@ try:
         "makerInterfaceId": HexBytes("an interface Id here".encode("utf-8").hex()),
         "taker": taker_address,
         "takerInterfaceId": HexBytes("an interface Id here".encode("utf-8").hex()),
-        "stablecoinType": 0,
+        "stablecoin": dai_deployment_tx_receipt.contractAddress,
         "amountLowerBound": 100,
         "amountUpperBound": 100,
         "securityDepositAmount": 10,
@@ -1142,7 +1156,7 @@ try:
         "makerInterfaceId": HexBytes("an interface Id here".encode("utf-8").hex()),
         "taker": taker_address,
         "takerInterfaceId": HexBytes("an interface Id here".encode("utf-8").hex()),
-        "stablecoinType": 0,
+        "stablecoin": dai_deployment_tx_receipt.contractAddress,
         "amountLowerBound": 100,
         "amountUpperBound": 100,
         "securityDepositAmount": 10,
@@ -1184,7 +1198,7 @@ try:
         "makerInterfaceId": HexBytes("an interface Id here".encode("utf-8").hex()),
         "taker": taker_address,
         "takerInterfaceId": HexBytes("an interface Id here".encode("utf-8").hex()),
-        "stablecoinType": 0,
+        "stablecoin": dai_deployment_tx_receipt.contractAddress,
         "amountLowerBound": 100,
         "amountUpperBound": 100,
         "securityDepositAmount": 10,
@@ -1226,7 +1240,7 @@ try:
         "makerInterfaceId": HexBytes("an interface Id here".encode("utf-8").hex()),
         "taker": taker_address,
         "takerInterfaceId": HexBytes("an interface Id here".encode("utf-8").hex()),
-        "stablecoinType": 0,
+        "stablecoin": dai_deployment_tx_receipt.contractAddress,
         "amountLowerBound": 100,
         "amountUpperBound": 100,
         "securityDepositAmount": 10,
@@ -1268,7 +1282,7 @@ try:
         "makerInterfaceId": HexBytes("an interface Id here".encode("utf-8").hex()),
         "taker": taker_address,
         "takerInterfaceId": HexBytes("an interface Id here".encode("utf-8").hex()),
-        "stablecoinType": 0,
+        "stablecoin": dai_deployment_tx_receipt.contractAddress,
         "amountLowerBound": 100,
         "amountUpperBound": 100,
         "securityDepositAmount": 10,
@@ -1311,7 +1325,7 @@ try:
         "makerInterfaceId": HexBytes("an interface Id here".encode("utf-8").hex()),
         "taker": taker_address,
         "takerInterfaceId": HexBytes("an interface Id here".encode("utf-8").hex()),
-        "stablecoinType": 0,
+        "stablecoin": dai_deployment_tx_receipt.contractAddress,
         "amountLowerBound": 100,
         "amountUpperBound": 100,
         "securityDepositAmount": 10,
@@ -1353,7 +1367,7 @@ try:
         "makerInterfaceId": HexBytes("an interface Id here".encode("utf-8").hex()),
         "taker": taker_address,
         "takerInterfaceId": HexBytes("an interface Id here".encode("utf-8").hex()),
-        "stablecoinType": 0,
+        "stablecoin": dai_deployment_tx_receipt.contractAddress,
         "amountLowerBound": 100,
         "amountUpperBound": 100,
         "securityDepositAmount": 10,
@@ -1410,7 +1424,7 @@ try:
         "makerInterfaceId": HexBytes("an interface Id here".encode("utf-8").hex()),
         "taker": taker_address,
         "takerInterfaceId": HexBytes("an interface Id here".encode("utf-8").hex()),
-        "stablecoinType": 0,
+        "stablecoin": dai_deployment_tx_receipt.contractAddress,
         "amountLowerBound": 100,
         "amountUpperBound": 100,
         "securityDepositAmount": 10,
@@ -1497,7 +1511,7 @@ try:
         "isTaken": True,
         "maker": maker_address,
         "interfaceId": HexBytes("an interface Id here".encode("utf-8").hex()),
-        "stablecoinType": 0,
+        "stablecoin": dai_deployment_tx_receipt.contractAddress,
         "amountLowerBound": 100,
         "amountUpperBound": 100,
         "securityDepositAmount": 10,
@@ -1527,7 +1541,7 @@ try:
         "makerInterfaceId": HexBytes("an interface Id here".encode("utf-8").hex()),
         "taker": taker_address,
         "takerInterfaceId": HexBytes("an interface Id here".encode("utf-8").hex()),
-        "stablecoinType": 0,
+        "stablecoin": dai_deployment_tx_receipt.contractAddress,
         "amountLowerBound": 100,
         "amountUpperBound": 100,
         "securityDepositAmount": 10,
@@ -1575,7 +1589,7 @@ try:
         "isTaken": True,
         "maker": maker_address,
         "interfaceId": HexBytes("an interface Id here".encode("utf-8").hex()),
-        "stablecoinType": 0,
+        "stablecoin": dai_deployment_tx_receipt.contractAddress,
         "amountLowerBound": 100,
         "amountUpperBound": 100,
         "securityDepositAmount": 10,
@@ -1605,7 +1619,7 @@ try:
         "makerInterfaceId": HexBytes("an interface Id here".encode("utf-8").hex()),
         "taker": taker_address,
         "takerInterfaceId": HexBytes("an interface Id here".encode("utf-8").hex()),
-        "stablecoinType": 0,
+        "stablecoin": dai_deployment_tx_receipt.contractAddress,
         "amountLowerBound": 100,
         "amountUpperBound": 100,
         "securityDepositAmount": 10,
@@ -1653,7 +1667,7 @@ try:
         "isTaken": True,
         "maker": maker_address,
         "interfaceId": HexBytes("an interface Id here".encode("utf-8").hex()),
-        "stablecoinType": 0,
+        "stablecoin": dai_deployment_tx_receipt.contractAddress,
         "amountLowerBound": 100,
         "amountUpperBound": 100,
         "securityDepositAmount": 10,
@@ -1683,7 +1697,7 @@ try:
         "makerInterfaceId": HexBytes("an interface Id here".encode("utf-8").hex()),
         "taker": taker_address,
         "takerInterfaceId": HexBytes("an interface Id here".encode("utf-8").hex()),
-        "stablecoinType": 0,
+        "stablecoin": dai_deployment_tx_receipt.contractAddress,
         "amountLowerBound": 100,
         "amountUpperBound": 100,
         "securityDepositAmount": 10,
@@ -1741,7 +1755,7 @@ try:
         "isTaken": True,
         "maker": maker_address,
         "interfaceId": HexBytes("an interface Id here".encode("utf-8").hex()),
-        "stablecoinType": 0,
+        "stablecoin": dai_deployment_tx_receipt.contractAddress,
         "amountLowerBound": 100,
         "amountUpperBound": 100,
         "securityDepositAmount": 10,
@@ -1771,7 +1785,7 @@ try:
         "makerInterfaceId": HexBytes("an interface Id here".encode("utf-8").hex()),
         "taker": taker_address,
         "takerInterfaceId": HexBytes("an interface Id here".encode("utf-8").hex()),
-        "stablecoinType": 0,
+        "stablecoin": dai_deployment_tx_receipt.contractAddress,
         "amountLowerBound": 100,
         "amountUpperBound": 100,
         "securityDepositAmount": 10,
@@ -1851,7 +1865,7 @@ try:
         "isTaken": True,
         "maker": maker_address,
         "interfaceId": HexBytes("an interface Id here".encode("utf-8").hex()),
-        "stablecoinType": 0,
+        "stablecoin": dai_deployment_tx_receipt.contractAddress,
         "amountLowerBound": 100,
         "amountUpperBound": 100,
         "securityDepositAmount": 10,
@@ -1881,7 +1895,7 @@ try:
         "makerInterfaceId": HexBytes("an interface Id here".encode("utf-8").hex()),
         "taker": taker_address,
         "takerInterfaceId": HexBytes("an interface Id here".encode("utf-8").hex()),
-        "stablecoinType": 0,
+        "stablecoin": dai_deployment_tx_receipt.contractAddress,
         "amountLowerBound": 100,
         "amountUpperBound": 100,
         "securityDepositAmount": 10,
@@ -1939,7 +1953,7 @@ try:
         "isTaken": True,
         "maker": maker_address,
         "interfaceId": HexBytes("an interface Id here".encode("utf-8").hex()),
-        "stablecoinType": 0,
+        "stablecoin": dai_deployment_tx_receipt.contractAddress,
         "amountLowerBound": 100,
         "amountUpperBound": 100,
         "securityDepositAmount": 10,
@@ -1969,7 +1983,7 @@ try:
         "makerInterfaceId": HexBytes("an interface Id here".encode("utf-8").hex()),
         "taker": taker_address,
         "takerInterfaceId": HexBytes("an interface Id here".encode("utf-8").hex()),
-        "stablecoinType": 0,
+        "stablecoin": dai_deployment_tx_receipt.contractAddress,
         "amountLowerBound": 100,
         "amountUpperBound": 100,
         "securityDepositAmount": 10,
@@ -2038,7 +2052,7 @@ try:
         "isTaken": True,
         "maker": maker_address,
         "interfaceId": HexBytes("an interface Id here".encode("utf-8").hex()),
-        "stablecoinType": 0,
+        "stablecoin": dai_deployment_tx_receipt.contractAddress,
         "amountLowerBound": 100,
         "amountUpperBound": 100,
         "securityDepositAmount": 10,
@@ -2068,7 +2082,7 @@ try:
         "makerInterfaceId": HexBytes("an interface Id here".encode("utf-8").hex()),
         "taker": taker_address,
         "takerInterfaceId": HexBytes("an interface Id here".encode("utf-8").hex()),
-        "stablecoinType": 0,
+        "stablecoin": dai_deployment_tx_receipt.contractAddress,
         "amountLowerBound": 100,
         "amountUpperBound": 100,
         "securityDepositAmount": 10,
@@ -2122,7 +2136,7 @@ try:
         "isTaken": True,
         "maker": maker_address,
         "interfaceId": HexBytes("an interface Id here".encode("utf-8").hex()),
-        "stablecoinType": 0,
+        "stablecoin": dai_deployment_tx_receipt.contractAddress,
         "amountLowerBound": 100,
         "amountUpperBound": 100,
         "securityDepositAmount": 10,
@@ -2152,7 +2166,7 @@ try:
         "makerInterfaceId": HexBytes("an interface Id here".encode("utf-8").hex()),
         "taker": taker_address,
         "takerInterfaceId": HexBytes("an interface Id here".encode("utf-8").hex()),
-        "stablecoinType": 0,
+        "stablecoin": dai_deployment_tx_receipt.contractAddress,
         "amountLowerBound": 100,
         "amountUpperBound": 100,
         "securityDepositAmount": 10,
@@ -2232,7 +2246,7 @@ try:
         "isTaken": True,
         "maker": maker_address,
         "interfaceId": HexBytes("an interface Id here".encode("utf-8").hex()),
-        "stablecoinType": 0,
+        "stablecoin": dai_deployment_tx_receipt.contractAddress,
         "amountLowerBound": 100,
         "amountUpperBound": 100,
         "securityDepositAmount": 10,
@@ -2261,7 +2275,7 @@ try:
         "makerInterfaceId": HexBytes("an interface Id here".encode("utf-8").hex()),
         "taker": taker_address,
         "takerInterfaceId": HexBytes("an interface Id here".encode("utf-8").hex()),
-        "stablecoinType": 0,
+        "stablecoin": dai_deployment_tx_receipt.contractAddress,
         "amountLowerBound": 100,
         "amountUpperBound": 100,
         "securityDepositAmount": 10,
