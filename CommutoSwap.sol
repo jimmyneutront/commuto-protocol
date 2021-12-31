@@ -181,7 +181,8 @@ contract CommutoSwap {
     function getSwap(bytes16 swapID) view public returns (Swap memory) {
         return swaps[swapID];
     }
-    
+
+    //TODO: Remove fixed stablecoin addresses
     constructor (address _serviceFeePool,
                  address _daiAddress,
                  address _usdcAddress,

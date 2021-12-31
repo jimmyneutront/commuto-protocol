@@ -5,6 +5,7 @@ from solcx import compile_files
 from uuid import uuid4
 from web3 import Web3
 
+#Set up logger
 logger = logging.getLogger(__name__)
 c_handler = logging.StreamHandler()
 log_format = logging.Formatter('%(created)f : %(levelname)s : %(message)s')
@@ -12,7 +13,7 @@ c_handler.setFormatter(log_format)
 logger.addHandler(c_handler)
 logger.setLevel(logging.DEBUG)
 
-# TODO: Start hardhat node
+# Start hardhat node manually
 # Establish connection to web3 provider
 w3 = Web3(Web3.HTTPProvider("http://192.168.0.195:8545"))
 # Check connection
@@ -20,6 +21,13 @@ logger.info("Is connected to Web3 provider: " + str(w3.isConnected()))
 if not w3.isConnected():
     raise Exception("No connection to Web3 Provider")
 
+#Addresses of participants
+#address_one = w3.eth.accounts[1]
+#address_two = w3.eth.accounts[2]
+address_one = w3.eth.accounts[1]
+address_two = w3.eth.accounts[2]
+
+#Deploy dummy Dai ERC20 contract
 test_dai_abi = '[{"inputs": [],"stateMutability": "nonpayable","type": "constructor"},{"anonymous": false,"inputs": [{"indexed": true,"internalType": "address","name": "owner","type": "address"},{"indexed": true,"internalType": "address","name": "spender","type": "address"},{"indexed": false,"internalType": "uint256","name": "value","type": "uint256"}],"name": "Approval","type": "event"},{"anonymous": false,"inputs": [{"indexed": true,"internalType": "address","name": "from","type": "address"},{"indexed": true,"internalType": "address","name": "to","type": "address"},{"indexed": false,"internalType": "uint256","name": "value","type": "uint256"}],"name": "Transfer","type": "event"},{"inputs": [{"internalType": "address","name": "owner","type": "address"},{"internalType": "address","name": "spender","type": "address"}],"name": "allowance","outputs": [{"internalType": "uint256","name": "","type": "uint256"}],"stateMutability": "view","type": "function"},{"inputs": [{"internalType": "address","name": "spender","type": "address"},{"internalType": "uint256","name": "amount","type": "uint256"}],"name": "approve","outputs": [{"internalType": "bool","name": "","type": "bool"}],"stateMutability": "nonpayable","type": "function"},{"inputs": [{"internalType": "address","name": "account","type": "address"}],"name": "balanceOf","outputs": [{"internalType": "uint256","name": "","type": "uint256"}],"stateMutability": "view","type": "function"},{"inputs": [],"name": "decimals","outputs": [{"internalType": "uint8","name": "","type": "uint8"}],"stateMutability": "view","type": "function"},{"inputs": [{"internalType": "address","name": "spender","type": "address"},{"internalType": "uint256","name": "subtractedValue","type": "uint256"}],"name": "decreaseAllowance","outputs": [{"internalType": "bool","name": "","type": "bool"}],"stateMutability": "nonpayable","type": "function"},{"inputs": [{"internalType": "address","name": "spender","type": "address"},{"internalType": "uint256","name": "addedValue","type": "uint256"}],"name": "increaseAllowance","outputs": [{"internalType": "bool","name": "","type": "bool"}],"stateMutability": "nonpayable","type": "function"},{"inputs": [{"internalType": "address","name": "account","type": "address"},{"internalType": "uint256","name": "amount","type": "uint256"}],"name": "mint","outputs": [],"stateMutability": "nonpayable","type": "function"},{"inputs": [],"name": "name","outputs": [{"internalType": "string","name": "","type": "string"}],"stateMutability": "view","type": "function"},{"inputs": [],"name": "symbol","outputs": [{"internalType": "string","name": "","type": "string"}],"stateMutability": "view","type": "function"},{"inputs": [],"name": "totalSupply","outputs": [{"internalType": "uint256","name": "","type": "uint256"}],"stateMutability": "view","type": "function"},{"inputs": [{"internalType": "address","name": "recipient","type": "address"},{"internalType": "uint256","name": "amount","type": "uint256"}],"name": "transfer","outputs": [{"internalType": "bool","name": "","type": "bool"}],"stateMutability": "nonpayable","type": "function"},{"inputs": [{"internalType": "address","name": "sender","type": "address"},{"internalType": "address","name": "recipient","type": "address"},{"internalType": "uint256","name": "amount","type": "uint256"}],"name": "transferFrom","outputs": [{"internalType": "bool","name": "","type": "bool"}],"stateMutability": "nonpayable","type": "function"}]'
 test_dai_remix_bytecode_output = {
     "linkReferences": {},
@@ -37,21 +45,45 @@ test_dai_contract = w3.eth.contract(
     address=dai_deployment_tx_receipt.contractAddress,
     abi=test_dai_abi
 )
-maker_address = w3.eth.accounts[0]
-taker_address = w3.eth.accounts[1]
-commuto_service_fee_account = w3.eth.accounts[2]
+
+#Mint new Dai and give to swap participants
 token_mint_amount = 10_000_000
 logger.info(
     "Minting " + str(token_mint_amount) + " of each supported token to addresses: \n" +
-    "maker_address: " + str(maker_address) + "\n" +
-    "taker_address: " + str(taker_address)
+    "address_one: " + str(address_one) + "\n" +
+    "address_two: " + str(address_two)
 )
-tx_hash = test_dai_contract.functions.mint(maker_address, token_mint_amount).transact()
+tx_hash = test_dai_contract.functions.mint(address_one, token_mint_amount).transact()
 w3.eth.wait_for_transaction_receipt(tx_hash)
-logger.info("Minted " + str(token_mint_amount) + " DAI to ERC20_recipient_account_zero")
-tx_hash = test_dai_contract.functions.mint(taker_address, token_mint_amount).transact()
+logger.info("Minted " + str(token_mint_amount) + " DAI to address_one")
+tx_hash = test_dai_contract.functions.mint(address_two, token_mint_amount).transact()
 w3.eth.wait_for_transaction_receipt(tx_hash)
-logger.info("Minted " + str(token_mint_amount) + " DAI to ERC20_recipient_account_one")
+logger.info("Minted " + str(token_mint_amount) + " DAI to address_two")
+
+#Transfer ETH to participants for gas fees
+eth_transfer_amount = 100_000_000
+logger.info(
+    "Transferring " + str(eth_transfer_amount) + " wei to addresses: \n" +
+    "address_one: " + str(address_one) + "\n" +
+    "address_two: " + str(address_two)
+)
+tx_hash = w3.eth.send_transaction({
+    'to': address_one,
+    'from': w3.eth.accounts[0],
+    'value': eth_transfer_amount,
+})
+w3.eth.wait_for_transaction_receipt(tx_hash)
+logger.info("Transfered " + str(eth_transfer_amount) + " wei to address_one")
+tx_hash = w3.eth.send_transaction({
+    'to': address_two,
+    'from': w3.eth.accounts[0],
+    'value': eth_transfer_amount,
+})
+w3.eth.wait_for_transaction_receipt(tx_hash)
+logger.info("Transfered " + str(eth_transfer_amount) + " wei to address_two")
+
+#Deploy Commuto Swap contract
+commuto_service_fee_account = w3.eth.accounts[0]
 compiled_sol = compile_files(
     ["CommutoSwap.sol"],
     output_values=["abi", "bin"],
@@ -60,6 +92,7 @@ compiled_sol = compile_files(
 )
 commuto_swap_abi = compiled_sol["CommutoSwap.sol:CommutoSwap"]["abi"]
 commuto_swap_bytecode = compiled_sol["CommutoSwap.sol:CommutoSwap"]["bin"]
+logger.info("CommutoSwap contract ABI:\n" + str(compiled_sol["CommutoSwap.sol:CommutoSwap"]["abi"]))
 undeployed_commuto_swap_contract = w3.eth.contract(abi=commuto_swap_abi, bytecode=commuto_swap_bytecode)
 logger.info(
     "Deploying Commuto_Swap contract:\n" +
@@ -80,368 +113,18 @@ commuto_swap_contract = w3.eth.contract(
     abi=commuto_swap_abi
 )
 logger.info("Commuto_Swap contract deployment completed")
+
+#Add supported settlement methods
 logger.info("Adding USD-SWIFT and EUR-SEPA to settlementMethods")
 tx_hash = commuto_swap_contract.functions.setSettlementMethodSupport("USD-SWIFT".encode("utf-8"), True).transact()
 w3.eth.wait_for_transaction_receipt(tx_hash)
 tx_hash = commuto_swap_contract.functions.setSettlementMethodSupport("EUR-SEPA".encode("utf-8"), True).transact()
 w3.eth.wait_for_transaction_receipt(tx_hash)
 logger.info("Added USD-SWIFT and EUR-SEPA to settlementMethods")
+
+#Add support for dummy Dai contract
 logger.info("Adding stablecoin contract addresses to stablecoins")
 tx_hash = commuto_swap_contract.functions.setStablecoinSupport(dai_deployment_tx_receipt.contractAddress, True)\
     .transact()
 w3.eth.wait_for_transaction_receipt(tx_hash)
 logger.info("Added stablecoin contract addresses to stablecoins")
-logger.info("Running Commuto_Swap Integration Tests")
-# Testing Maker as Seller swap
-maker_initial_dai_balance = test_dai_contract.functions.balanceOf(maker_address).call()
-taker_initial_dai_balance = test_dai_contract.functions.balanceOf(taker_address).call()
-service_fee_initial_dai_balance = test_dai_contract.functions.balanceOf(commuto_service_fee_account).call()
-maker_as_seller_swap_id = HexBytes(uuid4().bytes)
-tx_details = {
-    "from": maker_address,
-}
-maker_as_seller_offer = {
-    "isCreated": True,
-    "isTaken": True,
-    "maker": maker_address,
-    "interfaceId": HexBytes("an interface Id here".encode("utf-8").hex()),
-    "stablecoin": dai_deployment_tx_receipt.contractAddress,
-    "amountLowerBound": 100,
-    "amountUpperBound": 100,
-    "securityDepositAmount": 10,
-    "direction": 1,
-    "price": HexBytes("a price here".encode("utf-8").hex()),
-    "settlementMethods": ["USD-SWIFT".encode("utf-8"),],
-    "protocolVersion": 1,
-    "extraData": sha256("A bunch of extra data in here".encode()).digest()
-}
-test_dai_contract.functions.increaseAllowance(
-    commuto_swap_deployment_tx_receipt.contractAddress,
-    11,
-).transact(tx_details)
-logger.info("Opening Maker as Seller offer with id " + str(maker_as_seller_swap_id))
-openOffer_tx_hash = commuto_swap_contract.functions.openOffer(
-    maker_as_seller_swap_id,
-    maker_as_seller_offer
-).transact(tx_details)
-openOffer_tx_receipt = w3.eth.get_transaction_receipt(openOffer_tx_hash)
-logger.info("Gas used: " + str(openOffer_tx_receipt["gasUsed"]))
-logger.info("Checking for OfferOpened event for offer with id " + str(maker_as_seller_swap_id))
-OfferOpened_event_filter = commuto_swap_contract.events.OfferOpened.createFilter(fromBlock="latest", argument_filters={
-    "offerID": maker_as_seller_swap_id,
-    "interfaceId": HexBytes("an interface Id here".encode("utf-8").hex())})
-events = OfferOpened_event_filter.get_new_entries()
-if not (len(events) == 1 and events[0]["args"]["offerID"] == maker_as_seller_swap_id and events[0]["args"][
-    "interfaceId"] == HexBytes("an interface Id here".encode("utf-8").hex()) and events[0][
-            "event"] == "OfferOpened"):
-    raise Exception("OfferOpened event for offer with id " + str(maker_as_seller_swap_id) + " not found")
-tx_details = {
-    "from": taker_address
-}
-maker_as_seller_swap = {
-    "isCreated": False,
-    "requiresFill": True,
-    "maker": maker_address,
-    "makerInterfaceId": HexBytes("an interface Id here".encode("utf-8").hex()),
-    "taker": taker_address,
-    "takerInterfaceId": HexBytes("an interface Id here".encode("utf-8").hex()),
-    "stablecoin": dai_deployment_tx_receipt.contractAddress,
-    "amountLowerBound": 100,
-    "amountUpperBound": 100,
-    "securityDepositAmount": 10,
-    "takenSwapAmount": 100,
-    "serviceFeeAmount": 1,
-    "direction": 1,
-    "price": HexBytes("a price here".encode("utf-8").hex()),
-    "settlementMethod": "USD-SWIFT".encode("utf-8"),
-    "protocolVersion": 1,
-    "makerExtraData": sha256("A bunch of extra data in here".encode()).digest(),
-    "takerExtraData": sha256("A bunch of extra data in here".encode()).digest(),
-    "isPaymentSent": True,
-    "isPaymentReceived": True,
-    "hasBuyerClosed": True,
-    "hasSellerClosed": True,
-}
-test_dai_contract.functions.increaseAllowance(
-    commuto_swap_deployment_tx_receipt.contractAddress,
-    11
-).transact(tx_details)
-logger.info("Taking Maker as Seller offer with id " + str(maker_as_seller_swap_id))
-takeOffer_tx_hash = commuto_swap_contract.functions.takeOffer(
-    maker_as_seller_swap_id,
-    maker_as_seller_swap,
-).transact(tx_details)
-takeOffer_tx_receipt = w3.eth.get_transaction_receipt(takeOffer_tx_hash)
-logger.info("Gas used: " + str(takeOffer_tx_receipt["gasUsed"]))
-logger.info("Checking for OfferTaken event for offer with id " + str(maker_as_seller_swap_id))
-OfferTaken_event_filter = commuto_swap_contract.events.OfferTaken.createFilter(fromBlock="latest", argument_filters={
-    "offerID": maker_as_seller_swap_id,
-    "takerInterfaceId": HexBytes("an interface Id here".encode("utf-8").hex())})
-events = OfferTaken_event_filter.get_new_entries()
-if not (len(events) == 1 and events[0]["args"]["offerID"] == maker_as_seller_swap_id and events[0]["args"][
-        "takerInterfaceId"] == HexBytes("an interface Id here".encode("utf-8").hex()) and events[0][
-            "event"] == "OfferTaken"):
-    raise Exception("OfferTaken event for offer with id " + str(maker_as_seller_swap_id) + " not found")
-tx_details = {
-    "from": maker_address
-}
-test_dai_contract.functions.increaseAllowance(
-    commuto_swap_deployment_tx_receipt.contractAddress,
-    100
-).transact(tx_details)
-logger.info("Funding Maker as Seller swap with id " + str(maker_as_seller_swap_id))
-fundSwap_tx_hash = commuto_swap_contract.functions.fillSwap(
-    maker_as_seller_swap_id
-).transact(tx_details)
-fundSwap_tx_receipt = w3.eth.get_transaction_receipt(fundSwap_tx_hash)
-logger.info("Gas used: " + str(fundSwap_tx_receipt["gasUsed"]))
-logger.info("Checking for SwapFilled event for swap with id " + str(maker_as_seller_swap_id))
-SwapFilled_event_filter = commuto_swap_contract.events.SwapFilled.createFilter(fromBlock="latest", argument_filters={
-    "swapID":maker_as_seller_swap_id
-})
-events = SwapFilled_event_filter.get_new_entries()
-if not (len(events) == 1 and events[0]["args"]["swapID"] == maker_as_seller_swap_id and events[0]["event"] ==
-        "SwapFilled"):
-    raise Exception("SwapFilled event for swap with id " + str(maker_as_seller_swap_id) + " not found")
-tx_details = {
-    "from": taker_address
-}
-logger.info("Reporting payment sent for Maker as Seller swap with id " + str(maker_as_seller_swap_id))
-reportPaymentSent_tx_hash = commuto_swap_contract.functions.reportPaymentSent(
-    maker_as_seller_swap_id
-).transact(tx_details)
-reportPaymentSent_tx_receipt = w3.eth.get_transaction_receipt(reportPaymentSent_tx_hash)
-logger.info("Gas used: " + str(reportPaymentSent_tx_receipt["gasUsed"]))
-logger.info("Checking for PaymentSent event for swap with id " + str(maker_as_seller_swap_id))
-PaymentSent_event_filter = commuto_swap_contract.events.PaymentSent.createFilter(fromBlock="latest", argument_filters={
-    "swapID": maker_as_seller_swap_id})
-events = PaymentSent_event_filter.get_new_entries()
-if not (len(events) == 1 and events[0]["args"]["swapID"] == maker_as_seller_swap_id and events[0][
-    "event"] == "PaymentSent"):
-    raise Exception("PaymentSent event for swap with id " + str(maker_as_seller_swap_id) + " not found")
-tx_details = {
-    "from": maker_address
-}
-logger.info("Reporting payment received for Maker as Seller swap with id " + str(maker_as_seller_swap_id))
-reportPaymentReceived_tx_hash = commuto_swap_contract.functions.reportPaymentReceived(
-    maker_as_seller_swap_id
-).transact(tx_details)
-reportPaymentReceieved_tx_receipt = w3.eth.get_transaction_receipt(reportPaymentReceived_tx_hash)
-logger.info("Gas used: " + str(reportPaymentReceieved_tx_receipt["gasUsed"]))
-logger.info("Checking for PaymentReceived event for swap with id " + str(maker_as_seller_swap_id))
-PaymentReceived_event_filter = commuto_swap_contract.events.PaymentReceived.createFilter(fromBlock="latest",
-                                                                                         argument_filters={
-                                                                                             "swapID": maker_as_seller_swap_id})
-events = PaymentReceived_event_filter.get_new_entries()
-if not (len(events) == 1 and events[0]["args"]["swapID"] == maker_as_seller_swap_id and events[0][
-    "event"] == "PaymentReceived"):
-    raise Exception("PaymentReceived event for swap with id " + str(maker_as_seller_swap_id) + " not found")
-logger.info("Closing Maker as Seller swap with id " + str(maker_as_seller_swap_id) + " as Maker/Seller")
-maker_closeSwap_tx_hash = commuto_swap_contract.functions.closeSwap(
-    maker_as_seller_swap_id
-).transact(tx_details)
-maker_closeSwap_tx_receipt = w3.eth.get_transaction_receipt(maker_closeSwap_tx_hash)
-logger.info("Gas used: " + str(maker_closeSwap_tx_receipt["gasUsed"]))
-logger.info("Checking for SellerClosed event for swap with id " + str(maker_as_seller_swap_id))
-SellerClosed_event_filter = commuto_swap_contract.events.SellerClosed.createFilter(fromBlock="latest",
-                                                                                   argument_filters={
-                                                                                       "swapID": maker_as_seller_swap_id})
-events = SellerClosed_event_filter.get_new_entries()
-if not (len(events) == 1 and events[0]["args"]["swapID"] == maker_as_seller_swap_id and events[0][
-    "event"] == "SellerClosed"):
-    raise Exception("SellerClosed event for swap with id " + str(maker_as_seller_swap_id) + " not found")
-tx_details = {
-    "from": taker_address
-}
-logger.info("Closing Maker as Seller swap with id " + str(maker_as_seller_swap_id) + " as Taker/Buyer")
-taker_closeSwap_tx_hash = commuto_swap_contract.functions.closeSwap(
-    maker_as_seller_swap_id
-).transact(tx_details)
-taker_closeSwap_tx_receipt = w3.eth.get_transaction_receipt(taker_closeSwap_tx_hash)
-logger.info("Gas used: " + str(taker_closeSwap_tx_receipt["gasUsed"]))
-logger.info("Checking for BuyerClosed event for swap with id " + str(maker_as_seller_swap_id))
-BuyerClosed_event_filter = commuto_swap_contract.events.BuyerClosed.createFilter(fromBlock="latest", argument_filters={
-    "swapID": maker_as_seller_swap_id})
-events = BuyerClosed_event_filter.get_new_entries()
-if not (len(events) == 1 and events[0]["args"]["swapID"] == maker_as_seller_swap_id and events[0][
-    "event"] == "BuyerClosed"):
-    raise Exception("BuyerClosed event for swap with id " + str(maker_as_seller_swap_id) + " not found")
-maker_final_dai_balance = test_dai_contract.functions.balanceOf(maker_address).call()
-taker_final_dai_balance = test_dai_contract.functions.balanceOf(taker_address).call()
-service_fee_final_dai_balance = test_dai_contract.functions.balanceOf(commuto_service_fee_account).call()
-if maker_initial_dai_balance - 101 != maker_final_dai_balance:
-    raise Exception(
-        "Maker did not receive valid amount for Maker as Seller swap with id " + str(maker_as_seller_swap_id))
-if taker_initial_dai_balance + 99 != taker_final_dai_balance:
-    raise Exception(
-        "Taker did not receive valid amount for Maker as Seller swap with id " + str(maker_as_seller_swap_id))
-if service_fee_initial_dai_balance + 2 != service_fee_final_dai_balance:
-    raise Exception("Service Fee Pool did not receive valid amount for Maker as Seller swap with id " + str(
-        maker_as_seller_swap_id))
-logger.info("Maker as Seller swap with id " + str(maker_as_seller_swap_id) + " closed successfully")
-# Testing Maker as Buyer swap
-maker_initial_dai_balance = test_dai_contract.functions.balanceOf(maker_address).call()
-taker_initial_dai_balance = test_dai_contract.functions.balanceOf(taker_address).call()
-service_fee_initial_dai_balance = test_dai_contract.functions.balanceOf(commuto_service_fee_account).call()
-maker_as_buyer_swap_id = HexBytes(uuid4().bytes)
-tx_details = {
-    "from": maker_address
-}
-maker_as_buyer_offer = {
-    "isCreated": True,
-    "isTaken": True,
-    "maker": maker_address,
-    "interfaceId": HexBytes("an interface Id here".encode("utf-8").hex()),
-    "stablecoin": dai_deployment_tx_receipt.contractAddress,
-    "amountLowerBound": 100,
-    "amountUpperBound": 100,
-    "securityDepositAmount": 10,
-    "direction": 0,
-    "price": HexBytes("a price here".encode("utf-8").hex()),
-    "settlementMethods": ["USD-SWIFT".encode("utf-8"),],
-    "paymentMethod": 0,
-    "protocolVersion": 1,
-    "extraData": sha256("A bunch of extra data in here".encode()).digest()
-}
-test_dai_contract.functions.increaseAllowance(
-    commuto_swap_deployment_tx_receipt.contractAddress,
-    11,
-).transact(tx_details)
-logger.info("Opening Maker as Buyer offer with id " + str(maker_as_buyer_swap_id))
-openOffer_tx_hash = commuto_swap_contract.functions.openOffer(
-    maker_as_buyer_swap_id,
-    maker_as_buyer_offer,
-).transact(tx_details)
-openOffer_tx_receipt = w3.eth.get_transaction_receipt(openOffer_tx_hash)
-logger.info("Gas used: " + str(openOffer_tx_receipt["gasUsed"]))
-logger.info("Checking for OfferOpened event for offer with id " + str(maker_as_buyer_swap_id))
-OfferOpened_event_filter = commuto_swap_contract.events.OfferOpened.createFilter(fromBlock="latest", argument_filters={
-    "offerID": maker_as_buyer_swap_id,
-    "interfaceId": HexBytes("an interface Id here".encode("utf-8").hex())})
-events = OfferOpened_event_filter.get_new_entries()
-if not (len(events) == 1 and events[0]["args"]["offerID"] == maker_as_buyer_swap_id and events[0]["args"][
-    "interfaceId"] == HexBytes("an interface Id here".encode("utf-8").hex()) and events[0][
-            "event"] == "OfferOpened"):
-    raise Exception("OfferOpened event for offer with id " + str(maker_as_buyer_swap_id) + " not found")
-tx_details = {
-    "from": taker_address
-}
-maker_as_buyer_swap = {
-    "isCreated": False,
-    "requiresFill": False,
-    "maker": maker_address,
-    "makerInterfaceId": HexBytes("an interface Id here".encode("utf-8").hex()),
-    "taker": taker_address,
-    "takerInterfaceId": HexBytes("an interface Id here".encode("utf-8").hex()),
-    "stablecoin": dai_deployment_tx_receipt.contractAddress,
-    "amountLowerBound": 100,
-    "amountUpperBound": 100,
-    "securityDepositAmount": 10,
-    "takenSwapAmount": 100,
-    "serviceFeeAmount": 1,
-    "direction": 0,
-    "price": HexBytes("a price here".encode("utf-8").hex()),
-    "settlementMethod": "USD-SWIFT".encode("utf-8"),
-    "protocolVersion": 1,
-    "makerExtraData": sha256("A bunch of extra data in here".encode()).digest(),
-    "takerExtraData": sha256("A bunch of extra data in here".encode()).digest(),
-    "isPaymentSent": True,
-    "isPaymentReceived": True,
-    "hasBuyerClosed": True,
-    "hasSellerClosed": True,
-}
-test_dai_contract.functions.increaseAllowance(
-    commuto_swap_deployment_tx_receipt.contractAddress,
-    111
-).transact(tx_details)
-logger.info("Taking Maker as Buyer offer with id " + str(maker_as_buyer_swap_id))
-takeOffer_tx_hash = commuto_swap_contract.functions.takeOffer(
-    maker_as_buyer_swap_id,
-    maker_as_buyer_swap,
-).transact(tx_details)
-takeOffer_tx_receipt = w3.eth.get_transaction_receipt(takeOffer_tx_hash)
-logger.info("Gas used: " + str(takeOffer_tx_receipt["gasUsed"]))
-tx_details = {
-    "from": maker_address
-}
-OfferTaken_event_filter = commuto_swap_contract.events.OfferTaken.createFilter(fromBlock="latest", argument_filters={
-    "offerID": maker_as_buyer_swap_id,
-    "takerInterfaceId": HexBytes("an interface Id here".encode("utf-8").hex())})
-events = OfferTaken_event_filter.get_new_entries()
-if not (len(events) == 1 and events[0]["args"]["offerID"] == maker_as_buyer_swap_id and events[0]["args"][
-        "takerInterfaceId"] == HexBytes("an interface Id here".encode("utf-8").hex()) and events[0][
-            "event"] == "OfferTaken"):
-    raise Exception("OfferTaken event for offer with id " + str(maker_as_buyer_swap_id) + " not found")
-logger.info("Reporting payment sent for Maker as Buyer swap with id " + str(maker_as_buyer_swap_id))
-reportPaymentSent_tx_hash = commuto_swap_contract.functions.reportPaymentSent(
-    maker_as_buyer_swap_id
-).transact(tx_details)
-reportPaymentSent_tx_receipt = w3.eth.get_transaction_receipt(reportPaymentSent_tx_hash)
-logger.info("Gas used: " + str(reportPaymentSent_tx_receipt["gasUsed"]))
-logger.info("Checking for PaymentSent event for swap with id " + str(maker_as_buyer_swap_id))
-PaymentSent_event_filter = commuto_swap_contract.events.PaymentSent.createFilter(fromBlock="latest", argument_filters={
-    "swapID": maker_as_buyer_swap_id})
-events = PaymentSent_event_filter.get_new_entries()
-if not (len(events) == 1 and events[0]["args"]["swapID"] == maker_as_buyer_swap_id and events[0][
-    "event"] == "PaymentSent"):
-    raise Exception("PaymentSent event for swap with id " + str(maker_as_buyer_swap_id) + " not found")
-tx_details = {
-    "from": taker_address
-}
-logger.info("Reporting payment received for Maker as Buyer swap with id " + str(maker_as_buyer_swap_id))
-reportPaymentReceived_tx_hash = commuto_swap_contract.functions.reportPaymentReceived(
-    maker_as_buyer_swap_id
-).transact(tx_details)
-reportPaymentReceieved_tx_receipt = w3.eth.get_transaction_receipt(reportPaymentReceived_tx_hash)
-logger.info("Gas used: " + str(reportPaymentReceieved_tx_receipt["gasUsed"]))
-logger.info("Checking for PaymentReceived event for swap with id " + str(maker_as_buyer_swap_id))
-PaymentReceived_event_filter = commuto_swap_contract.events.PaymentReceived.createFilter(fromBlock="latest",
-                                                                                         argument_filters={
-                                                                                             "swapID": maker_as_buyer_swap_id})
-events = PaymentReceived_event_filter.get_new_entries()
-if not (len(events) == 1 and events[0]["args"]["swapID"] == maker_as_buyer_swap_id and events[0][
-    "event"] == "PaymentReceived"):
-    raise Exception("PaymentReceived event for swap with id " + str(maker_as_buyer_swap_id) + " not found")
-logger.info("Closing Maker as Buyer swap with id " + str(maker_as_buyer_swap_id) + " as Taker/Seller")
-taker_closeSwap_tx_hash = commuto_swap_contract.functions.closeSwap(
-    maker_as_buyer_swap_id
-).transact(tx_details)
-taker_closeSwap_tx_receipt = w3.eth.get_transaction_receipt(taker_closeSwap_tx_hash)
-logger.info("Gas used: " + str(taker_closeSwap_tx_receipt["gasUsed"]))
-logger.info("Checking for SellerClosed event for swap with id " + str(maker_as_buyer_swap_id))
-SellerClosed_event_filter = commuto_swap_contract.events.SellerClosed.createFilter(fromBlock="latest",
-                                                                                   argument_filters={
-                                                                                       "swapID": maker_as_buyer_swap_id})
-events = SellerClosed_event_filter.get_new_entries()
-if not (len(events) == 1 and events[0]["args"]["swapID"] == maker_as_buyer_swap_id and events[0][
-    "event"] == "SellerClosed"):
-    raise Exception("SellerClosed event for swap with id " + str(maker_as_buyer_swap_id) + " not found")
-tx_details = {
-    "from": maker_address
-}
-logger.info("Closing Maker as Buyer swap with id " + str(maker_as_buyer_swap_id) + " as Maker/Buyer")
-maker_closeSwap_tx_hash = commuto_swap_contract.functions.closeSwap(
-    maker_as_buyer_swap_id
-).transact(tx_details)
-maker_closeSwap_tx_receipt = w3.eth.get_transaction_receipt(maker_closeSwap_tx_hash)
-logger.info("Gas used: " + str(maker_closeSwap_tx_receipt["gasUsed"]))
-logger.info("Checking for BuyerClosed event for swap with id " + str(maker_as_buyer_swap_id))
-BuyerClosed_event_filter = commuto_swap_contract.events.BuyerClosed.createFilter(fromBlock="latest", argument_filters={
-    "swapID": maker_as_buyer_swap_id})
-events = BuyerClosed_event_filter.get_new_entries()
-if not (len(events) == 1 and events[0]["args"]["swapID"] == maker_as_buyer_swap_id and events[0][
-    "event"] == "BuyerClosed"):
-    raise Exception("BuyerClosed event for swap with id " + str(maker_as_buyer_swap_id) + " not found")
-maker_final_dai_balance = test_dai_contract.functions.balanceOf(maker_address).call()
-taker_final_dai_balance = test_dai_contract.functions.balanceOf(taker_address).call()
-service_fee_final_dai_balance = test_dai_contract.functions.balanceOf(commuto_service_fee_account).call()
-if maker_initial_dai_balance + 99 != maker_final_dai_balance:
-    raise Exception(
-        "Maker did not receive valid amount for Maker as Buyer swap with id " + str(maker_as_buyer_swap_id))
-if taker_initial_dai_balance - 101 != taker_final_dai_balance:
-    raise Exception(
-        "Taker did not receive valid amount for Maker as Buyer swap with id " + str(maker_as_buyer_swap_id))
-if service_fee_initial_dai_balance + 2 != service_fee_final_dai_balance:
-    raise Exception("Service Fee Pool did not receive valid amount for Maker as Buyer swap with id " + str(
-        maker_as_buyer_swap_id))
-logger.info("Maker as Buyer swap with id " + str(maker_as_buyer_swap_id) + " closed successfully")
