@@ -14,7 +14,7 @@ logger.setLevel(logging.DEBUG)
 
 # TODO: Start hardhat node
 # Establish connection to web3 provider
-w3 = Web3(Web3.HTTPProvider("http://192.168.0.195:8545"))
+w3 = Web3(Web3.HTTPProvider("http://192.168.1.12:8545"))
 # Check connection
 logger.info("Is connected to Web3 provider: " + str(w3.isConnected()))
 if not w3.isConnected():
@@ -113,7 +113,6 @@ maker_as_seller_offer = {
     "price": HexBytes("a price here".encode("utf-8").hex()),
     "settlementMethods": ["USD-SWIFT".encode("utf-8"),],
     "protocolVersion": 1,
-    "extraData": sha256("A bunch of extra data in here".encode()).digest()
 }
 test_dai_contract.functions.increaseAllowance(
     commuto_swap_deployment_tx_receipt.contractAddress,
@@ -155,8 +154,6 @@ maker_as_seller_swap = {
     "price": HexBytes("a price here".encode("utf-8").hex()),
     "settlementMethod": "USD-SWIFT".encode("utf-8"),
     "protocolVersion": 1,
-    "makerExtraData": sha256("A bunch of extra data in here".encode()).digest(),
-    "takerExtraData": sha256("A bunch of extra data in here".encode()).digest(),
     "isPaymentSent": True,
     "isPaymentReceived": True,
     "hasBuyerClosed": True,
@@ -301,7 +298,6 @@ maker_as_buyer_offer = {
     "settlementMethods": ["USD-SWIFT".encode("utf-8"),],
     "paymentMethod": 0,
     "protocolVersion": 1,
-    "extraData": sha256("A bunch of extra data in here".encode()).digest()
 }
 test_dai_contract.functions.increaseAllowance(
     commuto_swap_deployment_tx_receipt.contractAddress,
@@ -343,8 +339,6 @@ maker_as_buyer_swap = {
     "price": HexBytes("a price here".encode("utf-8").hex()),
     "settlementMethod": "USD-SWIFT".encode("utf-8"),
     "protocolVersion": 1,
-    "makerExtraData": sha256("A bunch of extra data in here".encode()).digest(),
-    "takerExtraData": sha256("A bunch of extra data in here".encode()).digest(),
     "isPaymentSent": True,
     "isPaymentReceived": True,
     "hasBuyerClosed": True,

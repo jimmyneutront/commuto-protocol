@@ -21,7 +21,7 @@ logger.setLevel(logging.DEBUG)
 
 # TODO: Start hardhat node
 # Establish connection to web3 provider
-w3 = Web3(Web3.HTTPProvider("http://192.168.0.195:8545"))
+w3 = Web3(Web3.HTTPProvider("http://192.168.1.12:8545"))
 # Check connection
 logger.info("Is connected to Web3 provider: " + str(w3.isConnected()))
 if not w3.isConnected():
@@ -222,7 +222,6 @@ try:
         "price": HexBytes("a price here".encode("utf-8").hex()),
         "settlementMethods": ["USD-SWIFT".encode("utf-8"),],
         "protocolVersion": 1,
-        "extraData": sha256("A bunch of extra data in here".encode()).digest()
     }
     commuto_swap_contract.functions.openOffer(
         newOfferID,
@@ -255,7 +254,6 @@ try:
         "price": HexBytes("a price here".encode("utf-8").hex()),
         "settlementMethods": ["USD-SWIFT".encode("utf-8"),],
         "protocolVersion": 1,
-        "extraData": sha256("A bunch of extra data in here".encode()).digest()
     }
     commuto_swap_contract.functions.openOffer(
         newOfferID,
@@ -288,7 +286,6 @@ try:
         "price": HexBytes("a price here".encode("utf-8").hex()),
         "settlementMethods": ["USD-SWIFT".encode("utf-8"),],
         "protocolVersion": 1,
-        "extraData": sha256("A bunch of extra data in here".encode()).digest()
     }
     commuto_swap_contract.functions.openOffer(
         newOfferID,
@@ -321,7 +318,6 @@ try:
         "price": HexBytes("a price here".encode("utf-8").hex()),
         "settlementMethods": ["USD-SWIFT".encode("utf-8"),],
         "protocolVersion": 1,
-        "extraData": sha256("A bunch of extra data in here".encode()).digest()
     }
     commuto_swap_contract.functions.openOffer(
         newOfferID,
@@ -355,7 +351,6 @@ try:
         "price": HexBytes("a price here".encode("utf-8").hex()),
         "settlementMethods": ["USD-SWIFT".encode("utf-8"),],
         "protocolVersion": 1,
-        "extraData": sha256("A bunch of extra data in here".encode()).digest()
     }
     commuto_swap_contract.functions.openOffer(
         newOfferID,
@@ -392,7 +387,6 @@ try:
         "price": HexBytes("a price here".encode("utf-8").hex()),
         "settlementMethods": ["USD-SWIFT".encode("utf-8"),],
         "protocolVersion": 1,
-        "extraData": sha256("A bunch of extra data in here".encode()).digest()
     }
     test_dai_contract.functions.increaseAllowance(
         commuto_swap_deployment_tx_receipt.contractAddress,
@@ -432,7 +426,6 @@ try:
         "price": HexBytes("a price here".encode("utf-8").hex()),
         "settlementMethods": ["USD-SWIFT".encode("utf-8"),],
         "protocolVersion": 1,
-        "extraData": sha256("A bunch of extra data in here".encode()).digest()
     }
     test_dai_contract.functions.increaseAllowance(
         commuto_swap_deployment_tx_receipt.contractAddress,
@@ -504,8 +497,6 @@ try:
         "price": HexBytes("a price here".encode("utf-8").hex()),
         "settlementMethod": "USD-SWIFT".encode("utf-8"),
         "protocolVersion": 1,
-        "makerExtraData": sha256("A bunch of extra data in here".encode()).digest(),
-        "takerExtraData": sha256("A bunch of extra data in here".encode()).digest(),
         "isPaymentSent": True,
         "isPaymentReceived": True,
         "hasBuyerClosed": True,
@@ -551,7 +542,6 @@ try:
         "price": HexBytes("a price here".encode("utf-8").hex()),
         "settlementMethods": ["USD-SWIFT".encode("utf-8"),],
         "protocolVersion": 1,
-        "extraData": sha256("A bunch of extra data in here".encode()).digest()
     }
     commuto_swap_contract.functions.editOffer(
         uuid4().bytes,
@@ -585,7 +575,6 @@ try:
         "price": HexBytes("a price here".encode("utf-8").hex()),
         "settlementMethods": ["USD-SWIFT".encode("utf-8"),],
         "protocolVersion": 1,
-        "extraData": sha256("A bunch of extra data in here".encode()).digest()
     }
     commuto_swap_contract.functions.editOffer(
         newOfferID,
@@ -620,7 +609,6 @@ try:
         "price": HexBytes("a price here".encode("utf-8").hex()),
         "settlementMethods": ["USD-SWIFT".encode("utf-8"), ],
         "protocolVersion": 1,
-        "extraData": sha256("A bunch of extra data in here".encode()).digest()
     }
     test_dai_contract.functions.increaseAllowance(
         commuto_swap_deployment_tx_receipt.contractAddress,
@@ -646,7 +634,6 @@ try:
         "price": HexBytes("a price here".encode("utf-8").hex()),
         "settlementMethods": ["USD-SWIFT".encode("utf-8"),],
         "protocolVersion": 1,
-        "extraData": sha256("A bunch of extra data in here".encode()).digest()
     }
     commuto_swap_contract.functions.editOffer(
         iDOfOfferToEdit,
@@ -680,7 +667,6 @@ try:
         "price": HexBytes("an edited price here".encode("utf-8").hex()),
         "settlementMethods": ["EUR-SEPA".encode("utf-8"),],
         "protocolVersion": 1,
-        "extraData": sha256("A bunch of extra data in here".encode()).digest()
     }
     commuto_swap_contract.functions.editOffer(
         iDOfOfferToEdit,
@@ -721,8 +707,6 @@ try:
         "price": HexBytes("a price here".encode("utf-8").hex()),
         "settlementMethod": "USD-SWIFT".encode("utf-8"),
         "protocolVersion": 1,
-        "makerExtraData": sha256("A bunch of extra data in here".encode()).digest(),
-        "takerExtraData": sha256("A bunch of extra data in here".encode()).digest(),
         "isPaymentSent": True,
         "isPaymentReceived": True,
         "hasBuyerClosed": True,
@@ -762,8 +746,6 @@ try:
         "price": HexBytes("a price here".encode("utf-8").hex()),
         "settlementMethod": "USD-SWIFT".encode("utf-8"),
         "protocolVersion": 1,
-        "makerExtraData": sha256("A bunch of extra data in here".encode()).digest(),
-        "takerExtraData": sha256("A bunch of extra data in here".encode()).digest(),
         "isPaymentSent": True,
         "isPaymentReceived": True,
         "hasBuyerClosed": True,
@@ -800,7 +782,6 @@ try:
         "price": HexBytes("a price here".encode("utf-8").hex()),
         "settlementMethods": ["USD-SWIFT".encode("utf-8"),],
         "protocolVersion": 1,
-        "extraData": sha256("A bunch of extra data in here".encode()).digest()
     }
     test_dai_contract.functions.increaseAllowance(
         commuto_swap_deployment_tx_receipt.contractAddress,
@@ -831,8 +812,6 @@ try:
         "price": HexBytes("a price here".encode("utf-8").hex()),
         "settlementMethod": "USD-SWIFT".encode("utf-8"),
         "protocolVersion": 1,
-        "makerExtraData": sha256("A bunch of extra data in here".encode()).digest(),
-        "takerExtraData": sha256("A bunch of extra data in here".encode()).digest(),
         "isPaymentSent": True,
         "isPaymentReceived": True,
         "hasBuyerClosed": True,
@@ -872,8 +851,6 @@ try:
         "price": HexBytes("a price here".encode("utf-8").hex()),
         "settlementMethod": "USD-SWIFT".encode("utf-8"),
         "protocolVersion": 1,
-        "makerExtraData": sha256("A bunch of extra data in here".encode()).digest(),
-        "takerExtraData": sha256("A bunch of extra data in here".encode()).digest(),
         "isPaymentSent": True,
         "isPaymentReceived": True,
         "hasBuyerClosed": True,
@@ -913,8 +890,6 @@ try:
         "price": HexBytes("a price here".encode("utf-8").hex()),
         "settlementMethod": "USD-SWIFT".encode("utf-8"),
         "protocolVersion": 1,
-        "makerExtraData": sha256("A bunch of extra data in here".encode()).digest(),
-        "takerExtraData": sha256("A bunch of extra data in here".encode()).digest(),
         "isPaymentSent": True,
         "isPaymentReceived": True,
         "hasBuyerClosed": True,
@@ -954,8 +929,6 @@ try:
         "price": HexBytes("a price here".encode("utf-8").hex()),
         "settlementMethod": "USD-SWIFT".encode("utf-8"),
         "protocolVersion": 1,
-        "makerExtraData": sha256("A bunch of extra data in here".encode()).digest(),
-        "takerExtraData": sha256("A bunch of extra data in here".encode()).digest(),
         "isPaymentSent": True,
         "isPaymentReceived": True,
         "hasBuyerClosed": True,
@@ -995,8 +968,6 @@ try:
         "price": HexBytes("a price here".encode("utf-8").hex()),
         "settlementMethod": "USD-SWIFT".encode("utf-8"),
         "protocolVersion": 1,
-        "makerExtraData": sha256("A bunch of extra data in here".encode()).digest(),
-        "takerExtraData": sha256("A bunch of extra data in here".encode()).digest(),
         "isPaymentSent": True,
         "isPaymentReceived": True,
         "hasBuyerClosed": True,
@@ -1036,8 +1007,6 @@ try:
         "price": HexBytes("a price here".encode("utf-8").hex()),
         "settlementMethod": "USD-SWIFT".encode("utf-8"),
         "protocolVersion": 1,
-        "makerExtraData": sha256("A bunch of extra data in here".encode()).digest(),
-        "takerExtraData": sha256("A bunch of extra data in here".encode()).digest(),
         "isPaymentSent": True,
         "isPaymentReceived": True,
         "hasBuyerClosed": True,
@@ -1080,8 +1049,6 @@ try:
         "price": HexBytes("a price here".encode("utf-8").hex()),
         "settlementMethod": "USD-SWIFT".encode("utf-8"),
         "protocolVersion": 1,
-        "makerExtraData": sha256("A bunch of extra data in here".encode()).digest(),
-        "takerExtraData": sha256("A bunch of extra data in here".encode()).digest(),
         "isPaymentSent": True,
         "isPaymentReceived": True,
         "hasBuyerClosed": True,
@@ -1124,8 +1091,6 @@ try:
         "price": HexBytes("a price here".encode("utf-8").hex()),
         "settlementMethod": "USD-SWIFT".encode("utf-8"),
         "protocolVersion": 1,
-        "makerExtraData": sha256("A bunch of extra data in here".encode()).digest(),
-        "takerExtraData": sha256("A bunch of extra data in here".encode()).digest(),
         "isPaymentSent": True,
         "isPaymentReceived": True,
         "hasBuyerClosed": True,
@@ -1166,8 +1131,6 @@ try:
         "price": HexBytes("a price here".encode("utf-8").hex()),
         "settlementMethod": "USD-SWIFT".encode("utf-8"),
         "protocolVersion": 1,
-        "makerExtraData": sha256("A bunch of extra data in here".encode()).digest(),
-        "takerExtraData": sha256("A bunch of extra data in here".encode()).digest(),
         "isPaymentSent": True,
         "isPaymentReceived": True,
         "hasBuyerClosed": True,
@@ -1208,8 +1171,6 @@ try:
         "price": HexBytes("an incorrect price here".encode("utf-8").hex()),
         "settlementMethod": "USD-SWIFT".encode("utf-8"),
         "protocolVersion": 1,
-        "makerExtraData": sha256("A bunch of extra data in here".encode()).digest(),
-        "takerExtraData": sha256("A bunch of extra data in here".encode()).digest(),
         "isPaymentSent": True,
         "isPaymentReceived": True,
         "hasBuyerClosed": True,
@@ -1250,8 +1211,6 @@ try:
         "price": HexBytes("a price here".encode("utf-8").hex()),
         "settlementMethod": "NEX-Random".encode("utf-8"),
         "protocolVersion": 1,
-        "makerExtraData": sha256("A bunch of extra data in here".encode()).digest(),
-        "takerExtraData": sha256("A bunch of extra data in here".encode()).digest(),
         "isPaymentSent": True,
         "isPaymentReceived": True,
         "hasBuyerClosed": True,
@@ -1292,8 +1251,6 @@ try:
         "price": HexBytes("a price here".encode("utf-8").hex()),
         "settlementMethod": "EUR-SEPA".encode("utf-8"),
         "protocolVersion": 1,
-        "makerExtraData": sha256("A bunch of extra data in here".encode()).digest(),
-        "takerExtraData": sha256("A bunch of extra data in here".encode()).digest(),
         "isPaymentSent": True,
         "isPaymentReceived": True,
         "hasBuyerClosed": True,
@@ -1313,48 +1270,6 @@ except ValueError as e:
 # TODO: Test swap protocol check
 try:
     test_id = "4.14"
-    logger.info(
-        "Test " + test_id + ": Ensuring takeOffer requires matching maker data")
-    tx_details = {
-        "from": taker_address
-    }
-    newSwap = {
-        "isCreated": False,
-        "requiresFill": True,
-        "maker": maker_address,
-        "makerInterfaceId": HexBytes("an interface Id here".encode("utf-8").hex()),
-        "taker": taker_address,
-        "takerInterfaceId": HexBytes("an interface Id here".encode("utf-8").hex()),
-        "stablecoin": dai_deployment_tx_receipt.contractAddress,
-        "amountLowerBound": 100,
-        "amountUpperBound": 100,
-        "securityDepositAmount": 10,
-        "takenSwapAmount": 100,
-        "serviceFeeAmount": 1,
-        "direction": 1,
-        "price": HexBytes("a price here".encode("utf-8").hex()),
-        "settlementMethod": "USD-SWIFT".encode("utf-8"),
-        "protocolVersion": 1,
-        "makerExtraData": sha256("A bunch of incorrect extra data in here".encode()).digest(),
-        "takerExtraData": sha256("A bunch of extra data in here".encode()).digest(),
-        "isPaymentSent": True,
-        "isPaymentReceived": True,
-        "hasBuyerClosed": True,
-        "hasSellerClosed": True,
-    }
-    commuto_swap_contract.functions.takeOffer(
-        newOfferID,
-        newSwap,
-    ).transact(tx_details)
-    raise (Exception("Test " + test_id + " failed without raising exception"))
-except ValueError as e:
-    # "e32":"Maker extra data must match"
-    if "e32" in str(e):
-        logger.info("Test " + test_id + " passed")
-    else:
-        raise e
-try:
-    test_id = "4.15"
     logger.info(
         "Test " + test_id + ": Ensuring takeOffer checks for stablecoin allowance")
     tx_details = {
@@ -1377,8 +1292,6 @@ try:
         "price": HexBytes("a price here".encode("utf-8").hex()),
         "settlementMethod": "USD-SWIFT".encode("utf-8"),
         "protocolVersion": 1,
-        "makerExtraData": sha256("A bunch of extra data in here".encode()).digest(),
-        "takerExtraData": sha256("A bunch of extra data in here".encode()).digest(),
         "isPaymentSent": True,
         "isPaymentReceived": True,
         "hasBuyerClosed": True,
@@ -1434,8 +1347,6 @@ try:
         "price": HexBytes("a price here".encode("utf-8").hex()),
         "settlementMethod": "USD-SWIFT".encode("utf-8"),
         "protocolVersion": 1,
-        "makerExtraData": sha256("A bunch of extra data in here".encode()).digest(),
-        "takerExtraData": sha256("A bunch of extra data in here".encode()).digest(),
         "isPaymentSent": True,
         "isPaymentReceived": True,
         "hasBuyerClosed": True,
@@ -1519,7 +1430,6 @@ try:
         "price": HexBytes("a price here".encode("utf-8").hex()),
         "settlementMethods": ["USD-SWIFT".encode("utf-8"), ],
         "protocolVersion": 1,
-        "extraData": sha256("A bunch of extra data in here".encode()).digest()
     }
     test_dai_contract.functions.increaseAllowance(
         commuto_swap_deployment_tx_receipt.contractAddress,
@@ -1551,8 +1461,6 @@ try:
         "price": HexBytes("a price here".encode("utf-8").hex()),
         "settlementMethod": "USD-SWIFT".encode("utf-8"),
         "protocolVersion": 1,
-        "makerExtraData": sha256("A bunch of extra data in here".encode()).digest(),
-        "takerExtraData": sha256("A bunch of extra data in here".encode()).digest(),
         "isPaymentSent": True,
         "isPaymentReceived": True,
         "hasBuyerClosed": True,
@@ -1597,7 +1505,6 @@ try:
         "price": HexBytes("a price here".encode("utf-8").hex()),
         "settlementMethods": ["USD-SWIFT".encode("utf-8"),],
         "protocolVersion": 1,
-        "extraData": sha256("A bunch of extra data in here".encode()).digest()
     }
     test_dai_contract.functions.increaseAllowance(
         commuto_swap_deployment_tx_receipt.contractAddress,
@@ -1629,8 +1536,6 @@ try:
         "price": HexBytes("a price here".encode("utf-8").hex()),
         "settlementMethod": "USD-SWIFT".encode("utf-8"),
         "protocolVersion": 1,
-        "makerExtraData": sha256("A bunch of extra data in here".encode()).digest(),
-        "takerExtraData": sha256("A bunch of extra data in here".encode()).digest(),
         "isPaymentSent": True,
         "isPaymentReceived": True,
         "hasBuyerClosed": True,
@@ -1675,7 +1580,6 @@ try:
         "price": HexBytes("a price here".encode("utf-8").hex()),
         "settlementMethods": ["USD-SWIFT".encode("utf-8"),],
         "protocolVersion": 1,
-        "extraData": sha256("A bunch of extra data in here".encode()).digest()
     }
     test_dai_contract.functions.increaseAllowance(
         commuto_swap_deployment_tx_receipt.contractAddress,
@@ -1707,8 +1611,6 @@ try:
         "price": HexBytes("a price here".encode("utf-8").hex()),
         "settlementMethod": "USD-SWIFT".encode("utf-8"),
         "protocolVersion": 1,
-        "makerExtraData": sha256("A bunch of extra data in here".encode()).digest(),
-        "takerExtraData": sha256("A bunch of extra data in here".encode()).digest(),
         "isPaymentSent": True,
         "isPaymentReceived": True,
         "hasBuyerClosed": True,
@@ -1763,7 +1665,6 @@ try:
         "price": HexBytes("a price here".encode("utf-8").hex()),
         "settlementMethods": ["USD-SWIFT".encode("utf-8"),],
         "protocolVersion": 1,
-        "extraData": sha256("A bunch of extra data in here".encode()).digest()
     }
     test_dai_contract.functions.increaseAllowance(
         commuto_swap_deployment_tx_receipt.contractAddress,
@@ -1795,8 +1696,6 @@ try:
         "price": HexBytes("a price here".encode("utf-8").hex()),
         "settlementMethod": "USD-SWIFT".encode("utf-8"),
         "protocolVersion": 1,
-        "makerExtraData": sha256("A bunch of extra data in here".encode()).digest(),
-        "takerExtraData": sha256("A bunch of extra data in here".encode()).digest(),
         "isPaymentSent": True,
         "isPaymentReceived": True,
         "hasBuyerClosed": True,
@@ -1873,7 +1772,6 @@ try:
         "price": HexBytes("a price here".encode("utf-8").hex()),
         "settlementMethods": ["USD-SWIFT".encode("utf-8"),],
         "protocolVersion": 1,
-        "extraData": sha256("A bunch of extra data in here".encode()).digest()
     }
     test_dai_contract.functions.increaseAllowance(
         commuto_swap_deployment_tx_receipt.contractAddress,
@@ -1905,8 +1803,6 @@ try:
         "price": HexBytes("a price here".encode("utf-8").hex()),
         "settlementMethod": "USD-SWIFT".encode("utf-8"),
         "protocolVersion": 1,
-        "makerExtraData": sha256("A bunch of extra data in here".encode()).digest(),
-        "takerExtraData": sha256("A bunch of extra data in here".encode()).digest(),
         "isPaymentSent": True,
         "isPaymentReceived": True,
         "hasBuyerClosed": True,
@@ -1961,7 +1857,6 @@ try:
         "price": HexBytes("a price here".encode("utf-8").hex()),
         "settlementMethods": ["USD-SWIFT".encode("utf-8"),],
         "protocolVersion": 1,
-        "extraData": sha256("A bunch of extra data in here".encode()).digest()
     }
     test_dai_contract.functions.increaseAllowance(
         commuto_swap_deployment_tx_receipt.contractAddress,
@@ -1993,8 +1888,6 @@ try:
         "price": HexBytes("a price here".encode("utf-8").hex()),
         "settlementMethod": "USD-SWIFT".encode("utf-8"),
         "protocolVersion": 1,
-        "makerExtraData": sha256("A bunch of extra data in here".encode()).digest(),
-        "takerExtraData": sha256("A bunch of extra data in here".encode()).digest(),
         "isPaymentSent": True,
         "isPaymentReceived": True,
         "hasBuyerClosed": True,
@@ -2060,7 +1953,6 @@ try:
         "price": HexBytes("a price here".encode("utf-8").hex()),
         "settlementMethods": ["USD-SWIFT".encode("utf-8"),],
         "protocolVersion": 1,
-        "extraData": sha256("A bunch of extra data in here".encode()).digest()
     }
     test_dai_contract.functions.increaseAllowance(
         commuto_swap_deployment_tx_receipt.contractAddress,
@@ -2092,8 +1984,6 @@ try:
         "price": HexBytes("a price here".encode("utf-8").hex()),
         "settlementMethod": "USD-SWIFT".encode("utf-8"),
         "protocolVersion": 1,
-        "makerExtraData": sha256("A bunch of extra data in here".encode()).digest(),
-        "takerExtraData": sha256("A bunch of extra data in here".encode()).digest(),
         "isPaymentSent": True,
         "isPaymentReceived": True,
         "hasBuyerClosed": True,
@@ -2144,7 +2034,6 @@ try:
         "price": HexBytes("a price here".encode("utf-8").hex()),
         "settlementMethods": ["USD-SWIFT".encode("utf-8"),],
         "protocolVersion": 1,
-        "extraData": sha256("A bunch of extra data in here".encode()).digest()
     }
     test_dai_contract.functions.increaseAllowance(
         commuto_swap_deployment_tx_receipt.contractAddress,
@@ -2176,8 +2065,6 @@ try:
         "price": HexBytes("a price here".encode("utf-8").hex()),
         "settlementMethod": "USD-SWIFT".encode("utf-8"),
         "protocolVersion": 1,
-        "makerExtraData": sha256("A bunch of extra data in here".encode()).digest(),
-        "takerExtraData": sha256("A bunch of extra data in here".encode()).digest(),
         "isPaymentSent": True,
         "isPaymentReceived": True,
         "hasBuyerClosed": True,
@@ -2254,7 +2141,6 @@ try:
         "price": HexBytes("a price here".encode("utf-8").hex()),
         "settlementMethods": ["USD-SWIFT".encode("utf-8"),],
         "protocolVersion": 1,
-        "extraData": sha256("A bunch of extra data in here".encode()).digest()
     }
     test_dai_contract.functions.increaseAllowance(
         commuto_swap_deployment_tx_receipt.contractAddress,
@@ -2285,8 +2171,6 @@ try:
         "price": HexBytes("a price here".encode("utf-8").hex()),
         "settlementMethod": "USD-SWIFT".encode("utf-8"),
         "protocolVersion": 1,
-        "makerExtraData": sha256("A bunch of extra data in here".encode()).digest(),
-        "takerExtraData": sha256("A bunch of extra data in here".encode()).digest(),
         "isPaymentSent": True,
         "isPaymentReceived": True,
         "hasBuyerClosed": True,

@@ -132,7 +132,6 @@ contract CommutoSwap {
         bytes price;
         bytes[] settlementMethods;
         uint256 protocolVersion;
-        bytes32 extraData;
     }
 
     struct Swap {
@@ -152,8 +151,6 @@ contract CommutoSwap {
         bytes price;
         bytes settlementMethod;
         uint256 protocolVersion;
-        bytes32 makerExtraData;
-        bytes32 takerExtraData;
         bool isPaymentSent;
         bool isPaymentReceived;
         bool hasBuyerClosed;
@@ -340,7 +337,6 @@ contract CommutoSwap {
         require(settlementMethods[newSwap.settlementMethod] == true, "e46"); //"e46": "Settlement method must be supported"
         require(offerSettlementMethods[offerID][newSwap.settlementMethod] == true, "e30"); //"e30": "Settlement method must be accepted by maker"
         require(offers[offerID].protocolVersion == newSwap.protocolVersion, "e31"); //"e31": "Protocol versions must match"
-        require(offers[offerID].extraData == newSwap.makerExtraData, "e32"); //"e32": "Maker extra data must match"
 
         //Find proper stablecoin contract
         ERC20 token = ERC20(offers[offerID].stablecoin);

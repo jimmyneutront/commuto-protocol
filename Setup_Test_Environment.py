@@ -1,8 +1,5 @@
-from hashlib import sha256
-from hexbytes import HexBytes
 import logging
 from solcx import compile_files
-from uuid import uuid4
 from web3 import Web3
 
 #Set up logger
@@ -15,7 +12,7 @@ logger.setLevel(logging.DEBUG)
 
 # Start hardhat node manually
 # Establish connection to web3 provider
-w3 = Web3(Web3.HTTPProvider("http://192.168.0.195:8545"))
+w3 = Web3(Web3.HTTPProvider("http://192.168.1.12:8545"))
 # Check connection
 logger.info("Is connected to Web3 provider: " + str(w3.isConnected()))
 if not w3.isConnected():
