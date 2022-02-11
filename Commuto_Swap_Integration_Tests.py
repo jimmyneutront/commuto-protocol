@@ -65,13 +65,7 @@ logger.info(
     "Deploying Commuto_Swap contract:\n" +
     "Fee pool address: " + str(commuto_service_fee_account)
 )
-commuto_swap_deployment_tx_hash = undeployed_commuto_swap_contract.constructor(
-    commuto_service_fee_account,
-    dai_deployment_tx_receipt.contractAddress,
-    dai_deployment_tx_receipt.contractAddress,
-    dai_deployment_tx_receipt.contractAddress,
-    dai_deployment_tx_receipt.contractAddress,
-).transact()
+commuto_swap_deployment_tx_hash = undeployed_commuto_swap_contract.constructor(commuto_service_fee_account).transact()
 logger.info("Deployed Commuto_Swap contract, awaiting tx mining")
 commuto_swap_deployment_tx_receipt = w3.eth.wait_for_transaction_receipt(commuto_swap_deployment_tx_hash)
 logger.info("Commuto_Swap contract deployed with address " + str(commuto_swap_deployment_tx_receipt.contractAddress))

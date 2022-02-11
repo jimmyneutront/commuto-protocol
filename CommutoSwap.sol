@@ -20,6 +20,7 @@ abstract contract ERC20 {
   function approve(address spender, uint value) public virtual returns (bool ok);
 }
 
+//TODO: Require 10% of amountUpperBound as security deposit
 //TODO: Deal with contract size limitation
 //TODO: Fee percentage set by token holders
 //TODO: Better code comments
@@ -28,10 +29,6 @@ contract CommutoSwap {
     address public owner;
     address public serviceFeePool;
     //TODO: Deal with decimal point precision differences between stablecoins
-    address public daiAddress; //The address of a ERC20 contract to represent DAI
-    address public usdcAddress; //The address of a ERC20 contract to represent USDC
-    address public busdAddress; //The address of a ERC20 contract to represent BUSD
-    address public usdtAddress; //The address of a ERC20 contract to represent USDT
     
     //The current version of the Commuto Protocol
     uint256 public protocolVersion = 0;
@@ -179,23 +176,10 @@ contract CommutoSwap {
         return swaps[swapID];
     }
 
-    //TODO: Remove fixed stablecoin addresses
-    constructor (address _serviceFeePool,
-                 address _daiAddress,
-                 address _usdcAddress,
-                 address _busdAddress,
-                 address _usdtAddress) public {
+    constructor (address _serviceFeePool) public {
         owner = msg.sender;
         require(_serviceFeePool != address(0), "e0"); //"e0": "_serviceFeePool address cannot be zero"
         serviceFeePool = _serviceFeePool;
-        require(_daiAddress != address(0), "e1"); //"e1": "_daiAddress cannot be zero address"
-        daiAddress = _daiAddress;
-        require(_usdcAddress != address(0), "e2"); //"e2": "_usdcAddress cannot be zero address"
-        usdcAddress = _usdcAddress;
-        require(_busdAddress != address(0), "e3"); //"e3": "_busdAddress cannot be zero address"
-        busdAddress = _busdAddress;
-        require(_usdtAddress != address(0), "e4"); //"e4": "_usdtAddress cannot be zero address"
-        usdtAddress = _usdtAddress;
     }
 
     //Create a new swap offer

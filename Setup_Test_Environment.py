@@ -9,7 +9,6 @@ log_format = logging.Formatter('%(created)f : %(levelname)s : %(message)s')
 c_handler.setFormatter(log_format)
 logger.addHandler(c_handler)
 logger.setLevel(logging.DEBUG)
-
 # Start hardhat node manually
 # Establish connection to web3 provider
 w3 = Web3(Web3.HTTPProvider("http://192.168.1.12:8545"))
@@ -95,13 +94,7 @@ logger.info(
     "Deploying Commuto_Swap contract:\n" +
     "Fee pool address: " + str(commuto_service_fee_account)
 )
-commuto_swap_deployment_tx_hash = undeployed_commuto_swap_contract.constructor(
-    commuto_service_fee_account,
-    dai_deployment_tx_receipt.contractAddress,
-    dai_deployment_tx_receipt.contractAddress,
-    dai_deployment_tx_receipt.contractAddress,
-    dai_deployment_tx_receipt.contractAddress,
-).transact()
+commuto_swap_deployment_tx_hash = undeployed_commuto_swap_contract.constructor(commuto_service_fee_account).transact()
 logger.info("Deployed Commuto_Swap contract, awaiting tx mining")
 commuto_swap_deployment_tx_receipt = w3.eth.wait_for_transaction_receipt(commuto_swap_deployment_tx_hash)
 logger.info("Commuto_Swap contract deployed with address " + str(commuto_swap_deployment_tx_receipt.contractAddress))

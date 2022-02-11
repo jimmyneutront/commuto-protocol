@@ -1,9 +1,9 @@
 commuto_swap_error_messages = {
     "e0": "_serviceFeePool address cannot be zero",
-    "e1": "_daiAddress cannot be zero address",
-    "e2": "_usdcAddress cannot be zero address",
-    "e3": "_busdAddress cannot be zero address",
-    "e4": "_usdtAddress cannot be zero address",
+    "e1": "",
+    "e2": "",
+    "e3": "",
+    "e4": "",
     "e5": "An offer with the specified id already exists",
     "e6": "The minimum swap amount must be greater than zero",
     "e7": "The maximum swap amount must be >= the minimum swap amount",
