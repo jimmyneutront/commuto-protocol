@@ -3,7 +3,7 @@ pragma solidity ^0.6.12;
 pragma experimental ABIEncoderV2;
 
 //import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/v3.0.0/contracts/math/SafeMath.sol";
-import "SafeMath.sol";
+import "./SafeMath.sol";
 
 //Abstract ERC20 contract
 abstract contract ERC20 {
