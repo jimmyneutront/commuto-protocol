@@ -361,6 +361,7 @@ contract CommutoSwap {
         require(token.transferFrom(msg.sender, address(this), totalAmount), "e14"); //"e14": "Token transfer to Commuto Protocol failed"
     }
 
+    //TODO: More fillSwap tests
     //Fill swap (deposit takenSwapAmount of STBL) as maker and seller
     function fillSwap(bytes16 swapID) public {
         //Validate arguments
