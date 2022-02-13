@@ -178,7 +178,7 @@ class CommutoSwapIntegrationTests(CommutoSwapTest.CommutoSwapTest):
             raise Exception("Service Fee Pool did not receive valid amount for Maker as Seller swap with id " + str(
                 maker_as_seller_swap_id))
 
-    def test_maker_as_seller_swap(self):
+    def test_maker_as_buyer_swap(self):
         # Testing Maker as Buyer swap
         maker_initial_dai_balance = self.test_dai_contract.functions.balanceOf(self.maker_address).call()
         taker_initial_dai_balance = self.test_dai_contract.functions.balanceOf(self.taker_address).call()
