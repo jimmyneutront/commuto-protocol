@@ -20,7 +20,6 @@ abstract contract ERC20 {
   function approve(address spender, uint value) public virtual returns (bool ok);
 }
 
-//TODO: Require 10% of amountUpperBound as security deposit
 //TODO: Deal with contract size limitation
 //TODO: Fee percentage set by token holders
 //TODO: Better code comments
@@ -193,7 +192,7 @@ contract CommutoSwap {
         require(!offers[offerID].isCreated, "e5"); //"An offer with the specified id already exists"
         require(newOffer.amountLowerBound > 0, "e6"); //"The minimum swap amount must be greater than zero"
         require(newOffer.amountUpperBound >= newOffer.amountLowerBound, "e7"); //"e7": "The maximum swap amount must be >= the minimum swap amount"
-        require(SafeMath.mul(newOffer.securityDepositAmount, 10) >= newOffer.amountLowerBound, "e8"); //"e8": "The security deposit must be at least 10% of the minimum swap amount"
+        require(SafeMath.mul(newOffer.securityDepositAmount, 10) >= newOffer.amountUpperBound, "e8"); //"e8": "The security deposit must be at least 10% of the maximum swap amount"
         uint256 serviceFeeAmountLowerBound = SafeMath.div(newOffer.amountLowerBound, 100);
         require(serviceFeeAmountLowerBound > 0, "e9"); //"e9": "Service fee amount must be greater than zero"
         require(newOffer.protocolVersion >= protocolVersion, "e10"); //"e10": "Offers can only be created for the most recent protocol version"

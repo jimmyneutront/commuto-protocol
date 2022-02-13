@@ -78,9 +78,9 @@ class CommutoOfferCreationTests(CommutoSwapTest.CommutoSwapTest):
                 "maker": self.maker_address,
                 "interfaceId": HexBytes("an interface Id here".encode("utf-8").hex()),
                 "stablecoin": self.dai_deployment_tx_receipt.contractAddress,
-                "amountLowerBound": 11,
+                "amountLowerBound": 10,
                 "amountUpperBound": 100,
-                "securityDepositAmount": 1,
+                "securityDepositAmount": 9,
                 "direction": 1,
                 "price": HexBytes("a price here".encode("utf-8").hex()),
                 "settlementMethods": ["USD-SWIFT".encode("utf-8"), ],
@@ -92,7 +92,7 @@ class CommutoOfferCreationTests(CommutoSwapTest.CommutoSwapTest):
             ).transact(tx_details)
             raise (Exception("test_securityDepositAmount_sufficient failed without raising exception"))
         except ValueError as e:
-            # "e8":"The security deposit must be at least 10% of the minimum swap amount"
+            # "e8":"The security deposit must be at least 10% of the maximum swap amount"
             if not "e8" in str(e):
                 raise e
 

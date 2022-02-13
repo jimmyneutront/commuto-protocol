@@ -7,7 +7,7 @@ commuto_swap_error_messages = {
     "e5": "An offer with the specified id already exists",
     "e6": "The minimum swap amount must be greater than zero",
     "e7": "The maximum swap amount must be >= the minimum swap amount",
-    "e8": "The security deposit must be at least 10% of the minimum swap amount",
+    "e8": "The security deposit must be at least 10% of the maximum swap amount",
     "e9": "Service fee amount must be greater than zero",
     "e10": "Offers can only be created for the most recent protocol version",
     "e11": "You must specify a supported stablecoin",
