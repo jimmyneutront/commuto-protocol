@@ -3,6 +3,7 @@ pragma solidity ^0.6.12;
 pragma experimental ABIEncoderV2;
 
 //import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/v3.0.0/contracts/math/SafeMath.sol";
+import "./libraries/CommutoSwapTypes.sol";
 import "./SafeMath.sol";
 
 //Abstract ERC20 contract
@@ -31,19 +32,6 @@ contract CommutoSwap {
     
     //The current version of the Commuto Protocol
     uint256 public protocolVersion = 0;
-    
-    enum SwapDirection  {
-        BUY, //Maker has FIAT, wants STBL
-        SELL //Maker has STBL, wants FIAT
-    }
-    
-    //The stablecoin to be swapped
-    enum StablecoinType {
-        DAI,
-        USDC,
-        BUSD,
-        USDT
-    }
 
     /*A mapping of settlement method names to boolean values indicating whether they are supported or not, and an array
     containing the names of all supported settlement methods. Both a mapping and an array are necessary because map
@@ -114,45 +102,7 @@ contract CommutoSwap {
     function getSupportedStablecoins() view public returns (address[] memory) {
         return supportedStablecoins;
     }
-    
-    struct Offer {
-        bool isCreated;
-        bool isTaken;
-        address maker;
-        bytes interfaceId;
-        address stablecoin;
-        uint256 amountLowerBound;
-        uint256 amountUpperBound;
-        uint256 securityDepositAmount;
-        SwapDirection direction;
-        bytes price;
-        bytes[] settlementMethods;
-        uint256 protocolVersion;
-    }
 
-    struct Swap {
-        bool isCreated;
-        bool requiresFill;
-        address maker;
-        bytes makerInterfaceId;
-        address taker;
-        bytes takerInterfaceId;
-        address stablecoin;
-        uint256 amountLowerBound;
-        uint256 amountUpperBound;
-        uint256 securityDepositAmount;
-        uint256 takenSwapAmount;
-        uint256 serviceFeeAmount;
-        SwapDirection direction;
-        bytes price;
-        bytes settlementMethod;
-        uint256 protocolVersion;
-        bool isPaymentSent;
-        bool isPaymentReceived;
-        bool hasBuyerClosed;
-        bool hasSellerClosed;
-    }
-    
     event OfferOpened(bytes16 offerID, bytes interfaceId);
     event PriceChanged(bytes16 offerID);
     event OfferCanceled(bytes16 offerID);
