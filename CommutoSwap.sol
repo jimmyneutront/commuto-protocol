@@ -4,34 +4,16 @@ pragma experimental ABIEncoderV2;
 
 //import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/v3.0.0/contracts/math/SafeMath.sol";
 import "./libraries/AbstractERC20.sol";
-import "./libraries/CommutoSwapTypes.sol";
-import "./libraries/CommutoNewOfferValidator.sol";
-import "./libraries/SafeMath.sol";
 import "./libraries/CommutoSwapOfferOpener.sol";
+import "./libraries/CommutoNewOfferValidator.sol";
+import "./libraries/CommutoSwapStorage.sol";
+import "./libraries/CommutoSwapTypes.sol";
+import "./libraries/SafeMath.sol";
 
 //TODO: Deal with contract size limitation
 //TODO: Fee percentage set by token holders
 //TODO: Better code comments
-contract CommutoSwap {
-    
-    address public owner;
-    address public serviceFeePool;
-
-    //Address of the contract to which CommutoSwap should delegate openOffer calls
-    address immutable public commutoSwapOfferOpener;
-
-    //TODO: Deal with decimal point precision differences between stablecoins
-    
-    //The current version of the Commuto Protocol
-    uint256 public protocolVersion = 0;
-
-    /*A mapping of settlement method names to boolean values indicating whether they are supported or not, and an array
-    containing the names of all supported settlement methods. Both a mapping and an array are necessary because map
-    value lookups are inexpensive and keep user costs down, but an array is necessary so that one can always obtain a
-    complete list of supported settlement methods.
-    */
-    mapping (bytes => bool) private settlementMethods;
-    bytes[] private supportedSettlementMethods;
+contract CommutoSwap is CommutoSwapStorage {
 
     //Set the supported state of a settlement method
     function setSettlementMethodSupport(bytes calldata settlementMethod, bool support) public {
@@ -61,12 +43,6 @@ contract CommutoSwap {
         return supportedSettlementMethods;
     }
 
-    /*A mapping of stablecoin contract addresses to boolean values indicating whether they are supported or not, and an
-    array containing the contract addresses of all supported stablecoins.
-    */
-    mapping (address => bool) private stablecoins;
-    address[] private supportedStablecoins;
-
     //Set the supported state of a settlement method
     function setStablecoinSupport(address stablecoin, bool support) public {
         require(msg.sender == owner, "e49"); //"e49": "Only owner can set stablecoin support"
@@ -95,20 +71,6 @@ contract CommutoSwap {
         return supportedStablecoins;
     }
 
-    event OfferOpened(bytes16 offerID, bytes interfaceId);
-    event PriceChanged(bytes16 offerID);
-    event OfferCanceled(bytes16 offerID);
-    event OfferTaken(bytes16 offerID, bytes takerInterfaceId);
-    event SwapFilled(bytes16 swapID);
-    event PaymentSent(bytes16 swapID);
-    event PaymentReceived(bytes16 swapID);
-    event BuyerClosed(bytes16 swapID);
-    event SellerClosed(bytes16 swapID);
-    
-    mapping (bytes16 => Offer) private offers;
-    mapping (bytes16 => mapping (bytes => bool)) private offerSettlementMethods;
-    mapping (bytes16 => Swap) private swaps;
-
     function getOffer(bytes16 offerID) view public returns (Offer memory) {
         return offers[offerID];
     }
@@ -117,12 +79,10 @@ contract CommutoSwap {
         return swaps[swapID];
     }
 
-    constructor (address _serviceFeePool, address offerOpener) public {
+    constructor (address _serviceFeePool, address offerOpener) public CommutoSwapStorage(offerOpener) {
         owner = msg.sender;
         require(_serviceFeePool != address(0), "e0"); //"e0": "_serviceFeePool address cannot be zero"
-        require(offerOpener != address(0), "e1"); //"e1": "CommutoSwapOfferOpener address cannot be zero"
         serviceFeePool = _serviceFeePool;
-        commutoSwapOfferOpener = offerOpener;
     }
 
     //Create a new swap offer by delegating to CommutoSwapOfferOpener

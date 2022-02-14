@@ -3,37 +3,13 @@ pragma solidity ^0.6.12;
 pragma experimental ABIEncoderV2;
 //import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/v3.0.0/contracts/math/SafeMath.sol";
 import "./AbstractERC20.sol";
+import "./CommutoSwapStorage.sol";
 import "./CommutoSwapTypes.sol";
 import "./SafeMath.sol";
 
-contract CommutoSwapOfferOpener {
+contract CommutoSwapOfferOpener is CommutoSwapStorage {
 
-    address public owner = address(0);
-    address public serviceFeePool = address(0);
-
-    address immutable public commutoSwapOfferOpener = address(0);
-
-    uint256 public protocolVersion = 0;
-
-    mapping (bytes => bool) private settlementMethods;
-    bytes[] private supportedSettlementMethods;
-
-    mapping (address => bool) private stablecoins;
-    address[] private supportedStablecoins;
-
-    event OfferOpened(bytes16 offerID, bytes interfaceId);
-    event PriceChanged(bytes16 offerID);
-    event OfferCanceled(bytes16 offerID);
-    event OfferTaken(bytes16 offerID, bytes takerInterfaceId);
-    event SwapFilled(bytes16 swapID);
-    event PaymentSent(bytes16 swapID);
-    event PaymentReceived(bytes16 swapID);
-    event BuyerClosed(bytes16 swapID);
-    event SellerClosed(bytes16 swapID);
-
-    mapping (bytes16 => Offer) private offers;
-    mapping (bytes16 => mapping (bytes => bool)) private offerSettlementMethods;
-    mapping (bytes16 => Swap) private swaps;
+    constructor() CommutoSwapStorage(address(0)) public {}
 
     //Create a new swap offer
     /*

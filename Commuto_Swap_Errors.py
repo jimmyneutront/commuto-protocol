@@ -1,6 +1,6 @@
 commuto_swap_error_messages = {
     "e0": "_serviceFeePool address cannot be zero",
-    "e1": "CommutoSwapOfferOpener address cannot be zero",
+    "e1": "",
     "e2": "Offer opening delegatecall failed",
     "e3": "",
     "e4": "",
