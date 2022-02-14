@@ -5,7 +5,6 @@ pragma experimental ABIEncoderV2;
 //import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/v3.0.0/contracts/math/SafeMath.sol";
 import "./libraries/AbstractERC20.sol";
 import "./libraries/CommutoSwapOfferOpener.sol";
-import "./libraries/CommutoNewOfferValidator.sol";
 import "./libraries/CommutoSwapStorage.sol";
 import "./libraries/CommutoSwapTypes.sol";
 import "./libraries/SafeMath.sol";

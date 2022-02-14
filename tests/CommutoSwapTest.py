@@ -113,21 +113,6 @@ class CommutoSwapTest(unittest.TestCase):
         CommutoSwapOfferOpener_deployment_tx_hash = undeployed_CommutoSwapOfferOpener.constructor().transact()
         CommutoSwapOfferOpener_address = w3.eth.wait_for_transaction_receipt(CommutoSwapOfferOpener_deployment_tx_hash).contractAddress
 
-        """
-        compiled_CommutoNewOfferValidator = compile_files(
-            ["../libraries/CommutoNewOfferValidator.sol"],
-            allow_paths=["./"],
-            output_values=["abi", "bin"],
-            optimize=False,
-            optimize_runs=1
-        )
-        CommutoNewOfferValidator_abi = compiled_CommutoNewOfferValidator["../libraries/CommutoNewOfferValidator.sol:CommutoNewOfferValidator"]["abi"]
-        CommutoNewOfferValidator_bytecode = compiled_CommutoNewOfferValidator["../libraries/CommutoNewOfferValidator.sol:CommutoNewOfferValidator"]["bin"]
-        undeployed_CommutoNewOfferValidator = w3.eth.contract(abi=CommutoNewOfferValidator_abi, bytecode=CommutoNewOfferValidator_bytecode)
-        CommutoNewOfferValidator_deployment_tx_hash = undeployed_CommutoNewOfferValidator.constructor(w3.eth.accounts[2]).transact()
-        CommutoNewOfferValidator_address = w3.eth.wait_for_transaction_receipt(CommutoNewOfferValidator_deployment_tx_hash).contractAddress
-        """
-
         compiled_sol = compile_files(
             ["../CommutoSwap.sol"],
             allow_paths=["./"],
@@ -136,13 +121,6 @@ class CommutoSwapTest(unittest.TestCase):
             optimize_runs=1
         )
         commuto_swap_abi = compiled_sol["../CommutoSwap.sol:CommutoSwap"]["abi"]
-
-        """
-        commuto_swap_linked_bytecode = link_code(
-            compiled_sol["../CommutoSwap.sol:CommutoSwap"]["bin"],
-            {'../libraries/CommutoNewOfferValidator.sol:CommutoNewOfferValidator': CommutoNewOfferValidator_address}
-        )
-        """
 
         commuto_swap_bytecode = compiled_sol["../CommutoSwap.sol:CommutoSwap"]["bin"]
         print(len(commuto_swap_bytecode)/2)
