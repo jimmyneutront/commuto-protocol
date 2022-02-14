@@ -1,4 +1,4 @@
-from solcx import compile_files
+from solcx import compile_files, link_code
 import unittest
 from web3 import Web3
 
@@ -7,7 +7,7 @@ class CommutoSwapTest(unittest.TestCase):
     def setUp(self) -> None:
         # TODO: Start hardhat node
         # Establish connection to web3 provider
-        w3 = Web3(Web3.HTTPProvider("http://192.168.0.195:8545"))
+        w3 = Web3(Web3.HTTPProvider("http://192.168.1.12:8545"))
         # Check connection
         if not w3.isConnected():
             raise Exception("No connection to Web3 Provider")
@@ -100,6 +100,20 @@ class CommutoSwapTest(unittest.TestCase):
         w3.eth.wait_for_transaction_receipt(tx_hash)
         tx_hash = test_usdt_contract.functions.mint(ERC20_recipient_account_one, token_mint_amount).transact()
         w3.eth.wait_for_transaction_receipt(tx_hash)
+
+        compiled_CommutoNewOfferValidator = compile_files(
+            ["../libraries/CommutoNewOfferValidator.sol"],
+            allow_paths=["./"],
+            output_values=["abi", "bin"],
+            optimize=False,
+            optimize_runs=1
+        )
+        CommutoNewOfferValidator_abi = compiled_CommutoNewOfferValidator["../libraries/CommutoNewOfferValidator.sol:CommutoNewOfferValidator"]["abi"]
+        CommutoNewOfferValidator_bytecode = compiled_CommutoNewOfferValidator["../libraries/CommutoNewOfferValidator.sol:CommutoNewOfferValidator"]["bin"]
+        undeployed_CommutoNewOfferValidator = w3.eth.contract(abi=CommutoNewOfferValidator_abi, bytecode=CommutoNewOfferValidator_bytecode)
+        CommutoNewOfferValidator_deployment_tx_hash = undeployed_CommutoNewOfferValidator.constructor(w3.eth.accounts[2]).transact()
+        CommutoNewOfferValidator_address = w3.eth.wait_for_transaction_receipt(CommutoNewOfferValidator_deployment_tx_hash).contractAddress
+
         compiled_sol = compile_files(
             ["../CommutoSwap.sol"],
             allow_paths=["./"],
@@ -108,8 +122,12 @@ class CommutoSwapTest(unittest.TestCase):
             optimize_runs=1
         )
         commuto_swap_abi = compiled_sol["../CommutoSwap.sol:CommutoSwap"]["abi"]
-        commuto_swap_bytecode = compiled_sol["../CommutoSwap.sol:CommutoSwap"]["bin"]
-        undeployed_commuto_swap_contract = w3.eth.contract(abi=commuto_swap_abi, bytecode=commuto_swap_bytecode)
+        commuto_swap_linked_bytecode = link_code(
+            compiled_sol["../CommutoSwap.sol:CommutoSwap"]["bin"],
+            {'../libraries/CommutoNewOfferValidator.sol:CommutoNewOfferValidator': CommutoNewOfferValidator_address}
+        )
+        print(len(commuto_swap_linked_bytecode))
+        undeployed_commuto_swap_contract = w3.eth.contract(abi=commuto_swap_abi, bytecode=commuto_swap_linked_bytecode)
         """
         deployment_tx_details = {
         	"from":w3.eth.accounts[2],
