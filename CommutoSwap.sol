@@ -7,6 +7,7 @@ import "./libraries/AbstractERC20.sol";
 import "./libraries/CommutoSwapTypes.sol";
 import "./libraries/CommutoNewOfferValidator.sol";
 import "./libraries/SafeMath.sol";
+import "./libraries/CommutoSwapOfferOpener.sol";
 
 //TODO: Deal with contract size limitation
 //TODO: Fee percentage set by token holders
@@ -15,6 +16,10 @@ contract CommutoSwap {
     
     address public owner;
     address public serviceFeePool;
+
+    //Address of the contract to which CommutoSwap should delegate openOffer calls
+    address immutable public commutoSwapOfferOpener;
+
     //TODO: Deal with decimal point precision differences between stablecoins
     
     //The current version of the Commuto Protocol
@@ -112,48 +117,26 @@ contract CommutoSwap {
         return swaps[swapID];
     }
 
-    constructor (address _serviceFeePool) public {
+    constructor (address _serviceFeePool, address offerOpener) public {
         owner = msg.sender;
         require(_serviceFeePool != address(0), "e0"); //"e0": "_serviceFeePool address cannot be zero"
+        require(offerOpener != address(0), "e1"); //"e1": "CommutoSwapOfferOpener address cannot be zero"
         serviceFeePool = _serviceFeePool;
+        commutoSwapOfferOpener = offerOpener;
     }
 
-    //Create a new swap offer
-    /*
-    Note that openOffer will not prevent a maker from creating an offer with unsupported settlement methods, to keep gas
-    costs low. However, a taker will not be able to take an offer with unsupported settlement methods, so the maker
-    should be careful not to create such invalid offers.
-    */
+    //Create a new swap offer by delegating to CommutoSwapOfferOpener
     function openOffer(bytes16 offerID, Offer memory newOffer) public {
-        //Prevent duplicate offers
-        require(!offers[offerID].isCreated, "e5"); //"An offer with the specified id already exists"
-
-        //Find proper stablecoin contract
         /*
-        Slither complains that "token" is never initialized. However, compilation fails if this declaration takes place
-        within the if/else statements, so it must remain here. Additionally, if initialization doesn't take place within
-        the if/else statements, the function reverts because a supported stablecoin has not been specified.
+        Slither throws a high severity warning about the use of delegatecall. In this case it is necessary due to
+        contract size limitations, and also save since the CommutoSwapOfferOpener address is immutable and set when
+        CommutoSwap is deployed, and therefore the call cannot be delegated to a malicious contract.
         */
-        ERC20 token;
-
-        if(stablecoins[newOffer.stablecoin] == true) {
-            token = ERC20(newOffer.stablecoin);
-        } else {
-            revert("e11");
-        }
-
-        (Offer memory validatedOffer, uint256 depositAmount) = CommutoNewOfferValidator.validateNewOffer(newOffer, protocolVersion);
-        offers[offerID] = validatedOffer;
-
-        //Record supported settlement methods
-        for (uint i = 0; i < newOffer.settlementMethods.length; i++) {
-            offerSettlementMethods[offerID][newOffer.settlementMethods[i]] = true;
-        }
-        emit OfferOpened(offerID, validatedOffer.interfaceId);
-
-        //Lock required total amount in escrow
-        require(depositAmount <= token.allowance(msg.sender, address(this)), "e13"); //"e13": "Token allowance must be >= required amount"
-        require(token.transferFrom(msg.sender, address(this), depositAmount), "e14"); //"e14": "Token transfer to Commuto Protocol failed"
+        (bool success, bytes memory data) = commutoSwapOfferOpener.delegatecall(
+            abi.encodeWithSignature("openOffer(bytes16,(bool,bool,address,bytes,address,uint256,uint256,uint256,uint8,bytes,bytes[],uint256))",
+            offerID, newOffer)
+        );
+        require(success, "e2"); //"e2": "Offer opening delegatecall failed"
     }
 
     //Edit the price and supported settlement methods of an open swap offer
