@@ -95,7 +95,7 @@ contract CommutoSwap is CommutoSwapStorage {
             abi.encodeWithSignature("openOffer(bytes16,(bool,bool,address,bytes,address,uint256,uint256,uint256,uint8,bytes,bytes[],uint256))",
             offerID, newOffer)
         );
-        require(success, "e1"); //"e1": "Offer opening delegatecall failed"
+        require(success, string (data) );
     }
 
     //Edit the price and supported settlement methods of an open swap offer
