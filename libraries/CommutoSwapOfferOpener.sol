@@ -9,11 +9,11 @@ import "./SafeMath.sol";
 
 contract CommutoSwapOfferOpener is CommutoSwapStorage {
 
-    constructor() CommutoSwapStorage(address(0)) public {}
+    constructor() CommutoSwapStorage(address(0), address(0)) public {}
 
     //Create a new swap offer
     /*
-    This function should only be called by CommutoSwap's openOffer function. No swap opened by directly calling this
+    This function should only be called by CommutoSwap's openOffer function. No offer opened by directly calling this
     function can be completed.
     Note that openOffer will not prevent a maker from creating an offer with unsupported settlement methods, to keep gas
     costs low. However, a taker will not be able to take an offer with unsupported settlement methods, so the maker

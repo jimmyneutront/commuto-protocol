@@ -78,7 +78,7 @@ contract CommutoSwap is CommutoSwapStorage {
         return swaps[swapID];
     }
 
-    constructor (address _serviceFeePool, address offerOpener) public CommutoSwapStorage(offerOpener) {
+    constructor (address _serviceFeePool, address offerOpener, address offerEditor) public CommutoSwapStorage(offerOpener, offerEditor) {
         owner = msg.sender;
         require(_serviceFeePool != address(0), "e0"); //"e0": "_serviceFeePool address cannot be zero"
         serviceFeePool = _serviceFeePool;
@@ -95,31 +95,21 @@ contract CommutoSwap is CommutoSwapStorage {
             abi.encodeWithSignature("openOffer(bytes16,(bool,bool,address,bytes,address,uint256,uint256,uint256,uint8,bytes,bytes[],uint256))",
             offerID, newOffer)
         );
-        require(success, "e2"); //"e2": "Offer opening delegatecall failed"
+        require(success, "e1"); //"e1": "Offer opening delegatecall failed"
     }
 
     //Edit the price and supported settlement methods of an open swap offer
     function editOffer(bytes16 offerID, Offer memory editedOffer, bool editPrice, bool editSettlementMethods) public {
-        //Validate arguments
-        require(offers[offerID].isCreated, "e15"); //"e15": "An offer with the specified id does not exist"
-        require(!offers[offerID].isTaken, "e16"); //"e16": "Offer is taken and cannot be mutated"
-        require(offers[offerID].maker == msg.sender, "e17"); //"e17": "Offers can only be mutated by offer maker"
-
-        if (editPrice) {
-            offers[offerID].price = editedOffer.price;
-        }
-
-        if (editSettlementMethods) {
-            //Delete records of supported settlement methods in preparation for updated info
-            for (uint i = 0; i < offers[offerID].settlementMethods.length; i++) {
-                offerSettlementMethods[offerID][offers[offerID].settlementMethods[i]] = false;
-            }
-            //Record new supported settlement methods
-            for (uint i = 0; i < editedOffer.settlementMethods.length; i++) {
-                offerSettlementMethods[offerID][editedOffer.settlementMethods[i]] = true;
-            }
-            offers[offerID].settlementMethods = editedOffer.settlementMethods;
-        }
+        /*
+        Slither throws a high severity warning about the use of delegatecall. In this case it is necessary due to
+        contract size limitations, and also save since the CommutoSwapOfferOpener address is immutable and set when
+        CommutoSwap is deployed, and therefore the call cannot be delegated to a malicious contract.
+        */
+        (bool success, bytes memory data) = commutoSwapOfferEditor.delegatecall(
+            abi.encodeWithSignature("editOffer(bytes16,(bool,bool,address,bytes,address,uint256,uint256,uint256,uint8,bytes,bytes[],uint256),bool,bool)",
+            offerID, editedOffer, editPrice, editSettlementMethods)
+        );
+        require(success, string (data) );
     }
 
     //Cancel open swap offer
