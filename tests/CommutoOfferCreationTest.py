@@ -78,7 +78,7 @@ class CommutoOfferCreationTests(CommutoSwapTest.CommutoSwapTest):
                 "maker": self.maker_address,
                 "interfaceId": HexBytes("an interface Id here".encode("utf-8").hex()),
                 "stablecoin": self.dai_deployment_tx_receipt.contractAddress,
-                "amountLowerBound": 10,
+                "amountLowerBound": 11,
                 "amountUpperBound": 100,
                 "securityDepositAmount": 9,
                 "direction": 1,
