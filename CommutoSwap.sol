@@ -78,7 +78,7 @@ contract CommutoSwap is CommutoSwapStorage {
         return swaps[swapID];
     }
 
-    constructor (address _serviceFeePool, address offerOpener, address offerEditor) public CommutoSwapStorage(offerOpener, offerEditor) {
+    constructor (address _serviceFeePool, address offerOpener, address offerEditor, address offerCanceler) public CommutoSwapStorage(offerOpener, offerEditor, offerCanceler) {
         owner = msg.sender;
         require(_serviceFeePool != address(0), "e0"); //"e0": "_serviceFeePool address cannot be zero"
         serviceFeePool = _serviceFeePool;
@@ -102,7 +102,7 @@ contract CommutoSwap is CommutoSwapStorage {
     function editOffer(bytes16 offerID, Offer memory editedOffer, bool editPrice, bool editSettlementMethods) public {
         /*
         Slither throws a high severity warning about the use of delegatecall. In this case it is necessary due to
-        contract size limitations, and also save since the CommutoSwapOfferOpener address is immutable and set when
+        contract size limitations, and also save since the CommutoSwapOfferEditor address is immutable and set when
         CommutoSwap is deployed, and therefore the call cannot be delegated to a malicious contract.
         */
         (bool success, bytes memory data) = commutoSwapOfferEditor.delegatecall(
@@ -114,32 +114,16 @@ contract CommutoSwap is CommutoSwapStorage {
 
     //Cancel open swap offer
     function cancelOffer(bytes16 offerID) public {
-        //Validate arguments
-        require(offers[offerID].isCreated, "e15"); //"e15": "An offer with the specified id does not exist"
-        require(!offers[offerID].isTaken, "e16"); //"e16": "Offer is taken and cannot be mutated"
-        require(offers[offerID].maker == msg.sender, "e17"); //"e17": "Offers can only be mutated by offer maker"
-
-        //Find proper stablecoin contract
-        ERC20 token = ERC20(offers[offerID].stablecoin);
-
-        //Calculate total amount in escrow
-        uint256 serviceFeeAmountUpperBound = SafeMath.div(offers[offerID].amountUpperBound, 100);
         /*
-        Slither complains that "totalAmount" is never initialized. However, compilation fails if this declaration takes place
-        within the if/else statements, so it must remain here. Additionally, if initialization doesn't take place within
-        the if/else statements, the function reverts because the specified offer has an invalid direction.
+        Slither throws a high severity warning about the use of delegatecall. In this case it is necessary due to
+        contract size limitations, and also save since the CommutoSwapOfferCanceler address is immutable and set when
+        CommutoSwap is deployed, and therefore the call cannot be delegated to a malicious contract.
         */
-
-        uint256 depositAmount = SafeMath.add(offers[offerID].securityDepositAmount, serviceFeeAmountUpperBound);
-
-        //Delete offer, refund STBL and notify
-        delete offers[offerID];
-        //Delete records of supported settlement methods
-        for (uint i = 0; i < offers[offerID].settlementMethods.length; i++) {
-            offerSettlementMethods[offerID][offers[offerID].settlementMethods[i]] = false;
-        }
-        emit OfferCanceled(offerID);
-        require(token.transfer(offers[offerID].maker, depositAmount), "e19"); //"e19": "Token transfer failed"
+        (bool success, bytes memory data) = commutoSwapOfferCanceler.delegatecall(
+            abi.encodeWithSignature("cancelOffer(bytes16)",
+            offerID)
+        );
+        require(success, string (data) );
     }
 
     //Take a swap offer
