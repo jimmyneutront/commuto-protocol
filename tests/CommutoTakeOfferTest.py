@@ -2,7 +2,7 @@ import CommutoSwapTest
 from hexbytes import HexBytes
 from uuid import uuid4
 
-class CommutoEditOfferTest(CommutoSwapTest.CommutoSwapTest):
+class CommutoTakeOfferTest(CommutoSwapTest.CommutoSwapTest):
 
     def test_takeOffer_offer_existence_check(self):
         #Ensure takeOffer checks for offer existence

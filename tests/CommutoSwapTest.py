@@ -131,7 +131,7 @@ class CommutoSwapTest(unittest.TestCase):
         CommutoSwapOfferEditor_address = w3.eth.wait_for_transaction_receipt(
             CommutoSwapOfferEditor_deployment_tx_hash).contractAddress
 
-        # Deploy CommutoSwapOfferCanceler contract
+        #Deploy CommutoSwapOfferCanceler contract
         compiled_CommutoSwapOfferCanceler = compile_files(
             ["../libraries/CommutoSwapOfferCanceler.sol"],
             allow_paths=["./"],
@@ -147,6 +147,25 @@ class CommutoSwapTest(unittest.TestCase):
         CommutoSwapOfferCanceler_deployment_tx_hash = undeployed_CommutoSwapOfferCanceler.constructor().transact()
         CommutoSwapOfferCanceler_address = w3.eth.wait_for_transaction_receipt(
             CommutoSwapOfferCanceler_deployment_tx_hash).contractAddress
+
+        #Deploy CommutoSwapOfferTaker contract
+        compiled_CommutoSwapOfferTaker = compile_files(
+            ["../libraries/CommutoSwapOfferTaker.sol"],
+            allow_paths=["./"],
+            output_values=["abi", "bin"],
+            optimize=False,
+        )
+        CommutoSwapOfferTaker_abi = \
+            compiled_CommutoSwapOfferTaker["../libraries/CommutoSwapOfferTaker.sol:CommutoSwapOfferTaker"][
+                "abi"]
+        CommutoSwapOfferTaker_bytecode = \
+            compiled_CommutoSwapOfferTaker["../libraries/CommutoSwapOfferTaker.sol:CommutoSwapOfferTaker"][
+                "bin"]
+        undeployed_CommutoSwapOfferTaker = w3.eth.contract(abi=CommutoSwapOfferTaker_abi,
+                                                              bytecode=CommutoSwapOfferTaker_bytecode)
+        CommutoSwapOfferTaker_deployment_tx_hash = undeployed_CommutoSwapOfferTaker.constructor().transact()
+        CommutoSwapOfferTaker_address = w3.eth.wait_for_transaction_receipt(
+            CommutoSwapOfferTaker_deployment_tx_hash).contractAddress
 
         #Deploy CommutoSwap contract
         compiled_sol = compile_files(
@@ -164,6 +183,7 @@ class CommutoSwapTest(unittest.TestCase):
                                                                                        CommutoSwapOfferOpener_address,
                                                                                        CommutoSwapOfferEditor_address,
                                                                                        CommutoSwapOfferCanceler_address,
+                                                                                       CommutoSwapOfferTaker_address
                                                                                        ).transact()
         self.commuto_swap_deployment_tx_receipt = w3.eth.wait_for_transaction_receipt(commuto_swap_deployment_tx_hash)
         self.commuto_swap_contract = w3.eth.contract(
