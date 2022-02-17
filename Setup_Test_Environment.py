@@ -78,12 +78,135 @@ tx_hash = w3.eth.send_transaction({
 w3.eth.wait_for_transaction_receipt(tx_hash)
 logger.info("Transfered " + str(eth_transfer_amount) + " wei to address_two")
 
+#Deploy CommutoSwapOfferOpener contract
+compiled_CommutoSwapOfferOpener = compile_files(
+    ["./libraries/CommutoSwapOfferOpener.sol"],
+    allow_paths=["./"],
+    output_values=["abi", "bin"],
+    optimize=False,
+)
+CommutoSwapOfferOpener_abi = compiled_CommutoSwapOfferOpener["./libraries/CommutoSwapOfferOpener.sol:CommutoSwapOfferOpener"]["abi"]
+CommutoSwapOfferOpener_bytecode = compiled_CommutoSwapOfferOpener["./libraries/CommutoSwapOfferOpener.sol:CommutoSwapOfferOpener"]["bin"]
+undeployed_CommutoSwapOfferOpener = w3.eth.contract(abi=CommutoSwapOfferOpener_abi, bytecode=CommutoSwapOfferOpener_bytecode)
+CommutoSwapOfferOpener_deployment_tx_hash = undeployed_CommutoSwapOfferOpener.constructor().transact()
+CommutoSwapOfferOpener_address = w3.eth.wait_for_transaction_receipt(CommutoSwapOfferOpener_deployment_tx_hash).contractAddress
+
+#Deploy CommutoSwapOfferEditor contract
+compiled_CommutoSwapOfferEditor = compile_files(
+    ["./libraries/CommutoSwapOfferEditor.sol"],
+    allow_paths=["./"],
+    output_values=["abi", "bin"],
+    optimize=False,
+)
+CommutoSwapOfferEditor_abi = \
+compiled_CommutoSwapOfferEditor["./libraries/CommutoSwapOfferEditor.sol:CommutoSwapOfferEditor"]["abi"]
+CommutoSwapOfferEditor_bytecode = \
+compiled_CommutoSwapOfferEditor["./libraries/CommutoSwapOfferEditor.sol:CommutoSwapOfferEditor"]["bin"]
+undeployed_CommutoSwapOfferEditor = w3.eth.contract(abi=CommutoSwapOfferEditor_abi,
+                                                    bytecode=CommutoSwapOfferEditor_bytecode)
+CommutoSwapOfferEditor_deployment_tx_hash = undeployed_CommutoSwapOfferEditor.constructor().transact()
+CommutoSwapOfferEditor_address = w3.eth.wait_for_transaction_receipt(
+    CommutoSwapOfferEditor_deployment_tx_hash).contractAddress
+
+#Deploy CommutoSwapOfferCanceler contract
+compiled_CommutoSwapOfferCanceler = compile_files(
+    ["./libraries/CommutoSwapOfferCanceler.sol"],
+    allow_paths=["./"],
+    output_values=["abi", "bin"],
+    optimize=False,
+)
+CommutoSwapOfferCanceler_abi = \
+    compiled_CommutoSwapOfferCanceler["./libraries/CommutoSwapOfferCanceler.sol:CommutoSwapOfferCanceler"]["abi"]
+CommutoSwapOfferCanceler_bytecode = \
+    compiled_CommutoSwapOfferCanceler["./libraries/CommutoSwapOfferCanceler.sol:CommutoSwapOfferCanceler"]["bin"]
+undeployed_CommutoSwapOfferCanceler = w3.eth.contract(abi=CommutoSwapOfferCanceler_abi,
+                                                    bytecode=CommutoSwapOfferCanceler_bytecode)
+CommutoSwapOfferCanceler_deployment_tx_hash = undeployed_CommutoSwapOfferCanceler.constructor().transact()
+CommutoSwapOfferCanceler_address = w3.eth.wait_for_transaction_receipt(
+    CommutoSwapOfferCanceler_deployment_tx_hash).contractAddress
+
+#Deploy CommutoSwapOfferTaker contract
+compiled_CommutoSwapOfferTaker = compile_files(
+    ["./libraries/CommutoSwapOfferTaker.sol"],
+    allow_paths=["./"],
+    output_values=["abi", "bin"],
+    optimize=False,
+)
+CommutoSwapOfferTaker_abi = \
+    compiled_CommutoSwapOfferTaker["./libraries/CommutoSwapOfferTaker.sol:CommutoSwapOfferTaker"][
+        "abi"]
+CommutoSwapOfferTaker_bytecode = \
+    compiled_CommutoSwapOfferTaker["./libraries/CommutoSwapOfferTaker.sol:CommutoSwapOfferTaker"][
+        "bin"]
+undeployed_CommutoSwapOfferTaker = w3.eth.contract(abi=CommutoSwapOfferTaker_abi,
+                                                      bytecode=CommutoSwapOfferTaker_bytecode)
+CommutoSwapOfferTaker_deployment_tx_hash = undeployed_CommutoSwapOfferTaker.constructor().transact()
+CommutoSwapOfferTaker_address = w3.eth.wait_for_transaction_receipt(
+    CommutoSwapOfferTaker_deployment_tx_hash).contractAddress
+
+#Deploy CommutoSwapFiller contract
+compiled_CommutoSwapFiller = compile_files(
+    ["./libraries/CommutoSwapFiller.sol"],
+    allow_paths=["./"],
+    output_values=["abi", "bin"],
+    optimize=False,
+)
+CommutoSwapFiller_abi = \
+    compiled_CommutoSwapFiller["./libraries/CommutoSwapFiller.sol:CommutoSwapFiller"][
+        "abi"]
+CommutoSwapFiller_bytecode = \
+    compiled_CommutoSwapFiller["./libraries/CommutoSwapFiller.sol:CommutoSwapFiller"][
+        "bin"]
+undeployed_CommutoSwapFiller = w3.eth.contract(abi=CommutoSwapFiller_abi,
+                                               bytecode=CommutoSwapFiller_bytecode)
+CommutoSwapFiller_deployment_tx_hash = undeployed_CommutoSwapFiller.constructor().transact()
+CommutoSwapFiller_address = w3.eth.wait_for_transaction_receipt(
+    CommutoSwapFiller_deployment_tx_hash).contractAddress
+
+#Deploy CommutoSwapPaymentReporter contract
+compiled_CommutoSwapPaymentReporter = compile_files(
+    ["./libraries/CommutoSwapPaymentReporter.sol"],
+    allow_paths=["./"],
+    output_values=["abi", "bin"],
+    optimize=False,
+)
+CommutoSwapPaymentReporter_abi = \
+    compiled_CommutoSwapPaymentReporter["./libraries/CommutoSwapPaymentReporter.sol:" \
+                                        "CommutoSwapPaymentReporter"]["abi"]
+CommutoSwapPaymentReporter_bytecode = \
+    compiled_CommutoSwapPaymentReporter["./libraries/CommutoSwapPaymentReporter.sol:" \
+                                        "CommutoSwapPaymentReporter"]["bin"]
+undeployed_CommutoSwapPaymentReporter = w3.eth.contract(abi=CommutoSwapPaymentReporter_abi,
+                                               bytecode=CommutoSwapPaymentReporter_bytecode)
+CommutoSwapPaymentReporter_deployment_tx_hash = undeployed_CommutoSwapPaymentReporter.constructor().transact()
+CommutoSwapPaymentReporter_address = w3.eth.wait_for_transaction_receipt(
+    CommutoSwapPaymentReporter_deployment_tx_hash).contractAddress
+
+# Deploy CommutoSwapCloser contract
+compiled_CommutoSwapCloser = compile_files(
+    ["./libraries/CommutoSwapCloser.sol"],
+    allow_paths=["./"],
+    output_values=["abi", "bin"],
+    optimize=False,
+)
+CommutoSwapCloser_abi = \
+    compiled_CommutoSwapCloser["./libraries/CommutoSwapCloser.sol:CommutoSwapCloser"][
+        "abi"]
+CommutoSwapCloser_bytecode = \
+    compiled_CommutoSwapCloser["./libraries/CommutoSwapCloser.sol:CommutoSwapCloser"][
+        "bin"]
+undeployed_CommutoSwapCloser = w3.eth.contract(abi=CommutoSwapCloser_abi,
+                                               bytecode=CommutoSwapCloser_bytecode)
+CommutoSwapCloser_deployment_tx_hash = undeployed_CommutoSwapCloser.constructor().transact()
+CommutoSwapCloser_address = w3.eth.wait_for_transaction_receipt(
+    CommutoSwapCloser_deployment_tx_hash).contractAddress
+
 #Deploy Commuto Swap contract
 commuto_service_fee_account = w3.eth.accounts[0]
 compiled_sol = compile_files(
     ["CommutoSwap.sol"],
     output_values=["abi", "bin"],
-    optimize=True,
+    optimize=False,
     optimize_runs=1
 )
 commuto_swap_abi = compiled_sol["CommutoSwap.sol:CommutoSwap"]["abi"]
@@ -94,7 +217,15 @@ logger.info(
     "Deploying Commuto_Swap contract:\n" +
     "Fee pool address: " + str(commuto_service_fee_account)
 )
-commuto_swap_deployment_tx_hash = undeployed_commuto_swap_contract.constructor(commuto_service_fee_account).transact()
+commuto_swap_deployment_tx_hash = undeployed_commuto_swap_contract.constructor(commuto_service_fee_account,
+                                                                                       CommutoSwapOfferOpener_address,
+                                                                                       CommutoSwapOfferEditor_address,
+                                                                                       CommutoSwapOfferCanceler_address,
+                                                                                       CommutoSwapOfferTaker_address,
+                                                                                       CommutoSwapFiller_address,
+                                                                                       CommutoSwapPaymentReporter_address,
+                                                                                       CommutoSwapCloser_address
+                                                                                       ).transact()
 logger.info("Deployed Commuto_Swap contract, awaiting tx mining")
 commuto_swap_deployment_tx_receipt = w3.eth.wait_for_transaction_receipt(commuto_swap_deployment_tx_hash)
 logger.info("Commuto_Swap contract deployed with address " + str(commuto_swap_deployment_tx_receipt.contractAddress))
