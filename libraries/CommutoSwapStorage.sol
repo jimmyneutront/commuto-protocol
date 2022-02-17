@@ -20,8 +20,11 @@ contract CommutoSwapStorage {
     //Address of the contract to which CommutoSwap should delegate takeOffer calls
     address immutable public commutoSwapOfferTaker;
 
-    //Address of the contract to which CommutoSwap should delegate fillOffer calls
+    //Address of the contract to which CommutoSwap should delegate fillSwap calls
     address immutable public commutoSwapFiller;
+
+    //Address of the contract to which CommutoSwap should delegate reportPaymentSent and reportPaymentReceived calls
+    address immutable public commutoSwapPaymentReporter;
 
     //The current version of the Commuto Protocol
     uint256 public protocolVersion = 0;
@@ -59,12 +62,13 @@ contract CommutoSwapStorage {
     mapping (bytes16 => mapping (bytes => bool)) internal offerSettlementMethods;
     mapping (bytes16 => Swap) internal swaps;
 
-    constructor(address offerOpener, address offerEditor, address offerCanceler, address offerTaker, address swapFiller) public {
+    constructor(address offerOpener, address offerEditor, address offerCanceler, address offerTaker, address swapFiller, address paymentReporter) public {
         commutoSwapOfferOpener = offerOpener;
         commutoSwapOfferEditor = offerEditor;
         commutoSwapOfferCanceler = offerCanceler;
         commutoSwapOfferTaker = offerTaker;
         commutoSwapFiller = swapFiller;
+        commutoSwapPaymentReporter = paymentReporter;
     }
 
 }

@@ -8,6 +8,7 @@ import "./libraries/CommutoSwapOfferOpener.sol";
 import "./libraries/CommutoSwapStorage.sol";
 import "./libraries/CommutoSwapTypes.sol";
 import "./libraries/SafeMath.sol";
+import "./libraries/CommutoSwapPaymentReporter.sol";
 
 //TODO: Deal with contract size limitation
 //TODO: Fee percentage set by token holders
@@ -78,7 +79,7 @@ contract CommutoSwap is CommutoSwapStorage {
         return swaps[swapID];
     }
 
-    constructor (address _serviceFeePool, address offerOpener, address offerEditor, address offerCanceler, address offerTaker, address swapFiller) public CommutoSwapStorage(offerOpener, offerEditor, offerCanceler, offerTaker, swapFiller) {
+    constructor (address _serviceFeePool, address offerOpener, address offerEditor, address offerCanceler, address offerTaker, address swapFiller, address paymentReporter) public CommutoSwapStorage(offerOpener, offerEditor, offerCanceler, offerTaker, swapFiller, paymentReporter) {
         owner = msg.sender;
         require(_serviceFeePool != address(0), "e0"); //"e0": "_serviceFeePool address cannot be zero"
         serviceFeePool = _serviceFeePool;
@@ -88,7 +89,7 @@ contract CommutoSwap is CommutoSwapStorage {
     function openOffer(bytes16 offerID, Offer memory newOffer) public {
         /*
         Slither throws a high severity warning about the use of delegatecall. In this case it is necessary due to
-        contract size limitations, and also save since the CommutoSwapOfferOpener address is immutable and set when
+        contract size limitations, and also safe since the CommutoSwapOfferOpener address is immutable and set when
         CommutoSwap is deployed, and therefore the call cannot be delegated to a malicious contract.
         */
         (bool success, bytes memory data) = commutoSwapOfferOpener.delegatecall(
@@ -102,7 +103,7 @@ contract CommutoSwap is CommutoSwapStorage {
     function editOffer(bytes16 offerID, Offer memory editedOffer, bool editPrice, bool editSettlementMethods) public {
         /*
         Slither throws a high severity warning about the use of delegatecall. In this case it is necessary due to
-        contract size limitations, and also save since the CommutoSwapOfferEditor address is immutable and set when
+        contract size limitations, and also safe since the CommutoSwapOfferEditor address is immutable and set when
         CommutoSwap is deployed, and therefore the call cannot be delegated to a malicious contract.
         */
         (bool success, bytes memory data) = commutoSwapOfferEditor.delegatecall(
@@ -116,7 +117,7 @@ contract CommutoSwap is CommutoSwapStorage {
     function cancelOffer(bytes16 offerID) public {
         /*
         Slither throws a high severity warning about the use of delegatecall. In this case it is necessary due to
-        contract size limitations, and also save since the CommutoSwapOfferCanceler address is immutable and set when
+        contract size limitations, and also safe since the CommutoSwapOfferCanceler address is immutable and set when
         CommutoSwap is deployed, and therefore the call cannot be delegated to a malicious contract.
         */
         (bool success, bytes memory data) = commutoSwapOfferCanceler.delegatecall(
@@ -130,7 +131,7 @@ contract CommutoSwap is CommutoSwapStorage {
     function takeOffer(bytes16 offerID, Swap memory newSwap) public {
         /*
         Slither throws a high severity warning about the use of delegatecall. In this case it is necessary due to
-        contract size limitations, and also save since the CommutoSwapOfferEditor address is immutable and set when
+        contract size limitations, and also safe since the CommutoSwapOfferTaker address is immutable and set when
         CommutoSwap is deployed, and therefore the call cannot be delegated to a malicious contract.
         */
         (bool success, bytes memory data) = commutoSwapOfferTaker.delegatecall(
@@ -145,7 +146,7 @@ contract CommutoSwap is CommutoSwapStorage {
     function fillSwap(bytes16 swapID) public {
         /*
         Slither throws a high severity warning about the use of delegatecall. In this case it is necessary due to
-        contract size limitations, and also save since the CommutoSwapOfferCanceler address is immutable and set when
+        contract size limitations, and also safe since the CommutoSwapFiller address is immutable and set when
         CommutoSwap is deployed, and therefore the call cannot be delegated to a malicious contract.
         */
         (bool success, bytes memory data) = commutoSwapFiller.delegatecall(
@@ -157,40 +158,30 @@ contract CommutoSwap is CommutoSwapStorage {
 
     //Report payment sent for swap
     function reportPaymentSent(bytes16 swapID) public {
-        //Validate arguments
-        require(swaps[swapID].isCreated, "e33"); //"e33": "A swap with the specified id does not exist"
-        require(!swaps[swapID].requiresFill, "e48"); //"e48": "The swap must be filled before payment is sent"
-        require(!swaps[swapID].isPaymentSent, "e34"); //"e34": "Payment sending has already been reported for swap with specified id"
-        if(swaps[swapID].direction == SwapDirection.BUY) {
-            require(swaps[swapID].maker == msg.sender, "e35"); //"e35": "Payment sending can only be reported by buyer"
-        } else if (swaps[swapID].direction == SwapDirection.SELL) {
-            require(swaps[swapID].taker == msg.sender, "e35"); //"e35": "Payment sending can only be reported by buyer"
-        } else {
-            revert("e36"); //"e36": "Swap has invalid direction"
-        }
-
-        //Mark payment sent and notify
-        swaps[swapID].isPaymentSent = true;
-        emit PaymentSent(swapID);
+        /*
+        Slither throws a high severity warning about the use of delegatecall. In this case it is necessary due to
+        contract size limitations, and also safe since the CommutoSwapPaymentReporter address is immutable and set when
+        CommutoSwap is deployed, and therefore the call cannot be delegated to a malicious contract.
+        */
+        (bool success, bytes memory data) = commutoSwapPaymentReporter.delegatecall(
+            abi.encodeWithSignature("reportPaymentSent(bytes16)",
+            swapID)
+        );
+        require(success, string (data) );
     }
 
     //Report payment received for swap
     function reportPaymentReceived(bytes16 swapID) public {
-        //Validate arguments
-        require(swaps[swapID].isCreated, "e33"); //"e33": "A swap with the specified id does not exist"
-        require(swaps[swapID].isPaymentSent, "e37"); //"e37": "Payment sending has not been reported for swap with specified id"
-        require(!swaps[swapID].isPaymentReceived, "e38"); //"e38": "Payment receiving has already been reported for swap with specified id"
-        if(swaps[swapID].direction == SwapDirection.BUY) {
-            require(swaps[swapID].taker == msg.sender, "e39"); //"e39": "Payment receiving can only be reported by seller"
-        } else if (swaps[swapID].direction == SwapDirection.SELL) {
-            require(swaps[swapID].maker == msg.sender, "e39"); //"e39": "Payment receiving can only be reported by seller"
-        } else {
-            revert("e36"); //"e36": "Swap has invalid direction"
-        }
-
-        //Mark payment received and notify
-        swaps[swapID].isPaymentReceived = true;
-        emit PaymentReceived(swapID);
+        /*
+        Slither throws a high severity warning about the use of delegatecall. In this case it is necessary due to
+        contract size limitations, and also safe since the CommutoSwapPaymentReporter address is immutable and set when
+        CommutoSwap is deployed, and therefore the call cannot be delegated to a malicious contract.
+        */
+        (bool success, bytes memory data) = commutoSwapPaymentReporter.delegatecall(
+            abi.encodeWithSignature("reportPaymentReceived(bytes16)",
+            swapID)
+        );
+        require(success, string (data) );
     }
 
     //Close swap and receive STBL from escrow
