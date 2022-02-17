@@ -10,9 +10,13 @@ import "./SafeMath.sol";
 
 contract CommutoSwapOfferTaker is CommutoSwapStorage {
 
-    constructor() CommutoSwapStorage(address(0), address(0), address(0), address(0)) public {}
+    constructor() CommutoSwapStorage(address(0), address(0), address(0), address(0), address(0)) public {}
 
     //Take a swap offer
+    /*
+    This function should only be called by CommutoSwap's takeOffer function. No attempt to take an offer by directly
+    calling this method will succeed.
+    */
     function takeOffer(bytes16 offerID, Swap memory newSwap) public {
         //Validate arguments
         require(offers[offerID].isCreated, "e15"); //"e15": "An offer with the specified id does not exist",

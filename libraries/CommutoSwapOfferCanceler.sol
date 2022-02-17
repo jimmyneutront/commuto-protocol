@@ -8,7 +8,7 @@ import "./SafeMath.sol";
 
 contract CommutoSwapOfferCanceler is CommutoSwapStorage {
 
-    constructor() CommutoSwapStorage(address(0), address(0), address(0), address(0)) public {}
+    constructor() CommutoSwapStorage(address(0), address(0), address(0), address(0), address(0)) public {}
 
     //Cancel open swap offer
     /*

@@ -78,7 +78,7 @@ contract CommutoSwap is CommutoSwapStorage {
         return swaps[swapID];
     }
 
-    constructor (address _serviceFeePool, address offerOpener, address offerEditor, address offerCanceler, address offerTaker) public CommutoSwapStorage(offerOpener, offerEditor, offerCanceler, offerTaker) {
+    constructor (address _serviceFeePool, address offerOpener, address offerEditor, address offerCanceler, address offerTaker, address swapFiller) public CommutoSwapStorage(offerOpener, offerEditor, offerCanceler, offerTaker, swapFiller) {
         owner = msg.sender;
         require(_serviceFeePool != address(0), "e0"); //"e0": "_serviceFeePool address cannot be zero"
         serviceFeePool = _serviceFeePool;
@@ -143,21 +143,16 @@ contract CommutoSwap is CommutoSwapStorage {
     //TODO: More fillSwap tests
     //Fill swap (deposit takenSwapAmount of STBL) as maker and seller
     function fillSwap(bytes16 swapID) public {
-        //Validate arguments
-        require(swaps[swapID].isCreated, "e33"); //"e33": "A swap with the specified id does not exist"
-        require(swaps[swapID].requiresFill && swaps[swapID].direction == SwapDirection.SELL, "e18"); //"e18": "Swap does not require filling"
-        require(swaps[swapID].maker == msg.sender, "e47"); //"e47": "Only maker and seller can fill swap"
-
-        //Update swap state
-        swaps[swapID].requiresFill = false;
-        emit SwapFilled(swapID);
-
-        //Find proper stablecoin contract
-        ERC20 token = ERC20(swaps[swapID].stablecoin);
-
-        //Lock taken swap amount in escrow
-        require(swaps[swapID].takenSwapAmount <= token.allowance(msg.sender, address(this)), "e13"); //"e13": "Token allowance must be >= required amount"
-        require(token.transferFrom(msg.sender, address(this), swaps[swapID].takenSwapAmount), "e14"); //"e14": "Token transfer to Commuto Protocol failed"
+        /*
+        Slither throws a high severity warning about the use of delegatecall. In this case it is necessary due to
+        contract size limitations, and also save since the CommutoSwapOfferCanceler address is immutable and set when
+        CommutoSwap is deployed, and therefore the call cannot be delegated to a malicious contract.
+        */
+        (bool success, bytes memory data) = commutoSwapFiller.delegatecall(
+            abi.encodeWithSignature("fillSwap(bytes16)",
+            swapID)
+        );
+        require(success, string (data) );
     }
 
     //Report payment sent for swap
