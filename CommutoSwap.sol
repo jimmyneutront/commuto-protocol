@@ -79,7 +79,7 @@ contract CommutoSwap is CommutoSwapStorage {
         return swaps[swapID];
     }
 
-    constructor (address _serviceFeePool, address offerOpener, address offerEditor, address offerCanceler, address offerTaker, address swapFiller, address paymentReporter) public CommutoSwapStorage(offerOpener, offerEditor, offerCanceler, offerTaker, swapFiller, paymentReporter) {
+    constructor (address _serviceFeePool, address offerOpener, address offerEditor, address offerCanceler, address offerTaker, address swapFiller, address paymentReporter, address swapCloser) public CommutoSwapStorage(offerOpener, offerEditor, offerCanceler, offerTaker, swapFiller, paymentReporter, swapCloser) {
         owner = msg.sender;
         require(_serviceFeePool != address(0), "e0"); //"e0": "_serviceFeePool address cannot be zero"
         serviceFeePool = _serviceFeePool;
@@ -186,54 +186,15 @@ contract CommutoSwap is CommutoSwapStorage {
 
     //Close swap and receive STBL from escrow
     function closeSwap(bytes16 swapID) public {
-        //Validate arguments
-        require(swaps[swapID].isCreated, "e33"); //"e33": "A swap with the specified id does not exist"
-        require(swaps[swapID].isPaymentReceived, "e40"); //"e40": "Payment receiving has not been reported for swap with specified id"
-
-        //Find proper stablecoin contract
-        ERC20 token = ERC20(swaps[swapID].stablecoin);
-
-        uint256 returnAmount;
-
-        //If caller is buyer and taker, return security deposit and swap amount, and send service fee to pool
-        if(swaps[swapID].direction == SwapDirection.SELL && swaps[swapID].taker == msg.sender) {
-            require(!swaps[swapID].hasBuyerClosed, "e41"); //"e41": "Buyer has already closed swap"
-            returnAmount = SafeMath.add(swaps[swapID].securityDepositAmount, swaps[swapID].takenSwapAmount);
-            swaps[swapID].hasBuyerClosed = true;
-            emit BuyerClosed(swapID);
-            require(token.transfer(swaps[swapID].taker, returnAmount), "e19"); //"e19": "Token transfer failed"
-            require(token.transfer(serviceFeePool, swaps[swapID].serviceFeeAmount), "e42"); //"e42": "Service fee transfer failed"
-        }
-        //If caller is buyer and maker, return security deposit, swap amount, and serviceFeeUpperBound - serviceFeeAmount, and send service fee to pool
-        else if (swaps[swapID].direction == SwapDirection.BUY && swaps[swapID].maker == msg.sender) {
-            require(!swaps[swapID].hasBuyerClosed, "e41"); //"e41": "Buyer has already closed swap"
-            uint256 serviceFeeAmountUpperBound = SafeMath.div(swaps[swapID].amountUpperBound, 100);
-            returnAmount = SafeMath.add(SafeMath.add(swaps[swapID].securityDepositAmount, swaps[swapID].takenSwapAmount), SafeMath.sub(serviceFeeAmountUpperBound, swaps[swapID].serviceFeeAmount));
-            swaps[swapID].hasBuyerClosed = true;
-            emit BuyerClosed(swapID);
-            require(token.transfer(swaps[swapID].maker, returnAmount), "e19"); //"e19": "Token transfer failed"
-            require(token.transfer(serviceFeePool, swaps[swapID].serviceFeeAmount), "e42"); //"e42": "Service fee transfer failed"
-        }
-        //If caller is seller and taker, return security deposit, and send service fee to pool
-        else if (swaps[swapID].direction == SwapDirection.BUY && swaps[swapID].taker == msg.sender) {
-            require(!swaps[swapID].hasSellerClosed, "e43"); //"e43": "Seller has already closed swap"
-            returnAmount = swaps[swapID].securityDepositAmount;
-            swaps[swapID].hasSellerClosed = true;
-            emit SellerClosed(swapID);
-            require(token.transfer(swaps[swapID].taker, returnAmount), "e19"); //"e19": "Token transfer failed"
-            require(token.transfer(serviceFeePool, swaps[swapID].serviceFeeAmount), "e42"); //"e42": "Service fee transfer failed"
-        }
-        //If caller is seller and maker, return security deposit and serviceFeeUpperBound - serviceFeeAmount, and send service fee to pool
-        else if (swaps[swapID].direction == SwapDirection.SELL && swaps[swapID].maker == msg.sender) {
-            require(!swaps[swapID].hasSellerClosed, "e43"); //"e43": "Seller has already closed swap"
-            uint256 serviceFeeAmountUpperBound = SafeMath.div(swaps[swapID].amountUpperBound, 100);
-            returnAmount = SafeMath.add(swaps[swapID].securityDepositAmount, SafeMath.sub(serviceFeeAmountUpperBound, swaps[swapID].serviceFeeAmount));
-            swaps[swapID].hasSellerClosed = true;
-            emit SellerClosed(swapID);
-            require(token.transfer(swaps[swapID].maker, returnAmount), "e19"); //"e19": "Token transfer failed"
-            require(token.transfer(serviceFeePool, swaps[swapID].serviceFeeAmount), "e42"); //"e42": "Service fee transfer failed"
-        } else {
-            revert("e44"); //"e44": "Only swap maker or taker can call this function"
-        }
+        /*
+        Slither throws a high severity warning about the use of delegatecall. In this case it is necessary due to
+        contract size limitations, and also safe since the CommutoSwapCloser address is immutable and set when
+        CommutoSwap is deployed, and therefore the call cannot be delegated to a malicious contract.
+        */
+        (bool success, bytes memory data) = commutoSwapCloser.delegatecall(
+            abi.encodeWithSignature("closeSwap(bytes16)",
+            swapID)
+        );
+        require(success, string (data) );
     }
 }

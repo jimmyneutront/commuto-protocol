@@ -167,7 +167,7 @@ class CommutoSwapTest(unittest.TestCase):
         CommutoSwapOfferTaker_address = w3.eth.wait_for_transaction_receipt(
             CommutoSwapOfferTaker_deployment_tx_hash).contractAddress
 
-        # Deploy CommutoSwapFiller contract
+        #Deploy CommutoSwapFiller contract
         compiled_CommutoSwapFiller = compile_files(
             ["../libraries/CommutoSwapFiller.sol"],
             allow_paths=["./"],
@@ -186,7 +186,7 @@ class CommutoSwapTest(unittest.TestCase):
         CommutoSwapFiller_address = w3.eth.wait_for_transaction_receipt(
             CommutoSwapFiller_deployment_tx_hash).contractAddress
 
-        # Deploy CommutoSwapPaymentReporter contract
+        #Deploy CommutoSwapPaymentReporter contract
         compiled_CommutoSwapPaymentReporter = compile_files(
             ["../libraries/CommutoSwapPaymentReporter.sol"],
             allow_paths=["./"],
@@ -205,6 +205,25 @@ class CommutoSwapTest(unittest.TestCase):
         CommutoSwapPaymentReporter_address = w3.eth.wait_for_transaction_receipt(
             CommutoSwapPaymentReporter_deployment_tx_hash).contractAddress
 
+        # Deploy CommutoSwapCloser contract
+        compiled_CommutoSwapCloser = compile_files(
+            ["../libraries/CommutoSwapCloser.sol"],
+            allow_paths=["./"],
+            output_values=["abi", "bin"],
+            optimize=False,
+        )
+        CommutoSwapCloser_abi = \
+            compiled_CommutoSwapCloser["../libraries/CommutoSwapCloser.sol:CommutoSwapCloser"][
+                "abi"]
+        CommutoSwapCloser_bytecode = \
+            compiled_CommutoSwapCloser["../libraries/CommutoSwapCloser.sol:CommutoSwapCloser"][
+                "bin"]
+        undeployed_CommutoSwapCloser = w3.eth.contract(abi=CommutoSwapCloser_abi,
+                                                       bytecode=CommutoSwapCloser_bytecode)
+        CommutoSwapCloser_deployment_tx_hash = undeployed_CommutoSwapCloser.constructor().transact()
+        CommutoSwapCloser_address = w3.eth.wait_for_transaction_receipt(
+            CommutoSwapCloser_deployment_tx_hash).contractAddress
+
         #Deploy CommutoSwap contract
         compiled_sol = compile_files(
             ["../CommutoSwap.sol"],
@@ -215,7 +234,6 @@ class CommutoSwapTest(unittest.TestCase):
         )
         commuto_swap_abi = compiled_sol["../CommutoSwap.sol:CommutoSwap"]["abi"]
         commuto_swap_bytecode = compiled_sol["../CommutoSwap.sol:CommutoSwap"]["bin"]
-        print(len(commuto_swap_bytecode)/2)
         undeployed_commuto_swap_contract = w3.eth.contract(abi=commuto_swap_abi, bytecode=commuto_swap_bytecode)
         commuto_swap_deployment_tx_hash = undeployed_commuto_swap_contract.constructor(w3.eth.accounts[2],
                                                                                        CommutoSwapOfferOpener_address,
@@ -224,6 +242,7 @@ class CommutoSwapTest(unittest.TestCase):
                                                                                        CommutoSwapOfferTaker_address,
                                                                                        CommutoSwapFiller_address,
                                                                                        CommutoSwapPaymentReporter_address,
+                                                                                       CommutoSwapCloser_address
                                                                                        ).transact()
         self.commuto_swap_deployment_tx_receipt = w3.eth.wait_for_transaction_receipt(commuto_swap_deployment_tx_hash)
         self.commuto_swap_contract = w3.eth.contract(

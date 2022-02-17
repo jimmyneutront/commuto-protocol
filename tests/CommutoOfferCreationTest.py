@@ -2,7 +2,7 @@ import CommutoSwapTest
 from hexbytes import HexBytes
 from uuid import uuid4
 
-class CommutoOfferCreationTests(CommutoSwapTest.CommutoSwapTest):
+class CommutoOfferCreationTest(CommutoSwapTest.CommutoSwapTest):
     def test_amountLowerBound_limit(self):
         try:
             tx_details = {

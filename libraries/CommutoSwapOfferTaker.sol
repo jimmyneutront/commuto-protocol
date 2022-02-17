@@ -10,7 +10,7 @@ import "./SafeMath.sol";
 
 contract CommutoSwapOfferTaker is CommutoSwapStorage {
 
-    constructor() CommutoSwapStorage(address(0), address(0), address(0), address(0), address(0), address(0)) public {}
+    constructor() CommutoSwapStorage(address(0), address(0), address(0), address(0), address(0), address(0), address(0)) public {}
 
     //Take a swap offer
     /*
