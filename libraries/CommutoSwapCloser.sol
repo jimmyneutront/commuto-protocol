@@ -7,6 +7,11 @@ import "./CommutoSwapStorage.sol";
 import "./CommutoSwapTypes.sol";
 import "./SafeMath.sol";
 
+/*
+Contains the closeSwap method, to which CommutoSwap delegates closeSwap calls to mark swaps as closed and complete
+STBL payment. This contract holds nothing in its own storage; its method is intended for use via delegatecall only, so
+swaps cannot be closed by calling CommutoSwapCloser directly.
+*/
 contract CommutoSwapCloser is CommutoSwapStorage {
 
     constructor() CommutoSwapStorage(address(0), address(0), address(0), address(0), address(0), address(0), address(0)) public {}

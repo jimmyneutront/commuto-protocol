@@ -2,6 +2,10 @@
 pragma solidity ^0.6.12;
 pragma experimental ABIEncoderV2;
 
+/*
+Contains Solidity types used by CommutoSwap
+*/
+
 enum SwapDirection  {
     BUY, //Maker has FIAT, wants STBL
     SELL //Maker has STBL, wants FIAT

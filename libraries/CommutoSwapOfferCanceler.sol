@@ -6,6 +6,11 @@ import "./AbstractERC20.sol";
 import "./CommutoSwapStorage.sol";
 import "./SafeMath.sol";
 
+/*
+Contains the cancelOffer method, to which CommutoSwap delegates cancelOffer calls to cancel offers and return deposited
+STBL to the offer maker. This contract holds nothing in its own storage; its method is intended for use via delegatecall
+only, so offers cannot be canceled by calling CommutoSwapOfferCanceler directly.
+*/
 contract CommutoSwapOfferCanceler is CommutoSwapStorage {
 
     constructor() CommutoSwapStorage(address(0), address(0), address(0), address(0), address(0), address(0), address(0)) public {}

@@ -4,6 +4,11 @@ pragma experimental ABIEncoderV2;
 
 import "./CommutoSwapStorage.sol";
 
+/*
+Contains the editOffer method, to which CommutoSwap delegates editOffer calles to change an offers's supported
+settlement methods and price. This contract holds nothing in its own storage; its method is intended for use via
+delegatecall only, so offers cannot be edited by calling CommutoSwapOfferEditor directly.
+*/
 contract CommutoSwapOfferEditor is CommutoSwapStorage{
 
     constructor() CommutoSwapStorage(address(0), address(0), address(0), address(0), address(0), address(0), address(0)) public {}

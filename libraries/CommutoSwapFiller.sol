@@ -7,6 +7,11 @@ import "./CommutoSwapStorage.sol";
 import "./CommutoSwapTypes.sol";
 import "./SafeMath.sol";
 
+/*
+Contains the fillSwap method, to which CommutoSwap delegates fillSwap calls in order to accept STBL deposit equal to the
+taken swap amount from the maker in maker-as-seller swaps. This contract holds nothing in its own storage; its method is
+intended for use via delegatecall only, so swaps cannot be filled by calling CommutoSwapFiller directly.
+*/
 contract CommutoSwapFiller is CommutoSwapStorage {
 
     constructor() CommutoSwapStorage(address(0), address(0), address(0), address(0), address(0), address(0), address(0)) public {}

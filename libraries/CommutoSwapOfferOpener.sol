@@ -7,6 +7,11 @@ import "./CommutoSwapStorage.sol";
 import "./CommutoSwapTypes.sol";
 import "./SafeMath.sol";
 
+/*
+Contains the openOffer method, to which CommutoSwap delegates openOffer calls to open a new swap offer. This contract
+holds nothing in its own storage; its method is intended for use via delegatecall only, so offers cannot be opened by
+calling CommutoSwapOfferOpener directly.
+*/
 contract CommutoSwapOfferOpener is CommutoSwapStorage {
 
     constructor() CommutoSwapStorage(address(0), address(0), address(0), address(0), address(0), address(0), address(0)) public {}

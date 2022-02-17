@@ -85,7 +85,7 @@ contract CommutoSwap is CommutoSwapStorage {
         serviceFeePool = _serviceFeePool;
     }
 
-    //Create a new swap offer by delegating to CommutoSwapOfferOpener
+    //Create a new swap offer
     function openOffer(bytes16 offerID, Offer memory newOffer) public {
         /*
         Slither throws a high severity warning about the use of delegatecall. In this case it is necessary due to

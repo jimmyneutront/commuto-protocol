@@ -7,7 +7,11 @@ import "./CommutoSwapStorage.sol";
 import "./CommutoSwapTypes.sol";
 import "./SafeMath.sol";
 
-
+/*
+Contains the takeOffer method, to which CommutoSwap delegates takeOffer calls to take an open swap offer. This contract
+holds nothing in its own storage; its method is for use via delegatecall only, so offers cannot be taken by calling
+CommutoSwapOfferTaker directly.
+*/
 contract CommutoSwapOfferTaker is CommutoSwapStorage {
 
     constructor() CommutoSwapStorage(address(0), address(0), address(0), address(0), address(0), address(0), address(0)) public {}

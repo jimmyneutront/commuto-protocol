@@ -3,6 +3,9 @@ pragma solidity ^0.6.12;
 
 import "./CommutoSwapTypes.sol";
 
+/*
+Establishes the contract storage layout for CommutoSwap and all the contracts to which CommutoSwap delegates calls
+*/
 contract CommutoSwapStorage {
 
     address public owner = address(0);

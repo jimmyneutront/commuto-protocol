@@ -4,6 +4,12 @@ pragma experimental ABIEncoderV2;
 
 import "./CommutoSwapStorage.sol";
 
+/*
+Contains reportPaymentSent and reportPaymentReceived methods, to which CommutoSwap delegates reportPaymentSent and
+reportPaymentReceived calls respectively. This contract holds nothing in its own storage; its methods are for use via
+delegatecall only, so payment for a swap cannot be reported as sent nor as received by calling
+CommutoSwapPaymentReporter directly.
+*/
 contract CommutoSwapPaymentReporter is CommutoSwapStorage {
 
     constructor() CommutoSwapStorage(address(0), address(0), address(0), address(0), address(0), address(0), address(0)) public {}
