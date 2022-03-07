@@ -10,7 +10,6 @@ import "./libraries/CommutoSwapTypes.sol";
 import "./libraries/SafeMath.sol";
 import "./libraries/CommutoSwapPaymentReporter.sol";
 
-//TODO: Deal with contract size limitation
 //TODO: Fee percentage set by token holders
 //TODO: Better code comments
 contract CommutoSwap is CommutoSwapStorage {
