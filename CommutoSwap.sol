@@ -75,7 +75,8 @@ contract CommutoSwap is CommutoSwapStorage {
     resolve disputes)
     */
     function setDisputeAgentActive(address disputeAgentAddress, bool isActive) public {
-
+        require(msg.sender == owner, "e1"); //"e1": "Only contract owner can set dispute agent activity state"
+        require(disputeAgentAddress != 0, "e2"); //"e2": "Dispute agent address cannot be the zero address"
     }
 
     function getOffer(bytes16 offerID) view public returns (Offer memory) {
