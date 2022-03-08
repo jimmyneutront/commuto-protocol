@@ -25,6 +25,7 @@ contract CommutoSwapCloser is CommutoSwapStorage {
         //Validate arguments
         require(swaps[swapID].isCreated, "e33"); //"e33": "A swap with the specified id does not exist"
         require(swaps[swapID].isPaymentReceived, "e40"); //"e40": "Payment receiving has not been reported for swap with specified id"
+        require(swaps[swapID].disputeRaiser == DisputeRaiser.NONE, "e52"); //"e52": "Swap cannot be closed if it is disputed"
 
         //Find proper stablecoin contract
         ERC20 token = ERC20(swaps[swapID].stablecoin);

@@ -52,4 +52,5 @@ commuto_swap_error_messages = {
     "e49": "Only owner can set stablecoin support",
     "e50": "Payment sending cannot be reported if swap is disputed",
     "e51": "Payment receiving cannot be reported if swap is disputed",
+    "e52": "Swap cannot be closed if it is disputed",
 }
