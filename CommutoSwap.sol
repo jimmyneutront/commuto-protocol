@@ -238,5 +238,8 @@ contract CommutoSwap is CommutoSwapStorage {
     function raiseDispute(bytes16 swapID, address disputeAgent0, address disputeAgent1, address disputeAgent2) public {
         //Validate arguments
         require(swaps[swapID].isCreated, "e33"); //"e33": "A swap with the specified id does not exist"
+        require(disputeAgents[disputeAgent0], "e3"); //"e3": "Selected dispute agents must be active"
+        require(disputeAgents[disputeAgent1], "e3"); //"e3": "Selected dispute agents must be active"
+        require(disputeAgents[disputeAgent2], "e3"); //"e3": "Selected dispute agents must be active"
     }
 }

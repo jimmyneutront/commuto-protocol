@@ -2,7 +2,7 @@ commuto_swap_error_messages = {
     "e0": "_serviceFeePool address cannot be zero",
     "e1": "Only contract owner can set dispute agent activity state",
     "e2": "Dispute agent address cannot be the zero address",
-    "e3": "",
+    "e3": "Selected dispute agents must be active",
     "e4": "",
     "e5": "An offer with the specified id already exists",
     "e6": "The minimum swap amount must be greater than zero",
