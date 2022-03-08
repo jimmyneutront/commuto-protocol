@@ -50,4 +50,5 @@ commuto_swap_error_messages = {
     "e47": "Only maker and seller can fill swap",
     "e48": "The swap must be filled before payment is sent",
     "e49": "Only owner can set stablecoin support",
+    "e50": "Payment sending cannot be reported if swap is disputed",
 }

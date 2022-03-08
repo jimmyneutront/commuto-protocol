@@ -31,6 +31,7 @@ contract CommutoSwapPaymentReporter is CommutoSwapStorage {
         } else {
             revert("e36"); //"e36": "Swap has invalid direction"
         }
+        require(swaps[swapID].disputeRaiser == DisputeRaiser.NONE, "e50"); //"e50": "Payment sending cannot be reported if swap is disputed",
 
         //Mark payment sent and notify
         swaps[swapID].isPaymentSent = true;
