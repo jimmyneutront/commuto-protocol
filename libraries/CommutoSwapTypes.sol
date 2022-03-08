@@ -11,6 +11,12 @@ enum SwapDirection  {
     SELL //Maker has STBL, wants FIAT
 }
 
+enum DisputeRaiser  {
+    NONE, //Swap is not disputed
+    MAKER, //Maker raised dispute
+    TAKER //Taker raised dispute
+}
+
 struct Offer {
     bool isCreated;
     bool isTaken;
@@ -47,4 +53,5 @@ struct Swap {
     bool isPaymentReceived;
     bool hasBuyerClosed;
     bool hasSellerClosed;
+    DisputeRaiser disputeRaiser;
 }

@@ -70,6 +70,7 @@ contract CommutoSwapOfferTaker is CommutoSwapStorage {
         newSwap.isPaymentReceived = false;
         newSwap.hasBuyerClosed = false;
         newSwap.hasSellerClosed = false;
+        newSwap.disputeRaiser = DisputeRaiser.NONE;
         swaps[offerID] = newSwap;
         emit OfferTaken(offerID, newSwap.takerInterfaceId);
 

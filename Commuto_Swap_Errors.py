@@ -32,7 +32,7 @@ commuto_swap_error_messages = {
     "e29": "Prices must match",
     "e30": "Settlement method must be accepted by maker",
     "e31": "Protocol versions must match",
-    "e32": "",
+    "e32": "Maker-as-seller swap cannot be filled if swap is disputed",
     "e33": "A swap with the specified id does not exist",
     "e34": "Payment sending has already been reported for swap with specified id",
     "e35": "Payment sending can only be reported by buyer",

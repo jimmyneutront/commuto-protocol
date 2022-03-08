@@ -26,6 +26,7 @@ contract CommutoSwapFiller is CommutoSwapStorage {
         require(swaps[swapID].isCreated, "e33"); //"e33": "A swap with the specified id does not exist"
         require(swaps[swapID].requiresFill && swaps[swapID].direction == SwapDirection.SELL, "e18"); //"e18": "Swap does not require filling"
         require(swaps[swapID].maker == msg.sender, "e47"); //"e47": "Only maker and seller can fill swap"
+        require(swaps[swapID].disputeRaiser == DisputeRaiser.NONE, "e32"); //"e32": "Maker-as-seller swap cannot be filled if swap is disputed"
 
         //Update swap state
         swaps[swapID].requiresFill = false;

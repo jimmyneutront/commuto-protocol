@@ -171,7 +171,7 @@ contract CommutoSwap is CommutoSwapStorage {
         CommutoSwap is deployed, and therefore the call cannot be delegated to a malicious contract.
         */
         (bool success, bytes memory data) = commutoSwapOfferTaker.delegatecall(
-            abi.encodeWithSignature("takeOffer(bytes16,(bool,bool,address,bytes,address,bytes,address,uint256,uint256,uint256,uint256,uint256,uint8,bytes,bytes,uint256,bool,bool,bool,bool))",
+            abi.encodeWithSignature("takeOffer(bytes16,(bool,bool,address,bytes,address,bytes,address,uint256,uint256,uint256,uint256,uint256,uint8,bytes,bytes,uint256,bool,bool,bool,bool,uint8))",
             offerID, newSwap)
         );
         require(success, string (data) );
@@ -241,8 +241,14 @@ contract CommutoSwap is CommutoSwapStorage {
         require(disputeAgents[disputeAgent0], "e3"); //"e3": "Selected dispute agents must be active"
         require(disputeAgents[disputeAgent1], "e3"); //"e3": "Selected dispute agents must be active"
         require(disputeAgents[disputeAgent2], "e3"); //"e3": "Selected dispute agents must be active"
-        require(msg.sender == swaps[swapID].maker || msg.sender == swaps[swapID].maker, "e44"); //"e44": "Only swap maker or taker can call this function"
         require(!swaps[swapID].hasBuyerClosed && !swaps[swapID].hasSellerClosed, "e4"); //"e4": "Dispute cannot be raised if maker or taker has already closed"
+        if (msg.sender == swaps[swapID].maker) {
+            swaps[swapID].disputeRaiser = DisputeRaiser.MAKER;
+        } else if (msg.sender == swaps[swapID].taker) {
+            swaps[swapID].disputeRaiser = DisputeRaiser.TAKER;
+        } else {
+            revert("e44"); //"e44": "Only swap maker or taker can call this function"
+        }
 
         emit DisputeRaised(swapID, disputeAgent0, disputeAgent1, disputeAgent2);
     }
