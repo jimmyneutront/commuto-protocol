@@ -261,4 +261,9 @@ contract CommutoSwap is CommutoSwapStorage {
         emit DisputeRaised(swapID, disputeAgent0, disputeAgent1, disputeAgent2);
     }
 
+    //Propose a resolution to a disputed swap
+    function proposeResolution(bytes16 swapID, uint256 makerPayout, uint256 takerPayout, uint256 confiscationPayout) public {
+        require(swaps[swapID].disputeRaiser != DisputeRaiser.NONE, "e54"); //"e54": "Swap doesn't exist or isn't disputed"
+    }
+
 }

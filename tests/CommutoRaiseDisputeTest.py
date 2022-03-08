@@ -821,13 +821,6 @@ class CommutoRaiseDisputeTest(CommutoSwapTest.CommutoSwapTest):
             if not "e53" in str(e):
                 raise e
 
-    #Note: this should probably be moved to a CommutoProposeResolutionTest file
-    # TODO: Ensure swap is disputed
-    # TODO: Ensure resolution proposal can't be submitted if the maker or taker has already accepted or rejected
-    # TODO: Ensure total payout amount in resolution proposals must equal total amount locked in escrow, minus service fee
-    # TODO: Ensure resolution proposals can only be submitted by dispute agents assigned to swap
-    # TODO: Ensure proposing resolution emits event
-
     #Note: this should probably be moved to a CommutoReactToResolutionTest file
     # TODO: Ensure only maker or taker can react to resolution proposal
     # TODO: Ensure maker and taker can't react to resolution proposal more than once
