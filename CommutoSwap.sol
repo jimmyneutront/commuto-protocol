@@ -233,4 +233,10 @@ contract CommutoSwap is CommutoSwapStorage {
         );
         require(success, string (data) );
     }
+
+    //Raise a dispute for a swap
+    function raiseDispute(bytes16 swapID, address disputeAgent0, address disputeAgent1, address disputeAgent2) public {
+        //Validate arguments
+        require(swaps[swapID].isCreated, "e33"); //"e33": "A swap with the specified id does not exist"
+    }
 }

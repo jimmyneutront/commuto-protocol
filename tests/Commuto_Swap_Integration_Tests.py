@@ -2,6 +2,12 @@ import CommutoSwapTest
 from hexbytes import HexBytes
 from uuid import uuid4
 
+# TODO: Test disputed swap payout given agreement by maker and taker
+# TODO: Test escalation to token holders given no response from dispute agents
+# TODO: Test escalation to token holders given lack of response from maker
+# TODO: Test escalation to token holders given lack of response from taker
+# TODO: Test immediate escalation to token holders given rejection of resolution proposal
+
 class CommutoSwapIntegrationTests(CommutoSwapTest.CommutoSwapTest):
 
     def test_maker_as_seller_swap(self):
