@@ -251,6 +251,14 @@ contract CommutoSwap is CommutoSwapStorage {
             revert("e44"); //"e44": "Only swap maker or taker can call this function"
         }
 
+        //Record the block number at which the dispute is raised
+        disputes[swapID].disputeRaisedBlockNum = block.number;
+        //Record the addresses of selected dispute agents
+        disputes[swapID].disputeAgent0 = disputeAgent0;
+        disputes[swapID].disputeAgent1 = disputeAgent1;
+        disputes[swapID].disputeAgent2 = disputeAgent2;
+
         emit DisputeRaised(swapID, disputeAgent0, disputeAgent1, disputeAgent2);
     }
+
 }

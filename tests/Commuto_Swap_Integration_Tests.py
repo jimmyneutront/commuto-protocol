@@ -3,10 +3,12 @@ from hexbytes import HexBytes
 from uuid import uuid4
 
 # TODO: Test disputed swap payout given agreement by maker and taker
+# TODO: Test immediate escalation to token holders given rejection of resolution proposal
 # TODO: Test escalation to token holders given no response from dispute agents
 # TODO: Test escalation to token holders given lack of response from maker
 # TODO: Test escalation to token holders given lack of response from taker
-# TODO: Test immediate escalation to token holders given rejection of resolution proposal
+
+# TODO: Check payout amounts for each test
 
 class CommutoSwapIntegrationTests(CommutoSwapTest.CommutoSwapTest):
 

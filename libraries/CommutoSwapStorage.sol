@@ -76,6 +76,11 @@ contract CommutoSwapStorage {
     mapping (bytes16 => mapping (bytes => bool)) internal offerSettlementMethods;
     mapping (bytes16 => Swap) internal swaps;
 
+    /*
+    Mapping containing the disputes for each disputed swap.
+    */
+    mapping (bytes16 => Dispute) internal disputes;
+
     constructor(address offerOpener, address offerEditor, address offerCanceler, address offerTaker, address swapFiller, address paymentReporter, address swapCloser) public {
         commutoSwapOfferOpener = offerOpener;
         commutoSwapOfferEditor = offerEditor;

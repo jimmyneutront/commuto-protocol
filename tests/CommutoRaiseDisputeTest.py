@@ -822,7 +822,7 @@ class CommutoRaiseDisputeTest(CommutoSwapTest.CommutoSwapTest):
                 raise e
 
     #Note: this should probably be moved to a CommutoProposeResolutionTest file
-    # TODO: Ensure swap exists
+    # TODO: Ensure swap is disputed
     # TODO: Ensure resolution proposal can't be submitted if the maker or taker has already accepted or rejected
     # TODO: Ensure total payout amount in resolution proposals must equal total amount locked in escrow, minus service fee
     # TODO: Ensure resolution proposals can only be submitted by dispute agents assigned to swap
