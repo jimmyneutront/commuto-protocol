@@ -53,4 +53,5 @@ commuto_swap_error_messages = {
     "e50": "Payment sending cannot be reported if swap is disputed",
     "e51": "Payment receiving cannot be reported if swap is disputed",
     "e52": "Swap cannot be closed if it is disputed",
+    "e53": "Dispute cannot be raised for an already-disputed swap",
 }
