@@ -31,7 +31,7 @@ contract CommutoSwapPaymentReporter is CommutoSwapStorage {
         } else {
             revert("e36"); //"e36": "Swap has invalid direction"
         }
-        require(swaps[swapID].disputeRaiser == DisputeRaiser.NONE, "e50"); //"e50": "Payment sending cannot be reported if swap is disputed",
+        require(swaps[swapID].disputeRaiser == DisputeRaiser.NONE, "e50"); //"e50": "Payment sending cannot be reported if swap is disputed"
 
         //Mark payment sent and notify
         swaps[swapID].isPaymentSent = true;
@@ -55,6 +55,7 @@ contract CommutoSwapPaymentReporter is CommutoSwapStorage {
         } else {
             revert("e36"); //"e36": "Swap has invalid direction"
         }
+        require(swaps[swapID].disputeRaiser == DisputeRaiser.NONE, "e51"); //"e51": "Payment receiving cannot be reported if swap is disputed"
 
         //Mark payment received and notify
         swaps[swapID].isPaymentReceived = true;
