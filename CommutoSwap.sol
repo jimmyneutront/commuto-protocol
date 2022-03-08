@@ -70,6 +70,14 @@ contract CommutoSwap is CommutoSwapStorage {
         return supportedStablecoins;
     }
 
+    /*
+    Set the active state of a dispute agent (True = active, shall resolve disputes, False = not active, shall not
+    resolve disputes)
+    */
+    function setDisputeAgentActive(address disputeAgentAddress, bool isActive) public {
+
+    }
+
     function getOffer(bytes16 offerID) view public returns (Offer memory) {
         return offers[offerID];
     }

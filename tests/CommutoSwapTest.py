@@ -272,3 +272,18 @@ class CommutoSwapTest(unittest.TestCase):
         self.taker_address = w3.eth.accounts[1]
         self.commuto_service_fee_account = w3.eth.accounts[2]
         self.w3 = w3
+
+        # Add dispute agents
+        self.dispute_agent_0 = w3.eth.accounts[3]
+        self.dispute_agent_1 = w3.eth.accounts[4]
+        self.dispute_agent_2 = w3.eth.accounts[5]
+
+        tx_hash = self.commuto_swap_contract.functions.setDisputeAgentActive(self.dispute_agent_0, False).transact()
+        w3.eth.wait_for_transaction_receipt(tx_hash)
+        tx_hash = self.commuto_swap_contract.functions.setDisputeAgentActive(self.dispute_agent_0, False).transact()
+        w3.eth.wait_for_transaction_receipt(tx_hash)
+        tx_hash = self.commuto_swap_contract.functions.setDisputeAgentActive(self.dispute_agent_0, False).transact()
+        w3.eth.wait_for_transaction_receipt(tx_hash)
+
+    def test_setup(self):
+        pass
