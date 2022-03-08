@@ -176,7 +176,88 @@ class CommutoDisputeTest(CommutoSwapTest.CommutoSwapTest):
             if not "e44" in str(e):
                 raise e
 
-    # TODO: Ensure event is emitted when dispute is raised
+    def test_raiseDispute_emits_event(self):
+        #Ensure raiseDispute emits DisputeRaised event upon success
+        newOfferID = HexBytes(uuid4().bytes)
+        DisputeRaised_event_filter = self.commuto_swap_contract.events.DisputeRaised\
+            .createFilter(fromBlock="latest",
+                             argument_filters={
+                                 'swapID': newOfferID,
+                             })
+        tx_details = {
+            "from": self.maker_address
+        }
+        newOffer = {
+            "isCreated": True,
+            "isTaken": True,
+            "maker": self.maker_address,
+            "interfaceId": HexBytes("an interface Id here".encode("utf-8").hex()),
+            "stablecoin": self.dai_deployment_tx_receipt.contractAddress,
+            "amountLowerBound": 100,
+            "amountUpperBound": 100,
+            "securityDepositAmount": 10,
+            "direction": 1,
+            "price": HexBytes("a price here".encode("utf-8").hex()),
+            "settlementMethods": ["USD-SWIFT".encode("utf-8"), ],
+            "protocolVersion": 1,
+        }
+        self.test_dai_contract.functions.increaseAllowance(
+            self.commuto_swap_deployment_tx_receipt.contractAddress,
+            11,
+        ).transact(tx_details)
+        self.commuto_swap_contract.functions.openOffer(
+            newOfferID,
+            newOffer,
+        ).transact(tx_details)
+        tx_details = {
+            "from": self.taker_address
+        }
+        newSwap = {
+            "isCreated": False,
+            "requiresFill": True,
+            "maker": self.maker_address,
+            "makerInterfaceId": HexBytes("an interface Id here".encode("utf-8").hex()),
+            "taker": self.taker_address,
+            "takerInterfaceId": HexBytes("an interface Id here".encode("utf-8").hex()),
+            "stablecoin": self.dai_deployment_tx_receipt.contractAddress,
+            "amountLowerBound": 100,
+            "amountUpperBound": 100,
+            "securityDepositAmount": 10,
+            "takenSwapAmount": 100,
+            "serviceFeeAmount": 1,
+            "direction": 1,
+            "price": HexBytes("a price here".encode("utf-8").hex()),
+            "settlementMethod": "USD-SWIFT".encode("utf-8"),
+            "protocolVersion": 1,
+            "isPaymentSent": True,
+            "isPaymentReceived": True,
+            "hasBuyerClosed": True,
+            "hasSellerClosed": True,
+        }
+        self.test_dai_contract.functions.increaseAllowance(
+            self.commuto_swap_deployment_tx_receipt.contractAddress,
+            11,
+        ).transact(tx_details)
+        self.commuto_swap_contract.functions.takeOffer(
+            newOfferID,
+            newSwap,
+        ).transact(tx_details)
+        tx_details = {
+            "from": self.maker_address
+        }
+        self.commuto_swap_contract.functions.raiseDispute(
+            newOfferID,
+            self.dispute_agent_0,
+            self.dispute_agent_1,
+            self.dispute_agent_2
+        ).transact(tx_details)
+        events = DisputeRaised_event_filter.get_new_entries()
+        self.assertEqual(len(events), 1)
+        self.assertEqual(events[0]["args"]["swapID"], newOfferID)
+        self.assertEqual(events[0]["args"]["disputeAgent0"], self.dispute_agent_0)
+        self.assertEqual(events[0]["args"]["disputeAgent1"], self.dispute_agent_1)
+        self.assertEqual(events[0]["args"]["disputeAgent2"], self.dispute_agent_2)
+
     # TODO: Ensure dispute can't be raised if maker has closed
     # TODO: Ensure dispute can't be raised if taker has closed
     # TODO: Ensure swap can't be filled if swap is disputed
