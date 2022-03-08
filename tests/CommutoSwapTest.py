@@ -12,6 +12,10 @@ class CommutoSwapTest(unittest.TestCase):
         if not w3.isConnected():
             raise Exception("No connection to Web3 Provider")
 
+        tx_details = {
+            "from": w3.eth.accounts[2]
+        }
+
         test_dai_abi = '[{"inputs": [],"stateMutability": "nonpayable","type": "constructor"},{"anonymous": false,"inputs": [{"indexed": true,"internalType": "address","name": "owner","type": "address"},{"indexed": true,"internalType": "address","name": "spender","type": "address"},{"indexed": false,"internalType": "uint256","name": "value","type": "uint256"}],"name": "Approval","type": "event"},{"anonymous": false,"inputs": [{"indexed": true,"internalType": "address","name": "from","type": "address"},{"indexed": true,"internalType": "address","name": "to","type": "address"},{"indexed": false,"internalType": "uint256","name": "value","type": "uint256"}],"name": "Transfer","type": "event"},{"inputs": [{"internalType": "address","name": "owner","type": "address"},{"internalType": "address","name": "spender","type": "address"}],"name": "allowance","outputs": [{"internalType": "uint256","name": "","type": "uint256"}],"stateMutability": "view","type": "function"},{"inputs": [{"internalType": "address","name": "spender","type": "address"},{"internalType": "uint256","name": "amount","type": "uint256"}],"name": "approve","outputs": [{"internalType": "bool","name": "","type": "bool"}],"stateMutability": "nonpayable","type": "function"},{"inputs": [{"internalType": "address","name": "account","type": "address"}],"name": "balanceOf","outputs": [{"internalType": "uint256","name": "","type": "uint256"}],"stateMutability": "view","type": "function"},{"inputs": [],"name": "decimals","outputs": [{"internalType": "uint8","name": "","type": "uint8"}],"stateMutability": "view","type": "function"},{"inputs": [{"internalType": "address","name": "spender","type": "address"},{"internalType": "uint256","name": "subtractedValue","type": "uint256"}],"name": "decreaseAllowance","outputs": [{"internalType": "bool","name": "","type": "bool"}],"stateMutability": "nonpayable","type": "function"},{"inputs": [{"internalType": "address","name": "spender","type": "address"},{"internalType": "uint256","name": "addedValue","type": "uint256"}],"name": "increaseAllowance","outputs": [{"internalType": "bool","name": "","type": "bool"}],"stateMutability": "nonpayable","type": "function"},{"inputs": [{"internalType": "address","name": "account","type": "address"},{"internalType": "uint256","name": "amount","type": "uint256"}],"name": "mint","outputs": [],"stateMutability": "nonpayable","type": "function"},{"inputs": [],"name": "name","outputs": [{"internalType": "string","name": "","type": "string"}],"stateMutability": "view","type": "function"},{"inputs": [],"name": "symbol","outputs": [{"internalType": "string","name": "","type": "string"}],"stateMutability": "view","type": "function"},{"inputs": [],"name": "totalSupply","outputs": [{"internalType": "uint256","name": "","type": "uint256"}],"stateMutability": "view","type": "function"},{"inputs": [{"internalType": "address","name": "recipient","type": "address"},{"internalType": "uint256","name": "amount","type": "uint256"}],"name": "transfer","outputs": [{"internalType": "bool","name": "","type": "bool"}],"stateMutability": "nonpayable","type": "function"},{"inputs": [{"internalType": "address","name": "sender","type": "address"},{"internalType": "address","name": "recipient","type": "address"},{"internalType": "uint256","name": "amount","type": "uint256"}],"name": "transferFrom","outputs": [{"internalType": "bool","name": "","type": "bool"}],"stateMutability": "nonpayable","type": "function"}]'
         test_dai_remix_bytecode_output = {
             "linkReferences": {},
@@ -51,28 +55,28 @@ class CommutoSwapTest(unittest.TestCase):
         }
         undeployed_test_usdt_contract = w3.eth.contract(abi=test_usdt_abi,
                                                         bytecode=test_usdt_remix_bytecode_output["object"])
-        dai_deployment_tx_hash = undeployed_test_dai_contract.constructor().transact()
+        dai_deployment_tx_hash = undeployed_test_dai_contract.constructor().transact(tx_details)
         self.dai_deployment_tx_receipt = w3.eth.wait_for_transaction_receipt(dai_deployment_tx_hash)
         self.test_dai_contract = w3.eth.contract(
             address=self.dai_deployment_tx_receipt.contractAddress,
             abi=test_dai_abi
         )
 
-        usdc_deployment_tx_hash = undeployed_test_usdc_contract.constructor().transact()
+        usdc_deployment_tx_hash = undeployed_test_usdc_contract.constructor().transact(tx_details)
         self.usdc_deployment_tx_receipt = w3.eth.wait_for_transaction_receipt(usdc_deployment_tx_hash)
         self.test_usdc_contract = w3.eth.contract(
             address=self.usdc_deployment_tx_receipt.contractAddress,
             abi=test_usdc_abi
         )
 
-        busd_deployment_tx_hash = undeployed_test_busd_contract.constructor().transact()
+        busd_deployment_tx_hash = undeployed_test_busd_contract.constructor().transact(tx_details)
         self.busd_deployment_tx_receipt = w3.eth.wait_for_transaction_receipt(busd_deployment_tx_hash)
         self.test_busd_contract = w3.eth.contract(
             address=self.busd_deployment_tx_receipt.contractAddress,
             abi=test_busd_abi
         )
 
-        usdt_deployment_tx_hash = undeployed_test_usdt_contract.constructor().transact()
+        usdt_deployment_tx_hash = undeployed_test_usdt_contract.constructor().transact(tx_details)
         self.usdt_deployment_tx_receipt = w3.eth.wait_for_transaction_receipt(usdt_deployment_tx_hash)
         test_usdt_contract = w3.eth.contract(
             address=self.usdt_deployment_tx_receipt.contractAddress,
@@ -84,21 +88,21 @@ class CommutoSwapTest(unittest.TestCase):
         ERC20_recipient_account_one = w3.eth.accounts[1]
         token_mint_amount = 10_000_000_000
 
-        tx_hash = self.test_dai_contract.functions.mint(ERC20_recipient_account_zero, token_mint_amount).transact()
+        tx_hash = self.test_dai_contract.functions.mint(ERC20_recipient_account_zero, token_mint_amount).transact(tx_details)
         w3.eth.wait_for_transaction_receipt(tx_hash)
-        tx_hash = self.test_dai_contract.functions.mint(ERC20_recipient_account_one, token_mint_amount).transact()
+        tx_hash = self.test_dai_contract.functions.mint(ERC20_recipient_account_one, token_mint_amount).transact(tx_details)
         w3.eth.wait_for_transaction_receipt(tx_hash)
-        tx_hash = self.test_dai_contract.functions.mint(ERC20_recipient_account_zero, token_mint_amount).transact()
+        tx_hash = self.test_dai_contract.functions.mint(ERC20_recipient_account_zero, token_mint_amount).transact(tx_details)
         w3.eth.wait_for_transaction_receipt(tx_hash)
-        tx_hash = self.test_dai_contract.functions.mint(ERC20_recipient_account_one, token_mint_amount).transact()
+        tx_hash = self.test_dai_contract.functions.mint(ERC20_recipient_account_one, token_mint_amount).transact(tx_details)
         w3.eth.wait_for_transaction_receipt(tx_hash)
-        tx_hash = self.test_dai_contract.functions.mint(ERC20_recipient_account_zero, token_mint_amount).transact()
+        tx_hash = self.test_dai_contract.functions.mint(ERC20_recipient_account_zero, token_mint_amount).transact(tx_details)
         w3.eth.wait_for_transaction_receipt(tx_hash)
-        tx_hash = self.test_dai_contract.functions.mint(ERC20_recipient_account_one, token_mint_amount).transact()
+        tx_hash = self.test_dai_contract.functions.mint(ERC20_recipient_account_one, token_mint_amount).transact(tx_details)
         w3.eth.wait_for_transaction_receipt(tx_hash)
-        tx_hash = test_usdt_contract.functions.mint(ERC20_recipient_account_zero, token_mint_amount).transact()
+        tx_hash = test_usdt_contract.functions.mint(ERC20_recipient_account_zero, token_mint_amount).transact(tx_details)
         w3.eth.wait_for_transaction_receipt(tx_hash)
-        tx_hash = test_usdt_contract.functions.mint(ERC20_recipient_account_one, token_mint_amount).transact()
+        tx_hash = test_usdt_contract.functions.mint(ERC20_recipient_account_one, token_mint_amount).transact(tx_details)
         w3.eth.wait_for_transaction_receipt(tx_hash)
 
         #Deploy CommutoSwapOfferOpener contract
@@ -111,7 +115,7 @@ class CommutoSwapTest(unittest.TestCase):
         CommutoSwapOfferOpener_abi = compiled_CommutoSwapOfferOpener["../libraries/CommutoSwapOfferOpener.sol:CommutoSwapOfferOpener"]["abi"]
         CommutoSwapOfferOpener_bytecode = compiled_CommutoSwapOfferOpener["../libraries/CommutoSwapOfferOpener.sol:CommutoSwapOfferOpener"]["bin"]
         undeployed_CommutoSwapOfferOpener = w3.eth.contract(abi=CommutoSwapOfferOpener_abi, bytecode=CommutoSwapOfferOpener_bytecode)
-        CommutoSwapOfferOpener_deployment_tx_hash = undeployed_CommutoSwapOfferOpener.constructor().transact()
+        CommutoSwapOfferOpener_deployment_tx_hash = undeployed_CommutoSwapOfferOpener.constructor().transact(tx_details)
         CommutoSwapOfferOpener_address = w3.eth.wait_for_transaction_receipt(CommutoSwapOfferOpener_deployment_tx_hash).contractAddress
 
         #Deploy CommutoSwapOfferEditor contract
@@ -127,7 +131,7 @@ class CommutoSwapTest(unittest.TestCase):
         compiled_CommutoSwapOfferEditor["../libraries/CommutoSwapOfferEditor.sol:CommutoSwapOfferEditor"]["bin"]
         undeployed_CommutoSwapOfferEditor = w3.eth.contract(abi=CommutoSwapOfferEditor_abi,
                                                             bytecode=CommutoSwapOfferEditor_bytecode)
-        CommutoSwapOfferEditor_deployment_tx_hash = undeployed_CommutoSwapOfferEditor.constructor().transact()
+        CommutoSwapOfferEditor_deployment_tx_hash = undeployed_CommutoSwapOfferEditor.constructor().transact(tx_details)
         CommutoSwapOfferEditor_address = w3.eth.wait_for_transaction_receipt(
             CommutoSwapOfferEditor_deployment_tx_hash).contractAddress
 
@@ -144,7 +148,7 @@ class CommutoSwapTest(unittest.TestCase):
             compiled_CommutoSwapOfferCanceler["../libraries/CommutoSwapOfferCanceler.sol:CommutoSwapOfferCanceler"]["bin"]
         undeployed_CommutoSwapOfferCanceler = w3.eth.contract(abi=CommutoSwapOfferCanceler_abi,
                                                             bytecode=CommutoSwapOfferCanceler_bytecode)
-        CommutoSwapOfferCanceler_deployment_tx_hash = undeployed_CommutoSwapOfferCanceler.constructor().transact()
+        CommutoSwapOfferCanceler_deployment_tx_hash = undeployed_CommutoSwapOfferCanceler.constructor().transact(tx_details)
         CommutoSwapOfferCanceler_address = w3.eth.wait_for_transaction_receipt(
             CommutoSwapOfferCanceler_deployment_tx_hash).contractAddress
 
@@ -163,7 +167,7 @@ class CommutoSwapTest(unittest.TestCase):
                 "bin"]
         undeployed_CommutoSwapOfferTaker = w3.eth.contract(abi=CommutoSwapOfferTaker_abi,
                                                               bytecode=CommutoSwapOfferTaker_bytecode)
-        CommutoSwapOfferTaker_deployment_tx_hash = undeployed_CommutoSwapOfferTaker.constructor().transact()
+        CommutoSwapOfferTaker_deployment_tx_hash = undeployed_CommutoSwapOfferTaker.constructor().transact(tx_details)
         CommutoSwapOfferTaker_address = w3.eth.wait_for_transaction_receipt(
             CommutoSwapOfferTaker_deployment_tx_hash).contractAddress
 
@@ -182,7 +186,7 @@ class CommutoSwapTest(unittest.TestCase):
                 "bin"]
         undeployed_CommutoSwapFiller = w3.eth.contract(abi=CommutoSwapFiller_abi,
                                                        bytecode=CommutoSwapFiller_bytecode)
-        CommutoSwapFiller_deployment_tx_hash = undeployed_CommutoSwapFiller.constructor().transact()
+        CommutoSwapFiller_deployment_tx_hash = undeployed_CommutoSwapFiller.constructor().transact(tx_details)
         CommutoSwapFiller_address = w3.eth.wait_for_transaction_receipt(
             CommutoSwapFiller_deployment_tx_hash).contractAddress
 
@@ -201,7 +205,7 @@ class CommutoSwapTest(unittest.TestCase):
                                                 "CommutoSwapPaymentReporter"]["bin"]
         undeployed_CommutoSwapPaymentReporter = w3.eth.contract(abi=CommutoSwapPaymentReporter_abi,
                                                        bytecode=CommutoSwapPaymentReporter_bytecode)
-        CommutoSwapPaymentReporter_deployment_tx_hash = undeployed_CommutoSwapPaymentReporter.constructor().transact()
+        CommutoSwapPaymentReporter_deployment_tx_hash = undeployed_CommutoSwapPaymentReporter.constructor().transact(tx_details)
         CommutoSwapPaymentReporter_address = w3.eth.wait_for_transaction_receipt(
             CommutoSwapPaymentReporter_deployment_tx_hash).contractAddress
 
@@ -220,7 +224,7 @@ class CommutoSwapTest(unittest.TestCase):
                 "bin"]
         undeployed_CommutoSwapCloser = w3.eth.contract(abi=CommutoSwapCloser_abi,
                                                        bytecode=CommutoSwapCloser_bytecode)
-        CommutoSwapCloser_deployment_tx_hash = undeployed_CommutoSwapCloser.constructor().transact()
+        CommutoSwapCloser_deployment_tx_hash = undeployed_CommutoSwapCloser.constructor().transact(tx_details)
         CommutoSwapCloser_address = w3.eth.wait_for_transaction_receipt(
             CommutoSwapCloser_deployment_tx_hash).contractAddress
 
@@ -243,29 +247,29 @@ class CommutoSwapTest(unittest.TestCase):
                                                                                        CommutoSwapFiller_address,
                                                                                        CommutoSwapPaymentReporter_address,
                                                                                        CommutoSwapCloser_address
-                                                                                       ).transact()
+                                                                                       ).transact(tx_details)
         self.commuto_swap_deployment_tx_receipt = w3.eth.wait_for_transaction_receipt(commuto_swap_deployment_tx_hash)
         self.commuto_swap_contract = w3.eth.contract(
             address=self.commuto_swap_deployment_tx_receipt.contractAddress,
             abi=commuto_swap_abi
         )
         tx_hash = self.commuto_swap_contract.functions.setSettlementMethodSupport("USD-SWIFT".encode("utf-8"),
-                                                                             True).transact()
+                                                                             True).transact(tx_details)
         w3.eth.wait_for_transaction_receipt(tx_hash)
         tx_hash = self.commuto_swap_contract.functions.setSettlementMethodSupport("EUR-SEPA".encode("utf-8"),
-                                                                             True).transact()
+                                                                             True).transact(tx_details)
         w3.eth.wait_for_transaction_receipt(tx_hash)
         tx_hash = self.commuto_swap_contract.functions.setStablecoinSupport(self.dai_deployment_tx_receipt.contractAddress, True) \
-            .transact()
+            .transact(tx_details)
         w3.eth.wait_for_transaction_receipt(tx_hash)
         tx_hash = self.commuto_swap_contract.functions.setStablecoinSupport(self.usdc_deployment_tx_receipt.contractAddress, True) \
-            .transact()
+            .transact(tx_details)
         w3.eth.wait_for_transaction_receipt(tx_hash)
         tx_hash = self.commuto_swap_contract.functions.setStablecoinSupport(self.busd_deployment_tx_receipt.contractAddress, True) \
-            .transact()
+            .transact(tx_details)
         w3.eth.wait_for_transaction_receipt(tx_hash)
         tx_hash = self.commuto_swap_contract.functions.setStablecoinSupport(self.usdt_deployment_tx_receipt.contractAddress, True) \
-            .transact()
+            .transact(tx_details)
         w3.eth.wait_for_transaction_receipt(tx_hash)
 
         self.maker_address = w3.eth.accounts[0]
@@ -278,11 +282,11 @@ class CommutoSwapTest(unittest.TestCase):
         self.dispute_agent_1 = w3.eth.accounts[4]
         self.dispute_agent_2 = w3.eth.accounts[5]
 
-        tx_hash = self.commuto_swap_contract.functions.setDisputeAgentActive(self.dispute_agent_0, False).transact()
+        tx_hash = self.commuto_swap_contract.functions.setDisputeAgentActive(self.dispute_agent_0, False).transact(tx_details)
         w3.eth.wait_for_transaction_receipt(tx_hash)
-        tx_hash = self.commuto_swap_contract.functions.setDisputeAgentActive(self.dispute_agent_0, False).transact()
+        tx_hash = self.commuto_swap_contract.functions.setDisputeAgentActive(self.dispute_agent_0, False).transact(tx_details)
         w3.eth.wait_for_transaction_receipt(tx_hash)
-        tx_hash = self.commuto_swap_contract.functions.setDisputeAgentActive(self.dispute_agent_0, False).transact()
+        tx_hash = self.commuto_swap_contract.functions.setDisputeAgentActive(self.dispute_agent_0, False).transact(tx_details)
         w3.eth.wait_for_transaction_receipt(tx_hash)
 
     def test_setup(self):
