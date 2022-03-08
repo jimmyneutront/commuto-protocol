@@ -2,7 +2,7 @@ import CommutoSwapTest
 from hexbytes import HexBytes
 from uuid import uuid4
 
-class CommutoDisputeTest(CommutoSwapTest.CommutoSwapTest):
+class CommutoRaiseDisputeTest(CommutoSwapTest.CommutoSwapTest):
 
     def test_raiseDispute_swap_existence_check(self):
         #Ensure raiseDispute checks for swap existence
@@ -740,6 +740,7 @@ class CommutoDisputeTest(CommutoSwapTest.CommutoSwapTest):
             if not "e52" in str(e):
                 raise e
 
+    #Note: the rest of these should probably be moved to a CommutoProposeResolutionTest file
     # TODO: Ensure resolution proposals can only be submitted by dispute agents
     # TODO: Ensure total payout amount in resolution proposals equals total amount locked in escrow, minus service fee
     # TODO: Ensure disputed swap can only be paid out if both maker and taker agree
