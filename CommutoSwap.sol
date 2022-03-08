@@ -242,6 +242,7 @@ contract CommutoSwap is CommutoSwapStorage {
         require(disputeAgents[disputeAgent1], "e3"); //"e3": "Selected dispute agents must be active"
         require(disputeAgents[disputeAgent2], "e3"); //"e3": "Selected dispute agents must be active"
         require(msg.sender == swaps[swapID].maker || msg.sender == swaps[swapID].maker, "e44"); //"e44": "Only swap maker or taker can call this function"
+        require(!swaps[swapID].hasBuyerClosed && !swaps[swapID].hasSellerClosed, "e4"); //"e4": "Dispute cannot be raised if maker or taker has already closed"
 
         emit DisputeRaised(swapID, disputeAgent0, disputeAgent1, disputeAgent2);
     }

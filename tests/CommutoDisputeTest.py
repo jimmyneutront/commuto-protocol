@@ -258,8 +258,108 @@ class CommutoDisputeTest(CommutoSwapTest.CommutoSwapTest):
         self.assertEqual(events[0]["args"]["disputeAgent1"], self.dispute_agent_1)
         self.assertEqual(events[0]["args"]["disputeAgent2"], self.dispute_agent_2)
 
-    # TODO: Ensure dispute can't be raised if maker has closed
-    # TODO: Ensure dispute can't be raised if taker has closed
+    def test_raiseDispute_swap_closed_check(self):
+        #Ensure raiseDispute can only be called if neither the maker nor taker have closed the swap
+        try:
+            newOfferID = HexBytes(uuid4().bytes)
+            tx_details = {
+                "from": self.maker_address
+            }
+            newOffer = {
+                "isCreated": True,
+                "isTaken": True,
+                "maker": self.maker_address,
+                "interfaceId": HexBytes("an interface Id here".encode("utf-8").hex()),
+                "stablecoin": self.dai_deployment_tx_receipt.contractAddress,
+                "amountLowerBound": 100,
+                "amountUpperBound": 100,
+                "securityDepositAmount": 10,
+                "direction": 1,
+                "price": HexBytes("a price here".encode("utf-8").hex()),
+                "settlementMethods": ["USD-SWIFT".encode("utf-8"), ],
+                "protocolVersion": 1,
+            }
+            self.test_dai_contract.functions.increaseAllowance(
+                self.commuto_swap_deployment_tx_receipt.contractAddress,
+                11,
+            ).transact(tx_details)
+            self.commuto_swap_contract.functions.openOffer(
+                newOfferID,
+                newOffer,
+            ).transact(tx_details)
+            tx_details = {
+                "from": self.taker_address
+            }
+            newSwap = {
+                "isCreated": False,
+                "requiresFill": True,
+                "maker": self.maker_address,
+                "makerInterfaceId": HexBytes("an interface Id here".encode("utf-8").hex()),
+                "taker": self.taker_address,
+                "takerInterfaceId": HexBytes("an interface Id here".encode("utf-8").hex()),
+                "stablecoin": self.dai_deployment_tx_receipt.contractAddress,
+                "amountLowerBound": 100,
+                "amountUpperBound": 100,
+                "securityDepositAmount": 10,
+                "takenSwapAmount": 100,
+                "serviceFeeAmount": 1,
+                "direction": 1,
+                "price": HexBytes("a price here".encode("utf-8").hex()),
+                "settlementMethod": "USD-SWIFT".encode("utf-8"),
+                "protocolVersion": 1,
+                "isPaymentSent": True,
+                "isPaymentReceived": True,
+                "hasBuyerClosed": True,
+                "hasSellerClosed": True,
+            }
+            self.test_dai_contract.functions.increaseAllowance(
+                self.commuto_swap_deployment_tx_receipt.contractAddress,
+                11,
+            ).transact(tx_details)
+            self.commuto_swap_contract.functions.takeOffer(
+                newOfferID,
+                newSwap,
+            ).transact(tx_details)
+            tx_details = {
+                "from": self.maker_address,
+            }
+            self.test_dai_contract.functions.increaseAllowance(
+                self.commuto_swap_deployment_tx_receipt.contractAddress,
+                100,
+            ).transact(tx_details)
+            self.commuto_swap_contract.functions.fillSwap(
+                newOfferID
+            ).transact(tx_details)
+            tx_details = {
+                "from": self.taker_address
+            }
+            self.commuto_swap_contract.functions.reportPaymentSent(
+                newOfferID
+            ).transact(tx_details)
+            tx_details = {
+                "from": self.maker_address
+            }
+            self.commuto_swap_contract.functions.reportPaymentReceived(
+                newOfferID
+            ).transact(tx_details)
+            tx_details = {
+                "from": self.taker_address
+            }
+            self.commuto_swap_contract.functions.closeSwap(
+                newOfferID,
+            ).transact(tx_details)
+            self.commuto_swap_contract.functions.raiseDispute(
+                newOfferID,
+                self.dispute_agent_0,
+                self.dispute_agent_1,
+                self.dispute_agent_2
+            ).transact(tx_details)
+            raise (Exception("test_raiseDispute_swap_closed_check failed without raising exception"))
+        except ValueError as e:
+            # "e4": "Dispute cannot be raised if maker or taker has already closed"
+            if not "e4" in str(e):
+                raise e
+
     # TODO: Ensure swap can't be filled if swap is disputed
     # TODO: Ensure payment can't be reported as sent if swap is disputed
     # TODO: Ensure payment can't be reported as received if swap is disputed

@@ -3,7 +3,7 @@ commuto_swap_error_messages = {
     "e1": "Only contract owner can set dispute agent activity state",
     "e2": "Dispute agent address cannot be the zero address",
     "e3": "Selected dispute agents must be active",
-    "e4": "",
+    "e4": "Dispute cannot be raised if maker or taker has already closed",
     "e5": "An offer with the specified id already exists",
     "e6": "The minimum swap amount must be greater than zero",
     "e7": "The maximum swap amount must be >= the minimum swap amount",
