@@ -282,11 +282,11 @@ class CommutoSwapTest(unittest.TestCase):
         self.dispute_agent_1 = w3.eth.accounts[4]
         self.dispute_agent_2 = w3.eth.accounts[5]
 
-        tx_hash = self.commuto_swap_contract.functions.setDisputeAgentActive(self.dispute_agent_0, False).transact(tx_details)
+        tx_hash = self.commuto_swap_contract.functions.setDisputeAgentActive(self.dispute_agent_0, True).transact(tx_details)
         w3.eth.wait_for_transaction_receipt(tx_hash)
-        tx_hash = self.commuto_swap_contract.functions.setDisputeAgentActive(self.dispute_agent_0, False).transact(tx_details)
+        tx_hash = self.commuto_swap_contract.functions.setDisputeAgentActive(self.dispute_agent_1, True).transact(tx_details)
         w3.eth.wait_for_transaction_receipt(tx_hash)
-        tx_hash = self.commuto_swap_contract.functions.setDisputeAgentActive(self.dispute_agent_0, False).transact(tx_details)
+        tx_hash = self.commuto_swap_contract.functions.setDisputeAgentActive(self.dispute_agent_2, True).transact(tx_details)
         w3.eth.wait_for_transaction_receipt(tx_hash)
 
     def test_setup(self):

@@ -74,9 +74,37 @@ contract CommutoSwap is CommutoSwapStorage {
     Set the active state of a dispute agent (True = active, shall resolve disputes, False = not active, shall not
     resolve disputes)
     */
-    function setDisputeAgentActive(address disputeAgentAddress, bool isActive) public {
+    function setDisputeAgentActive(address disputeAgentAddress, bool setActive) public {
         require(msg.sender == owner, "e1"); //"e1": "Only contract owner can set dispute agent activity state"
-        require(disputeAgentAddress != 0, "e2"); //"e2": "Dispute agent address cannot be the zero address"
+        require(disputeAgentAddress != address(0), "e2"); //"e2": "Dispute agent address cannot be the zero address"
+        bool foundDisputeAgent = false;
+        //Search for dispute agent in list of active dispute agents
+        for (uint i = 0; i < activeDisputeAgents.length; i++) {
+            if (activeDisputeAgents[i] == disputeAgentAddress && setActive == false) {
+                //Have found dispute agent and are setting them as not active
+                foundDisputeAgent = true;
+                delete activeDisputeAgents[i];
+                activeDisputeAgents[i] = activeDisputeAgents[activeDisputeAgents.length - 1];
+                activeDisputeAgents.pop();
+                break;
+            }
+            else if (activeDisputeAgents[i] == disputeAgentAddress && setActive == true) {
+                //Have found dispute agent and want to set them as active, but they already are active
+                foundDisputeAgent = true;
+                break;
+            }
+        }
+        if (foundDisputeAgent == false && setActive == true) {
+            //Didn't find them and are setting them as activeDisputeAgents
+            activeDisputeAgents.push(disputeAgentAddress);
+        }
+        //Set status in map
+        disputeAgents[disputeAgentAddress] = setActive;
+    }
+
+    //Get a copy of the array of active dispute agents
+    function getActiveDisputeAgents() view public returns (address[] memory) {
+        return activeDisputeAgents;
     }
 
     function getOffer(bytes16 offerID) view public returns (Offer memory) {

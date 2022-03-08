@@ -51,6 +51,13 @@ contract CommutoSwapStorage {
     mapping (address => bool) internal stablecoins;
     address[] internal supportedStablecoins;
 
+    /*
+    A mapping of dispute agent addresses to boolean values indicating whether they are active or not, and an array
+    containing the addresses of all active dispute agents.
+    */
+    mapping (address => bool) internal disputeAgents;
+    address[] internal activeDisputeAgents;
+
     event OfferOpened(bytes16 offerID, bytes interfaceId);
     event PriceChanged(bytes16 offerID);
     event OfferCanceled(bytes16 offerID);
