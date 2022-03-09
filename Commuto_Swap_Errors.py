@@ -57,4 +57,5 @@ commuto_swap_error_messages = {
     "e54": "Swap doesn't exist or isn't disputed",
     "e55": "Only a selected dispute agent selected for the swap",
     "e56": "Total payout amount must equal total amount paid in minus service fees",
+    "e57": "Only swap maker or taker can react to resolution proposal",
 }

@@ -820,21 +820,3 @@ class CommutoRaiseDisputeTest(CommutoSwapTest.CommutoSwapTest):
             # "e53": "Dispute cannot be raised for an already-disputed swap"
             if not "e53" in str(e):
                 raise e
-
-    #Note: this should probably be moved to a CommutoReactToResolutionTest file
-    # TODO: Ensure only maker or taker can react to resolution proposal
-    # TODO: Ensure maker and taker can't react to resolution proposal more than once
-    # TODO: Ensure maker or taker cannot accept or reject until at least two results have been submitted
-    # TODO: Ensure rejection immediately marks swap as escalated
-    # TODO: Ensure reacting emits event
-
-    #Note: this should be moved to a CommutoCloseDisputedSwapTest file
-    # TODO: Ensure disputed swap can only be paid out if both maker and taker agree
-    # TODO: Ensure disputed swap can only be paid out once
-    # TODO: Ensure paying out emits event
-
-    #Note: this should probably be moved to a CommutoEscalateDisputeTest file
-    # TODO: Ensure escalation can only be done by maker or taker
-    # TODO: Ensure disputed swap can only be escalated to token holders given nonmatching response from dispute agents if > 1 week has passed
-    # TODO: Ensure disputed swap can only be escalated to token holders given lack of response from maker if > 1 week has passed
-    # TODO: Ensure disputed swap can only be escalated to token holders given lack of response from taker if > 1 week has passed

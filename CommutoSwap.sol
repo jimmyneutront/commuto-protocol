@@ -296,4 +296,14 @@ contract CommutoSwap is CommutoSwapStorage {
 
     }
 
+    function reactToResolutionProposal(bytes16 swapID, DisputeReaction reaction) public {
+        if (msg.sender == swaps[swapID].maker) {
+
+        } else if (msg.sender == swaps[swapID].taker) {
+
+        } else {
+            revert("e57");
+        }
+    }
+
 }
