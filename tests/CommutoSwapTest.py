@@ -229,11 +229,12 @@ class CommutoSwapTest(unittest.TestCase):
             CommutoSwapCloser_deployment_tx_hash).contractAddress
 
         #Deploy CommutoSwap contract
+        #TODO: Reduce contract size
         compiled_sol = compile_files(
             ["../CommutoSwap.sol"],
             allow_paths=["./"],
             output_values=["abi", "bin"],
-            optimize=False,
+            optimize=True,
             optimize_runs=1
         )
         commuto_swap_abi = compiled_sol["../CommutoSwap.sol:CommutoSwap"]["abi"]

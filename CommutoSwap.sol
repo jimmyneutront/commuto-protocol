@@ -307,6 +307,43 @@ contract CommutoSwap is CommutoSwapStorage {
         } else {
             revert("e57");
         }
+        //Check if at least two dispute agents have submitted matching resolution proposals
+        bool foundMatchingResolutionProposals = false;
+        /*
+        Check if dispute agents 0 and 1 have submitted proposals. If they have, check if their proposals match.
+        */
+        if (disputes[swapID].hasDA0Proposed && disputes[swapID].hasDA1Proposed) {
+            foundMatchingResolutionProposals = (
+            (disputes[swapID].dA0MakerPayout == disputes[swapID].dA1MakerPayout) &&
+            (disputes[swapID].dA0TakerPayout == disputes[swapID].dA1TakerPayout) &&
+            (disputes[swapID].dA0ConfiscationPayout == disputes[swapID].dA1ConfiscationPayout)
+            );
+        }
+        /*
+        If dispute agents 0 and 1 haven't submitted matching proposals (which also includes the possibility that they
+        haven't submitted proposals at all) check if dispute agents 1 and 2 have submitted proposals. If they have,
+        check if their proposals match.
+        */
+        if ((disputes[swapID].hasDA1Proposed && disputes[swapID].hasDA2Proposed) && !foundMatchingResolutionProposals) {
+            foundMatchingResolutionProposals = (
+            (disputes[swapID].dA1MakerPayout == disputes[swapID].dA2MakerPayout) &&
+            (disputes[swapID].dA1TakerPayout == disputes[swapID].dA2TakerPayout) &&
+            (disputes[swapID].dA1ConfiscationPayout == disputes[swapID].dA2ConfiscationPayout)
+            );
+        }
+        /*
+        At this point, proposals (if any) submitted by dispute agents zero and one don't match, and proposals (if any)
+        submitted by dispute agents one and two don't match, so check if dispute agents zero and two have submitted
+        proposals. If they have, check if their proposals match.
+        */
+        if ((disputes[swapID].hasDA0Proposed && disputes[swapID].hasDA2Proposed) && !foundMatchingResolutionProposals) {
+            foundMatchingResolutionProposals = (
+            (disputes[swapID].dA0MakerPayout == disputes[swapID].dA2MakerPayout) &&
+            (disputes[swapID].dA0TakerPayout == disputes[swapID].dA2TakerPayout) &&
+            (disputes[swapID].dA0ConfiscationPayout == disputes[swapID].dA2ConfiscationPayout)
+            );
+        }
+        require(foundMatchingResolutionProposals, "e61"); //"e61": "Two matching resolutions must be proposed before reaction is allowed"
     }
 
 }
