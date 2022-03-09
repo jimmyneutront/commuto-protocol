@@ -274,11 +274,17 @@ contract CommutoSwap is CommutoSwapStorage {
         require(totalPayout == totalWithoutSpentServiceFees, "e56");
 
         if (msg.sender == disputes[swapID].disputeAgent0) {
-
+            disputes[swapID].dA0MakerPayout = makerPayout;
+            disputes[swapID].dA0TakerPayout = takerPayout;
+            disputes[swapID].dA0ConfiscationPayout = confiscationPayout;
         } else if (msg.sender == disputes[swapID].disputeAgent1) {
-
+            disputes[swapID].dA1MakerPayout = makerPayout;
+            disputes[swapID].dA1TakerPayout = takerPayout;
+            disputes[swapID].dA1ConfiscationPayout = confiscationPayout;
         } else if (msg.sender == disputes[swapID].disputeAgent2) {
-
+            disputes[swapID].dA2MakerPayout = makerPayout;
+            disputes[swapID].dA2TakerPayout = takerPayout;
+            disputes[swapID].dA2ConfiscationPayout = confiscationPayout;
         } else {
             revert("e55"); //"e55": "Only a selected dispute agent selected for the swap"
         }
