@@ -344,6 +344,7 @@ contract CommutoSwap is CommutoSwapStorage {
             );
         }
         require(foundMatchingResolutionProposals, "e61"); //"e61": "Two matching resolutions must be proposed before reaction is allowed"
+        emit ReactionSubmitted(swapID, msg.sender, reaction);
     }
 
 }
