@@ -354,4 +354,14 @@ contract CommutoSwap is CommutoSwapStorage {
         emit ReactionSubmitted(swapID, msg.sender, reaction);
     }
 
+    function closeDisputedSwap(bytes16 swapID) public {
+        if (msg.sender == swaps[swapID].maker) {
+
+        } else if (msg.sender == swaps[swapID].taker) {
+
+        } else {
+            revert("e63"); //"e63": "Only maker and taker can close disputed swap"
+        }
+    }
+
 }

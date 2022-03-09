@@ -2,17 +2,6 @@ import CommutoSwapTest
 from hexbytes import HexBytes
 from uuid import uuid4
 
-    #Note: this should be moved to a CommutoCloseDisputedSwapTest file
-    # TODO: Ensure disputed swap can only be paid out if both maker and taker agree
-    # TODO: Ensure disputed swap can only be paid out once
-    # TODO: Ensure paying out emits event
-
-    #Note: this should probably be moved to a CommutoEscalateDisputeTest file
-    # TODO: Ensure escalation can only be done by maker or taker
-    # TODO: Ensure disputed swap can only be escalated to token holders given nonmatching response from dispute agents if > 1 week has passed
-    # TODO: Ensure disputed swap can only be escalated to token holders given lack of response from maker if > 1 week has passed
-    # TODO: Ensure disputed swap can only be escalated to token holders given lack of response from taker if > 1 week has passed
-
 class CommutoReactToResolutionProposalTest(CommutoSwapTest.CommutoSwapTest):
 
     def test_reactToResolutionProposal_caller_is_maker_or_taker_check(self):
