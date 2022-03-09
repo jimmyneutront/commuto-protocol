@@ -62,4 +62,5 @@ commuto_swap_error_messages = {
     "e59": "Maker can't react to resolution proposal more than once",
     "e60": "Taker can't react to resolution proposal more than once",
     "e61": "Two matching resolutions must be proposed before reaction is allowed",
+    "e62": "A resolution proposal cannot be submitted if the maker or taker has already reacted"
 }

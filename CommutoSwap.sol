@@ -271,7 +271,8 @@ contract CommutoSwap is CommutoSwapStorage {
         uint256 totalWithoutSpentServiceFees = SafeMath.sub(totalWithSpentServiceFees, SafeMath.mul(2, swaps[swapID].serviceFeeAmount)); //Total minus spent service fees
         uint256 swapperPayout = SafeMath.add(makerPayout, takerPayout); //Total payout to maker and taker
         uint256 totalPayout = SafeMath.add(swapperPayout, confiscationPayout); //Total payout, including that to the fee pool
-        require(totalPayout == totalWithoutSpentServiceFees, "e56");
+        require(totalPayout == totalWithoutSpentServiceFees, "e56"); //"e56": "Total payout amount must equal total amount paid in minus service fees"
+        require((disputes[swapID].makerReaction == DisputeReaction.NO_REACTION) && (disputes[swapID].takerReaction == DisputeReaction.NO_REACTION), "e62"); //"e62": "A resolution proposal cannot be submitted if the maker or taker has already reacted"
 
         if (msg.sender == disputes[swapID].disputeAgent0) {
             disputes[swapID].dA0MakerPayout = makerPayout;
@@ -305,7 +306,7 @@ contract CommutoSwap is CommutoSwapStorage {
             require(disputes[swapID].takerReaction == DisputeReaction.NO_REACTION, "e60"); //"e60": "Taker can't react to resolution proposal more than once"
             disputes[swapID].takerReaction = reaction;
         } else {
-            revert("e57");
+            revert("e57"); //"e57": "Only swap maker or taker can react to resolution proposal"
         }
         //Check if at least two dispute agents have submitted matching resolution proposals
         bool foundMatchingResolutionProposals = false;
