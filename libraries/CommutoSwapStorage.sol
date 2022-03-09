@@ -68,6 +68,7 @@ contract CommutoSwapStorage {
     event BuyerClosed(bytes16 swapID);
     event SellerClosed(bytes16 swapID);
     event DisputeRaised(bytes16 swapID, address disputeAgent0, address disputeAgent1, address disputeAgent2);
+    event ResolutionProposed(bytes16 swapID, address disputeAgent);
 
     /*
     Mappings containing all offers, the settlement methods of each offer, and all swaps.

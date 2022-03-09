@@ -4,7 +4,6 @@ from uuid import uuid4
 
 #Note: this should probably be moved to a CommutoProposeResolutionTest file
     # TODO: Ensure resolution proposal can't be submitted if the maker or taker has already accepted or rejected
-    # TODO: Ensure proposing resolution emits event
 
 class CommutoProposeResolutionTest(CommutoSwapTest.CommutoSwapTest):
 
@@ -174,3 +173,86 @@ class CommutoProposeResolutionTest(CommutoSwapTest.CommutoSwapTest):
             # "e55": "Only a selected dispute agent selected for the swap"
             if not "e55" in str(e):
                 raise e
+
+    def test_proposeResolution_emits_event(self):
+        #Ensure proposeResolution emits ResolutionProposed event upon success
+        newOfferID = HexBytes(uuid4().bytes)
+        ResolutionProposed_event_filter = self.commuto_swap_contract.events.ResolutionProposed\
+            .createFilter(fromBlock="latest",
+                argument_filters = {
+                    'swapID': newOfferID
+                }
+            )
+        tx_details = {
+            "from": self.maker_address
+        }
+        newOffer = {
+            "isCreated": True,
+            "isTaken": True,
+            "maker": self.maker_address,
+            "interfaceId": HexBytes("an interface Id here".encode("utf-8").hex()),
+            "stablecoin": self.dai_deployment_tx_receipt.contractAddress,
+            "amountLowerBound": 100,
+            "amountUpperBound": 100,
+            "securityDepositAmount": 10,
+            "direction": 1,
+            "price": HexBytes("a price here".encode("utf-8").hex()),
+            "settlementMethods": ["USD-SWIFT".encode("utf-8"), ],
+            "protocolVersion": 1,
+        }
+        self.test_dai_contract.functions.increaseAllowance(
+            self.commuto_swap_deployment_tx_receipt.contractAddress,
+            11,
+        ).transact(tx_details)
+        self.commuto_swap_contract.functions.openOffer(
+            newOfferID,
+            newOffer,
+        ).transact(tx_details)
+        tx_details = {
+            "from": self.taker_address
+        }
+        newSwap = {
+            "isCreated": False,
+            "requiresFill": True,
+            "maker": self.maker_address,
+            "makerInterfaceId": HexBytes("an interface Id here".encode("utf-8").hex()),
+            "taker": self.taker_address,
+            "takerInterfaceId": HexBytes("an interface Id here".encode("utf-8").hex()),
+            "stablecoin": self.dai_deployment_tx_receipt.contractAddress,
+            "amountLowerBound": 100,
+            "amountUpperBound": 100,
+            "securityDepositAmount": 10,
+            "takenSwapAmount": 100,
+            "serviceFeeAmount": 1,
+            "direction": 1,
+            "price": HexBytes("a price here".encode("utf-8").hex()),
+            "settlementMethod": "USD-SWIFT".encode("utf-8"),
+            "protocolVersion": 1,
+            "isPaymentSent": True,
+            "isPaymentReceived": True,
+            "hasBuyerClosed": True,
+            "hasSellerClosed": True,
+            "disputeRaiser": 0,
+        }
+        self.test_dai_contract.functions.increaseAllowance(
+            self.commuto_swap_deployment_tx_receipt.contractAddress,
+            11,
+        ).transact(tx_details)
+        self.commuto_swap_contract.functions.takeOffer(
+            newOfferID,
+            newSwap,
+        ).transact(tx_details)
+        self.commuto_swap_contract.functions.raiseDispute(
+            newOfferID,
+            self.dispute_agent_0,
+            self.dispute_agent_1,
+            self.dispute_agent_2
+        ).transact(tx_details)
+        tx_details = {
+            "from": self.dispute_agent_0
+        }
+        self.commuto_swap_contract.functions.proposeResolution(newOfferID, 100, 18, 0).transact(tx_details)
+        events = ResolutionProposed_event_filter.get_new_entries()
+        self.assertEqual(len(events), 1)
+        self.assertEqual(events[0]["args"]["swapID"], newOfferID)
+        self.assertEqual(events[0]["args"]["disputeAgent"], self.dispute_agent_0)
