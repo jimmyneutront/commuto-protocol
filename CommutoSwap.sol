@@ -264,6 +264,15 @@ contract CommutoSwap is CommutoSwapStorage {
     //Propose a resolution to a disputed swap
     function proposeResolution(bytes16 swapID, uint256 makerPayout, uint256 takerPayout, uint256 confiscationPayout) public {
         require(swaps[swapID].disputeRaiser != DisputeRaiser.NONE, "e54"); //"e54": "Swap doesn't exist or isn't disputed"
+        uint256 serviceFeeAmountUpperBound = SafeMath.div(swaps[swapID].amountUpperBound, 100); //The amount the maker paid upon swap creation to pay the service fee
+        uint256 unspentServiceFee = SafeMath.sub(serviceFeeAmountUpperBound, swaps[swapID].serviceFeeAmount); //The remaining amount owed to the maker after subtracting service fee
+        uint256 totalSecurityDeposit = SafeMath.mul(swaps[swapID].securityDepositAmount, 2); //The sum of the maker's and taker's security deposits
+        uint256 totalWithSpentServiceFees = SafeMath.add(swaps[swapID].takenSwapAmount, SafeMath.add(totalSecurityDeposit, unspentServiceFee)); //The total amount of STBL locked up by the maker and taker
+        uint256 totalWithoutSpentServiceFees = SafeMath.sub(totalWithSpentServiceFees, SafeMath.mul(2, swaps[swapID].serviceFeeAmount)); //Total minus spent service fees
+        uint256 swapperPayout = SafeMath.add(makerPayout, takerPayout); //Total payout to maker and taker
+        uint256 totalPayout = SafeMath.add(swapperPayout, confiscationPayout); //Total payout, including that to the fee pool
+        require(totalPayout == totalWithoutSpentServiceFees, "e56");
+
         if (msg.sender == disputes[swapID].disputeAgent0) {
 
         } else if (msg.sender == disputes[swapID].disputeAgent1) {
