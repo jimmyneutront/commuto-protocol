@@ -55,7 +55,8 @@ commuto_swap_error_messages = {
     "e52": "Swap cannot be closed if it is disputed",
     "e53": "Dispute cannot be raised for an already-disputed swap",
     "e54": "Swap doesn't exist or isn't disputed",
-    "e55": "Only a selected dispute agent selected for the swap",
+    "e55": "Only a dispute agent selected for the swap can propose a resolution",
     "e56": "Total payout amount must equal total amount paid in minus service fees",
     "e57": "Only swap maker or taker can react to resolution proposal",
+    "e58": "Can't react with no reaction",
 }

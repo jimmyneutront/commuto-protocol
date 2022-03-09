@@ -170,7 +170,7 @@ class CommutoProposeResolutionTest(CommutoSwapTest.CommutoSwapTest):
             self.commuto_swap_contract.functions.proposeResolution(newOfferID, 100, 18, 0).transact(tx_details)
             raise (Exception("test_proposeResolution_caller_is_assigned_dispute_agent_check failed without raising exception"))
         except ValueError as e:
-            # "e55": "Only a selected dispute agent selected for the swap"
+            # "e55": "Only a dispute agent selected for the swap can propose a resolution"
             if not "e55" in str(e):
                 raise e
 

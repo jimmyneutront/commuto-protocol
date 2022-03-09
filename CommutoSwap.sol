@@ -289,7 +289,7 @@ contract CommutoSwap is CommutoSwapStorage {
             disputes[swapID].hasDA2Proposed = true;
             disputes[swapID].dA2ConfiscationPayout = confiscationPayout;
         } else {
-            revert("e55"); //"e55": "Only a selected dispute agent selected for the swap"
+            revert("e55"); //"e55": "Only a dispute agent selected for the swap can propose a resolution"
         }
 
         emit ResolutionProposed(swapID, msg.sender);
@@ -297,6 +297,7 @@ contract CommutoSwap is CommutoSwapStorage {
     }
 
     function reactToResolutionProposal(bytes16 swapID, DisputeReaction reaction) public {
+        require(reaction != DisputeReaction.NO_REACTION, "e58"); //"e58": "Can't react with no reaction"
         if (msg.sender == swaps[swapID].maker) {
 
         } else if (msg.sender == swaps[swapID].taker) {
