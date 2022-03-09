@@ -59,4 +59,6 @@ commuto_swap_error_messages = {
     "e56": "Total payout amount must equal total amount paid in minus service fees",
     "e57": "Only swap maker or taker can react to resolution proposal",
     "e58": "Can't react with no reaction",
+    "e59": "Maker can't react to resolution proposal more than once",
+    "e60": "Taker can't react to resolution proposal more than once",
 }
