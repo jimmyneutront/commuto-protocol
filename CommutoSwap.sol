@@ -345,6 +345,12 @@ contract CommutoSwap is CommutoSwapStorage {
             );
         }
         require(foundMatchingResolutionProposals, "e61"); //"e61": "Two matching resolutions must be proposed before reaction is allowed"
+
+        //Immediately mark dispute as escalated if reaction is rejection
+        if (reaction == DisputeReaction.REJECTED) {
+            disputes[swapID].state = DisputeState.ESCALATED;
+        }
+
         emit ReactionSubmitted(swapID, msg.sender, reaction);
     }
 

@@ -2,9 +2,6 @@ import CommutoSwapTest
 from hexbytes import HexBytes
 from uuid import uuid4
 
-#Note: this should probably be moved to a CommutoReactToResolutionTest file
-    # TODO: Ensure rejection immediately marks swap as escalated
-
     #Note: this should be moved to a CommutoCloseDisputedSwapTest file
     # TODO: Ensure disputed swap can only be paid out if both maker and taker agree
     # TODO: Ensure disputed swap can only be paid out once
