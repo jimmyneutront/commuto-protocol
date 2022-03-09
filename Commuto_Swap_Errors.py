@@ -55,4 +55,5 @@ commuto_swap_error_messages = {
     "e52": "Swap cannot be closed if it is disputed",
     "e53": "Dispute cannot be raised for an already-disputed swap",
     "e54": "Swap doesn't exist or isn't disputed",
+    "e55": "Only a selected dispute agent selected for the swap",
 }
