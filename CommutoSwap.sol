@@ -314,6 +314,7 @@ contract CommutoSwap is CommutoSwapStorage {
 
     function reactToResolutionProposal(bytes16 swapID, DisputeReaction reaction) public {
         require(reaction != DisputeReaction.NO_REACTION, "e58"); //"e58": "Can't react with no reaction"
+        require(disputes[swapID].state != DisputeState.ESCALATED, "e69"); //"e69": "A reaction cannot be submitted for an escalated swap"
         if (msg.sender == swaps[swapID].maker) {
             require(disputes[swapID].makerReaction == DisputeReaction.NO_REACTION, "e59"); //"e59": "Maker can't react to resolution proposal more than once"
             disputes[swapID].makerReaction = reaction;

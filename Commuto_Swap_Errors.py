@@ -69,4 +69,5 @@ commuto_swap_error_messages = {
     "e66": "Taker cannot close disputed swap more than once",
     "e67": "Confiscated amount transfer failed",
     "e68": "A resolution cannot be proposed for an escalated swap",
+    "e69": "A reaction cannot be submitted for an escalated swap",
 }

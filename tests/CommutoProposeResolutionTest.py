@@ -341,6 +341,8 @@ class CommutoProposeResolutionTest(CommutoSwapTest.CommutoSwapTest):
                 "from": self.dispute_agent_2
             }
             self.commuto_swap_contract.functions.proposeResolution(newOfferID, 10, 10, 0).transact(tx_details)
+            raise (Exception(
+                "test_proposeResolution_no_reaction_check failed without raising exception"))
         except ValueError as e:
             # "e62": "A resolution proposal cannot be submitted if the maker or taker has already reacted"
             if not "e62" in str(e):
@@ -430,6 +432,8 @@ class CommutoProposeResolutionTest(CommutoSwapTest.CommutoSwapTest):
                 "from": self.dispute_agent_2
             }
             self.commuto_swap_contract.functions.proposeResolution(newOfferID, 10, 10, 0).transact(tx_details)
+            raise (Exception(
+                "test_proposeResolution_not_escalated_check failed without raising exception"))
         except ValueError as e:
             #"e68": "A resolution cannot be proposed for an escalated swap"
             if not "e68" in str(e):
