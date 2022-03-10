@@ -377,6 +377,7 @@ contract CommutoSwap is CommutoSwapStorage {
 
         //Immediately mark dispute as escalated if reaction is rejection
         if (reaction == DisputeReaction.REJECTED) {
+            //TODO: Call escalateDispute here
             disputes[swapID].state = DisputeState.ESCALATED;
         }
 
@@ -441,7 +442,7 @@ contract CommutoSwap is CommutoSwapStorage {
 
     }
 
-    function escalateDispute(bytes16 swapID, EscalationReason reason) {
+    function escalateDispute(bytes16 swapID, EscalationReason reason) public {
         require(msg.sender == swaps[swapID].maker || msg.sender == swaps[swapID].taker, "e75"); //"e75": "Only maker or taker can escalate disputed swap"
         if (reason == EscalationReason.NO_DISPUTE_AGENT_CONSENSUS) {
             require(block.number > SafeMath.add(minimumDisputePeriod, disputes[swapID].disputeRaisedBlockNum), "e71"); //"e71": "More blocks must be mined before swap can be escalated"
@@ -501,6 +502,7 @@ contract CommutoSwap is CommutoSwapStorage {
         } else {
             totalWithoutSpentServiceFees = SafeMath.add(swaps[swapID].takenSwapAmount, SafeMath.add(totalSecurityDeposit, unspentServiceFee));
         }
+        disputes[swapID].state = DisputeState.ESCALATED;
 
         require(token.transfer(escalatedDisputedSwapsPool, totalWithoutSpentServiceFees), "e70"); //"e70": "Transfer to pool for escalated disputed swaps failed"
         require(token.transfer(serviceFeePool, SafeMath.mul(2, swaps[swapID].serviceFeeAmount)), "e42"); //"e42": "Service fee transfer failed"

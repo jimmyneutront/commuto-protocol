@@ -11,6 +11,9 @@ contract CommutoSwapStorage {
     address public owner = address(0);
     address public serviceFeePool = address(0);
 
+    //Address to which funds for escalated disputed swaps are sent until tokenholders approve a resolution
+    address public escalatedDisputedSwapsPool;
+
     //Address of the contract to which CommutoSwap should delegate openOffer calls
     address immutable public commutoSwapOfferOpener;
 
@@ -31,6 +34,10 @@ contract CommutoSwapStorage {
 
     //Address of the contract to which CommutoSwap should delegate closeSwap calls
     address immutable public commutoSwapCloser;
+
+    //The number of blocks that must be mined between when a dispute is raised and when it can be escalated
+    //TODO: Make this changeable by governance vote
+    uint256 public minimumDisputePeriod = 5;
 
     //The current version of the Commuto Protocol
     uint256 public protocolVersion = 0;

@@ -2,12 +2,6 @@ import CommutoSwapTest
 from hexbytes import HexBytes
 from uuid import uuid4
 
-# Note: this should probably be moved to a CommutoEscalateDisputeTest file
-# TODO: Ensure escalation can only be done by maker or taker
-# TODO: Ensure disputed swap can only be escalated to token holders given nonmatching response from dispute agents if > 1 week has passed
-# TODO: Ensure disputed swap can only be escalated to token holders given lack of response from maker if > 1 week has passed
-# TODO: Ensure disputed swap can only be escalated to token holders given lack of response from taker if > 1 week has passed
-
 class CommutoCloseDisputedSwapTest(CommutoSwapTest.CommutoSwapTest):
 
     def test_closeDisputedSwap_caller_is_maker_or_taker_check(self):

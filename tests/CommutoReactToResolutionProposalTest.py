@@ -76,7 +76,7 @@ class CommutoReactToResolutionProposalTest(CommutoSwapTest.CommutoSwapTest):
             tx_details = {
                 "from": self.dispute_agent_0
             }
-            self.commuto_swap_contract.functions.proposeResolution(newOfferID, 100, 18, 0).transact(tx_details)
+            self.commuto_swap_contract.functions.proposeResolution(newOfferID, 10, 10, 0).transact(tx_details)
             self.commuto_swap_contract.functions.reactToResolutionProposal(newOfferID, 1).transact(tx_details)
             raise (Exception(
                 "test_reactToResolutionProposal_caller_is_maker_or_taker_check failed without raising exception"))
@@ -156,7 +156,7 @@ class CommutoReactToResolutionProposalTest(CommutoSwapTest.CommutoSwapTest):
             tx_details = {
                 "from": self.dispute_agent_0
             }
-            self.commuto_swap_contract.functions.proposeResolution(newOfferID, 100, 18, 0).transact(tx_details)
+            self.commuto_swap_contract.functions.proposeResolution(newOfferID, 10, 10, 0).transact(tx_details)
             tx_details = {
                 "from": self.taker_address
             }
@@ -239,11 +239,11 @@ class CommutoReactToResolutionProposalTest(CommutoSwapTest.CommutoSwapTest):
             tx_details = {
                 "from": self.dispute_agent_0
             }
-            self.commuto_swap_contract.functions.proposeResolution(newOfferID, 100, 18, 0).transact(tx_details)
+            self.commuto_swap_contract.functions.proposeResolution(newOfferID, 10, 10, 0).transact(tx_details)
             tx_details = {
                 "from": self.dispute_agent_1
             }
-            self.commuto_swap_contract.functions.proposeResolution(newOfferID, 100, 18, 0).transact(tx_details)
+            self.commuto_swap_contract.functions.proposeResolution(newOfferID, 10, 10, 0).transact(tx_details)
             tx_details = {
                 "from": self.maker_address
             }
@@ -327,11 +327,11 @@ class CommutoReactToResolutionProposalTest(CommutoSwapTest.CommutoSwapTest):
             tx_details = {
                 "from": self.dispute_agent_0
             }
-            self.commuto_swap_contract.functions.proposeResolution(newOfferID, 100, 18, 0).transact(tx_details)
+            self.commuto_swap_contract.functions.proposeResolution(newOfferID, 10, 10, 0).transact(tx_details)
             tx_details = {
                 "from": self.dispute_agent_1
             }
-            self.commuto_swap_contract.functions.proposeResolution(newOfferID, 100, 18, 0).transact(tx_details)
+            self.commuto_swap_contract.functions.proposeResolution(newOfferID, 10, 10, 0).transact(tx_details)
             tx_details = {
                 "from": self.taker_address
             }
@@ -416,15 +416,15 @@ class CommutoReactToResolutionProposalTest(CommutoSwapTest.CommutoSwapTest):
             tx_details = {
                 "from": self.dispute_agent_0
             }
-            self.commuto_swap_contract.functions.proposeResolution(newOfferID, 100, 18, 0).transact(tx_details)
+            self.commuto_swap_contract.functions.proposeResolution(newOfferID, 10, 10, 0).transact(tx_details)
             tx_details = {
                 "from": self.dispute_agent_1
             }
-            self.commuto_swap_contract.functions.proposeResolution(newOfferID, 99, 19, 0).transact(tx_details)
+            self.commuto_swap_contract.functions.proposeResolution(newOfferID, 11, 9, 0).transact(tx_details)
             tx_details = {
                 "from": self.dispute_agent_2
             }
-            self.commuto_swap_contract.functions.proposeResolution(newOfferID, 98, 20, 0).transact(tx_details)
+            self.commuto_swap_contract.functions.proposeResolution(newOfferID, 9, 11, 0).transact(tx_details)
             tx_details = {
                 "from": self.taker_address
             }
@@ -511,15 +511,15 @@ class CommutoReactToResolutionProposalTest(CommutoSwapTest.CommutoSwapTest):
         tx_details = {
             "from": self.dispute_agent_0
         }
-        self.commuto_swap_contract.functions.proposeResolution(newOfferID, 100, 18, 0).transact(tx_details)
+        self.commuto_swap_contract.functions.proposeResolution(newOfferID, 10, 10, 0).transact(tx_details)
         tx_details = {
             "from": self.dispute_agent_1
         }
-        self.commuto_swap_contract.functions.proposeResolution(newOfferID, 100, 18, 0).transact(tx_details)
+        self.commuto_swap_contract.functions.proposeResolution(newOfferID, 10, 10, 0).transact(tx_details)
         tx_details = {
             "from": self.dispute_agent_2
         }
-        self.commuto_swap_contract.functions.proposeResolution(newOfferID, 100, 18, 0).transact(tx_details)
+        self.commuto_swap_contract.functions.proposeResolution(newOfferID, 10, 10, 0).transact(tx_details)
         tx_details = {
             "from": self.taker_address
         }
