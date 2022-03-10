@@ -89,7 +89,9 @@ class CommutoProposeResolutionTest(CommutoSwapTest.CommutoSwapTest):
             tx_details = {
                 "from": self.dispute_agent_0
             }
-            self.commuto_swap_contract.functions.proposeResolution(newOfferID, 100, 10, 0).transact(tx_details)
+            self.commuto_swap_contract.functions.proposeResolution(newOfferID, 10, 11, 0).transact(tx_details)
+            raise (Exception(
+                "test_proposeResolution_total_payout_equals_total_unspent_locked failed without raising exception"))
         except ValueError as e:
             # "e56": "Total payout amount must equal total amount paid in minus service fees"
             if not "e56" in str(e):
@@ -164,7 +166,7 @@ class CommutoProposeResolutionTest(CommutoSwapTest.CommutoSwapTest):
                 self.dispute_agent_1,
                 self.dispute_agent_2
             ).transact(tx_details)
-            self.commuto_swap_contract.functions.proposeResolution(newOfferID, 100, 18, 0).transact(tx_details)
+            self.commuto_swap_contract.functions.proposeResolution(newOfferID, 10, 10, 0).transact(tx_details)
             raise (Exception("test_proposeResolution_caller_is_assigned_dispute_agent_check failed without raising exception"))
         except ValueError as e:
             # "e55": "Only a dispute agent selected for the swap can propose a resolution"
@@ -248,7 +250,7 @@ class CommutoProposeResolutionTest(CommutoSwapTest.CommutoSwapTest):
         tx_details = {
             "from": self.dispute_agent_0
         }
-        self.commuto_swap_contract.functions.proposeResolution(newOfferID, 100, 18, 0).transact(tx_details)
+        self.commuto_swap_contract.functions.proposeResolution(newOfferID, 10, 10, 0).transact(tx_details)
         events = ResolutionProposed_event_filter.get_new_entries()
         self.assertEqual(len(events), 1)
         self.assertEqual(events[0]["args"]["swapID"], newOfferID)
@@ -332,11 +334,11 @@ class CommutoProposeResolutionTest(CommutoSwapTest.CommutoSwapTest):
             tx_details = {
                 "from": self.dispute_agent_0
             }
-            self.commuto_swap_contract.functions.proposeResolution(newOfferID, 100, 18, 0).transact(tx_details)
+            self.commuto_swap_contract.functions.proposeResolution(newOfferID, 10, 10, 0).transact(tx_details)
             tx_details = {
                 "from": self.dispute_agent_1
             }
-            self.commuto_swap_contract.functions.proposeResolution(newOfferID, 100, 18, 0).transact(tx_details)
+            self.commuto_swap_contract.functions.proposeResolution(newOfferID, 10, 10, 0).transact(tx_details)
             tx_details = {
                 "from": self.taker_address
             }
@@ -344,7 +346,7 @@ class CommutoProposeResolutionTest(CommutoSwapTest.CommutoSwapTest):
             tx_details = {
                 "from": self.dispute_agent_2
             }
-            self.commuto_swap_contract.functions.proposeResolution(newOfferID, 100, 18, 0).transact(tx_details)
+            self.commuto_swap_contract.functions.proposeResolution(newOfferID, 10, 10, 0).transact(tx_details)
         except ValueError as e:
             # "e62": "A resolution proposal cannot be submitted if the maker or taker has already reacted"
             if not "e62" in str(e):
