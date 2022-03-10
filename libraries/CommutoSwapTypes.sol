@@ -36,6 +36,12 @@ enum MatchingProposalPair {
     ONE_AND_TWO //Proposals from dispute agents one and two match
 }
 
+enum EscalationReason {
+    REJECTION, //Escalating the swap because the maker or taker has rejected the dispute agents' proposal
+    NO_DISPUTE_AGENT_CONSENSUS, //Escalating the swap because the dispute agents didn't agree on a proposal
+    NO_COUNTERPARTY_REACTION //Escalating the swap because the counterparty didn't react
+}
+
 struct Offer {
     bool isCreated;
     bool isTaken;

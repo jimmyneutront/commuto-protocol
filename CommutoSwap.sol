@@ -441,4 +441,67 @@ contract CommutoSwap is CommutoSwapStorage {
 
     }
 
+    function escalateDispute(bytes16 swapID, EscalationReason reason) {
+        require(msg.sender == swaps[swapID].maker || msg.sender == swaps[swapID].taker, "e75"); //"e75": "Only maker or taker can escalate disputed swap"
+        if (reason == EscalationReason.NO_DISPUTE_AGENT_CONSENSUS) {
+            require(block.number > SafeMath.add(minimumDisputePeriod, disputes[swapID].disputeRaisedBlockNum), "e71"); //"e71": "More blocks must be mined before swap can be escalated"
+            /*
+            Check if at least two dispute agents have submitted matching resolution proposals
+            See reactToResolutionProposal() to understand logic behind this code
+            */
+            bool foundMatchingResolutionProposals = false;
+            if (disputes[swapID].hasDA0Proposed && disputes[swapID].hasDA1Proposed) {
+                foundMatchingResolutionProposals = (
+                (disputes[swapID].dA0MakerPayout == disputes[swapID].dA1MakerPayout) &&
+                (disputes[swapID].dA0TakerPayout == disputes[swapID].dA1TakerPayout) &&
+                (disputes[swapID].dA0ConfiscationPayout == disputes[swapID].dA1ConfiscationPayout)
+                );
+            }
+            if ((disputes[swapID].hasDA1Proposed && disputes[swapID].hasDA2Proposed) && !foundMatchingResolutionProposals) {
+                foundMatchingResolutionProposals = (
+                (disputes[swapID].dA1MakerPayout == disputes[swapID].dA2MakerPayout) &&
+                (disputes[swapID].dA1TakerPayout == disputes[swapID].dA2TakerPayout) &&
+                (disputes[swapID].dA1ConfiscationPayout == disputes[swapID].dA2ConfiscationPayout)
+                );
+            }
+            if ((disputes[swapID].hasDA0Proposed && disputes[swapID].hasDA2Proposed) && !foundMatchingResolutionProposals) {
+                foundMatchingResolutionProposals = (
+                (disputes[swapID].dA0MakerPayout == disputes[swapID].dA2MakerPayout) &&
+                (disputes[swapID].dA0TakerPayout == disputes[swapID].dA2TakerPayout) &&
+                (disputes[swapID].dA0ConfiscationPayout == disputes[swapID].dA2ConfiscationPayout)
+                );
+            }
+            require(!foundMatchingResolutionProposals, "e73"); //"e73": "Dispute can't be escalated for lack of dispute agent response if dispute agents have agreed on resolution proposal"
+        } else if (reason == EscalationReason.NO_COUNTERPARTY_REACTION) {
+            require(block.number > SafeMath.add(minimumDisputePeriod, disputes[swapID].disputeRaisedBlockNum), "e71"); //"e71": "More blocks must be mined before swap can be escalated"
+            if (msg.sender == swaps[swapID].maker) {
+                require(disputes[swapID].takerReaction == DisputeReaction.NO_REACTION, "e74"); //"e74": "Dispute cannot be escalated for lack of counterparty reaction if counterparty has reacted"
+            } else if (msg.sender == swaps[swapID].taker) {
+                require(disputes[swapID].makerReaction == DisputeReaction.NO_REACTION, "e74"); //"e74": "Dispute cannot be escalated for lack of counterparty reaction if counterparty has reacted"
+            } else {
+                revert("e75"); //"e75": "Only maker or taker can escalate disputed swap"
+            }
+        } else {
+            require(disputes[swapID].makerReaction == DisputeReaction.REJECTED || disputes[swapID].takerReaction == DisputeReaction.REJECTED, "e72"); //"e72": "Resolution proposal must be rejected to escalate dispute because of rejection"
+        }
+
+        //Find proper stablecoin contract
+        ERC20 token = ERC20(swaps[swapID].stablecoin);
+        uint256 serviceFeeAmountUpperBound = SafeMath.div(swaps[swapID].amountUpperBound, 100); //The amount the maker paid upon swap creation to pay the service fee
+        uint256 unspentServiceFee = SafeMath.sub(serviceFeeAmountUpperBound, swaps[swapID].serviceFeeAmount); //The remaining amount owed to the maker after subtracting actual service fee
+        uint256 totalSecurityDeposit = SafeMath.mul(swaps[swapID].securityDepositAmount, 2); //The sum of the maker's and taker's security deposits
+        uint256 totalWithoutSpentServiceFees = 0; //The total amount of STBL locked up by the maker and taker, excluding service fees
+        if (swaps[swapID].requiresFill == true) {
+            /*
+            See comment in proposeResolution() to understand the logic behind this code
+            */
+            totalWithoutSpentServiceFees = SafeMath.add(totalSecurityDeposit, unspentServiceFee);
+        } else {
+            totalWithoutSpentServiceFees = SafeMath.add(swaps[swapID].takenSwapAmount, SafeMath.add(totalSecurityDeposit, unspentServiceFee));
+        }
+
+        require(token.transfer(escalatedDisputedSwapsPool, totalWithoutSpentServiceFees), "e70"); //"e70": "Transfer to pool for escalated disputed swaps failed"
+        require(token.transfer(serviceFeePool, SafeMath.mul(2, swaps[swapID].serviceFeeAmount)), "e42"); //"e42": "Service fee transfer failed"
+    }
+
 }
