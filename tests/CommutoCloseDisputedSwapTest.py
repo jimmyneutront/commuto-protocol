@@ -2,6 +2,8 @@ import CommutoSwapTest
 from hexbytes import HexBytes
 from uuid import uuid4
 
+#TODO: Throw exception if smart contract call doesn't throw
+
 class CommutoCloseDisputedSwapTest(CommutoSwapTest.CommutoSwapTest):
 
     def test_closeDisputedSwap_caller_is_maker_or_taker_check(self):

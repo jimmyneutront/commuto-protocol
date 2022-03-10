@@ -444,7 +444,7 @@ contract CommutoSwap is CommutoSwapStorage {
 
     function escalateDispute(bytes16 swapID, EscalationReason reason) public {
         require(msg.sender == swaps[swapID].maker || msg.sender == swaps[swapID].taker, "e75"); //"e75": "Only maker or taker can escalate disputed swap"
-        if (reason == EscalationReason.NO_DISPUTE_AGENT_CONSENSUS) {
+        if (reason == EscalationReason.NO_DISPUTE_AGENT_AGREEMENT) {
             require(block.number > SafeMath.add(minimumDisputePeriod, disputes[swapID].disputeRaisedBlockNum), "e71"); //"e71": "More blocks must be mined before swap can be escalated"
             /*
             Check if at least two dispute agents have submitted matching resolution proposals

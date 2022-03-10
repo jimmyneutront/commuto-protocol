@@ -38,7 +38,7 @@ enum MatchingProposalPair {
 
 enum EscalationReason {
     REJECTION, //Escalating the swap because the maker or taker has rejected the dispute agents' proposal
-    NO_DISPUTE_AGENT_CONSENSUS, //Escalating the swap because the dispute agents didn't agree on a proposal
+    NO_DISPUTE_AGENT_AGREEMENT, //Escalating the swap because the dispute agents didn't agree on a proposal
     NO_COUNTERPARTY_REACTION //Escalating the swap because the counterparty didn't react
 }
 
