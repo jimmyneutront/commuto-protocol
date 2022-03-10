@@ -379,8 +379,8 @@ contract CommutoSwap is CommutoSwapStorage {
 
         //Immediately mark dispute as escalated if reaction is rejection
         if (reaction == DisputeReaction.REJECTED) {
-            //TODO: Call escalateDispute here
             disputes[swapID].state = DisputeState.ESCALATED;
+            escalateDispute(swapID, EscalationReason.REJECTION);
         }
 
         emit ReactionSubmitted(swapID, msg.sender, reaction);
