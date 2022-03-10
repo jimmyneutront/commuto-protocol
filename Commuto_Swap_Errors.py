@@ -70,4 +70,11 @@ commuto_swap_error_messages = {
     "e67": "Confiscated amount transfer failed",
     "e68": "A resolution cannot be proposed for an escalated swap",
     "e69": "A reaction cannot be submitted for an escalated swap",
+    "e70": "Transfer to pool for escalated disputed swaps failed",
+    "e71": "More blocks must be mined before swap can be escalated",
+    "e72": "Resolution proposal must be rejected to escalate dispute because of rejection",
+    "e73": "Dispute can't be escalated for lack of dispute agent response if dispute agents have agreed on resolution proposal",
+    "e74": "Dispute cannot be escalated for lack of counterparty reaction if counterparty has reacted",
+    "e75": "Only maker or taker can escalate disputed swap",
+    "e76": "Dispute cannot be escalated for lack of counterparty reaction if caller has not reacted",
 }

@@ -475,8 +475,10 @@ contract CommutoSwap is CommutoSwapStorage {
         } else if (reason == EscalationReason.NO_COUNTERPARTY_REACTION) {
             require(block.number > SafeMath.add(minimumDisputePeriod, disputes[swapID].disputeRaisedBlockNum), "e71"); //"e71": "More blocks must be mined before swap can be escalated"
             if (msg.sender == swaps[swapID].maker) {
+                require(disputes[swapID].makerReaction != DisputeReaction.NO_REACTION, "e76"); //"e76": "Dispute cannot be escalated for lack of counterparty reaction if caller has not reacted"
                 require(disputes[swapID].takerReaction == DisputeReaction.NO_REACTION, "e74"); //"e74": "Dispute cannot be escalated for lack of counterparty reaction if counterparty has reacted"
             } else if (msg.sender == swaps[swapID].taker) {
+                require(disputes[swapID].takerReaction != DisputeReaction.NO_REACTION, "e76"); //"e76": "Dispute cannot be escalated for lack of counterparty reaction if caller has not reacted"
                 require(disputes[swapID].makerReaction == DisputeReaction.NO_REACTION, "e74"); //"e74": "Dispute cannot be escalated for lack of counterparty reaction if counterparty has reacted"
             } else {
                 revert("e75"); //"e75": "Only maker or taker can escalate disputed swap"
