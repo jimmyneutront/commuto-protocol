@@ -3,9 +3,6 @@ from hexbytes import HexBytes
 from time import sleep
 from uuid import uuid4
 
-# Note: this should probably be moved to a CommutoEscalateDisputeTest file
-# TODO: Ensure dispute escalation emits event
-
 # TODO: Immediately escalate swap upon rejection
 
 class CommutoEscalateDisputeTest(CommutoSwapTest.CommutoSwapTest):
@@ -722,3 +719,88 @@ class CommutoEscalateDisputeTest(CommutoSwapTest.CommutoSwapTest):
             #"e72": "Resolution proposal must be rejected to escalate dispute because of rejection"
             if not "e72" in str(e):
                 raise e
+
+    def test_escalateDispute_event_emission_check(self):
+        # Ensure dispute escalation emits event
+        newOfferID = HexBytes(uuid4().bytes)
+        DisputeEscalated_event_filter = self.commuto_swap_contract.events.DisputeEscalated \
+            .createFilter(fromBlock="latest",
+                          argument_filters={
+                              'swapID': newOfferID
+                          }
+                          )
+        tx_details = {
+            "from": self.maker_address
+        }
+        newOffer = {
+            "isCreated": True,
+            "isTaken": True,
+            "maker": self.maker_address,
+            "interfaceId": HexBytes("an interface Id here".encode("utf-8").hex()),
+            "stablecoin": self.dai_deployment_tx_receipt.contractAddress,
+            "amountLowerBound": 100,
+            "amountUpperBound": 100,
+            "securityDepositAmount": 10,
+            "direction": 1,
+            "price": HexBytes("a price here".encode("utf-8").hex()),
+            "settlementMethods": ["USD-SWIFT".encode("utf-8"), ],
+            "protocolVersion": 1,
+        }
+        self.test_dai_contract.functions.increaseAllowance(
+            self.commuto_swap_deployment_tx_receipt.contractAddress,
+            11,
+        ).transact(tx_details)
+        self.commuto_swap_contract.functions.openOffer(
+            newOfferID,
+            newOffer,
+        ).transact(tx_details)
+        tx_details = {
+            "from": self.taker_address
+        }
+        newSwap = {
+            "isCreated": False,
+            "requiresFill": True,
+            "maker": self.maker_address,
+            "makerInterfaceId": HexBytes("an interface Id here".encode("utf-8").hex()),
+            "taker": self.taker_address,
+            "takerInterfaceId": HexBytes("an interface Id here".encode("utf-8").hex()),
+            "stablecoin": self.dai_deployment_tx_receipt.contractAddress,
+            "amountLowerBound": 100,
+            "amountUpperBound": 100,
+            "securityDepositAmount": 10,
+            "takenSwapAmount": 100,
+            "serviceFeeAmount": 1,
+            "direction": 1,
+            "price": HexBytes("a price here".encode("utf-8").hex()),
+            "settlementMethod": "USD-SWIFT".encode("utf-8"),
+            "protocolVersion": 1,
+            "isPaymentSent": True,
+            "isPaymentReceived": True,
+            "hasBuyerClosed": True,
+            "hasSellerClosed": True,
+            "disputeRaiser": 0,
+        }
+        self.test_dai_contract.functions.increaseAllowance(
+            self.commuto_swap_deployment_tx_receipt.contractAddress,
+            11,
+        ).transact(tx_details)
+        self.commuto_swap_contract.functions.takeOffer(
+            newOfferID,
+            newSwap,
+        ).transact(tx_details)
+        self.commuto_swap_contract.functions.raiseDispute(
+            newOfferID,
+            self.dispute_agent_0,
+            self.dispute_agent_1,
+            self.dispute_agent_2
+        ).transact(tx_details)
+        sleep(6)
+        tx_details = {
+            "from": self.maker_address
+        }
+        self.commuto_swap_contract.functions.escalateDispute(newOfferID, 1).transact(tx_details)
+        events = DisputeEscalated_event_filter.get_new_entries()
+        self.assertEqual(len(events), 1)
+        self.assertEqual(events[0]["args"]["swapID"], newOfferID)
+        self.assertEqual(events[0]["args"]["escalator"], self.maker_address)
+        self.assertEqual(events[0]["args"]["reason"], 1)
