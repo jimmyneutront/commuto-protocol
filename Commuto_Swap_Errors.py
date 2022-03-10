@@ -64,4 +64,7 @@ commuto_swap_error_messages = {
     "e61": "Two matching resolutions must be proposed before reaction is allowed",
     "e62": "A resolution proposal cannot be submitted if the maker or taker has already reacted",
     "e63": "Only maker and taker can close disputed swap",
+    "e64": "Disputed swap closure requires proposal acceptance by maker and taker",
+    "e65": "Maker cannot close disputed swap more than once",
+    "e66": "Taker cannot close disputed swap more than once",
 }

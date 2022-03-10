@@ -88,4 +88,6 @@ struct Dispute {
     DisputeReaction makerReaction;
     DisputeReaction takerReaction;
     DisputeState state;
+    bool hasMakerPaidOut;
+    bool hasTakerPaidOut;
 }

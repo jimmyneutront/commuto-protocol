@@ -369,10 +369,11 @@ contract CommutoSwap is CommutoSwapStorage {
     }
 
     function closeDisputedSwap(bytes16 swapID) public {
+        require(disputes[swapID].makerReaction == DisputeReaction.ACCEPTED && disputes[swapID].takerReaction == DisputeReaction.ACCEPTED, "e64"); //"e64": "Disputed swap closure requires proposal acceptance by maker and taker"
         if (msg.sender == swaps[swapID].maker) {
-
+            require(!disputes[swapID].hasMakerPaidOut, "e65"); //"e65": "Maker cannot close disputed swap more than once"
         } else if (msg.sender == swaps[swapID].taker) {
-
+            require(!disputes[swapID].hasTakerPaidOut, "e66"); //"e66": "Taker cannot close disputed swap more than once"
         } else {
             revert("e63"); //"e63": "Only maker and taker can close disputed swap"
         }
