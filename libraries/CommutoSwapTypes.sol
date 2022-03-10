@@ -29,6 +29,13 @@ enum DisputeState {
     ESCALATED //Maker and taker didn't both accept dispute result and one of them is escalating dispute to CMTO tokenholders
 }
 
+enum MatchingProposalPair {
+    NO_MATCH, //A pair of matching proposals hasn't yet been found
+    ZERO_AND_ONE, //Proposals from dispute agents zero and one match
+    ZERO_AND_TWO, //Proposals from dispute agents zero and two match
+    ONE_AND_TWO //Proposals from dispute agents one and two match
+}
+
 struct Offer {
     bool isCreated;
     bool isTaken;
@@ -85,6 +92,7 @@ struct Dispute {
     uint256 dA2MakerPayout;
     uint256 dA2TakerPayout;
     uint256 dA2ConfiscationPayout;
+    MatchingProposalPair matchingProposals;
     DisputeReaction makerReaction;
     DisputeReaction takerReaction;
     DisputeState state;

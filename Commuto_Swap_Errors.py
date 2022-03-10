@@ -67,4 +67,5 @@ commuto_swap_error_messages = {
     "e64": "Disputed swap closure requires proposal acceptance by maker and taker",
     "e65": "Maker cannot close disputed swap more than once",
     "e66": "Taker cannot close disputed swap more than once",
+    "e67": "Confiscated amount transfer failed",
 }

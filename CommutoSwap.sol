@@ -322,43 +322,56 @@ contract CommutoSwap is CommutoSwapStorage {
         } else {
             revert("e57"); //"e57": "Only swap maker or taker can react to resolution proposal"
         }
-        //Check if at least two dispute agents have submitted matching resolution proposals
-        bool foundMatchingResolutionProposals = false;
-        /*
-        Check if dispute agents 0 and 1 have submitted proposals. If they have, check if their proposals match.
-        */
-        if (disputes[swapID].hasDA0Proposed && disputes[swapID].hasDA1Proposed) {
-            foundMatchingResolutionProposals = (
-            (disputes[swapID].dA0MakerPayout == disputes[swapID].dA1MakerPayout) &&
-            (disputes[swapID].dA0TakerPayout == disputes[swapID].dA1TakerPayout) &&
-            (disputes[swapID].dA0ConfiscationPayout == disputes[swapID].dA1ConfiscationPayout)
-            );
+
+        //Only search for matching resolution proposals if we haven't found a matching pair yet
+        if (disputes[swapID].matchingProposals == MatchingProposalPair.NO_MATCH) {
+            //Check if at least two dispute agents have submitted matching resolution proposals
+            bool foundMatchingResolutionProposals = false;
+            /*
+            Check if dispute agents 0 and 1 have submitted proposals. If they have, check if their proposals match.
+            */
+            if (disputes[swapID].hasDA0Proposed && disputes[swapID].hasDA1Proposed) {
+                foundMatchingResolutionProposals = (
+                (disputes[swapID].dA0MakerPayout == disputes[swapID].dA1MakerPayout) &&
+                (disputes[swapID].dA0TakerPayout == disputes[swapID].dA1TakerPayout) &&
+                (disputes[swapID].dA0ConfiscationPayout == disputes[swapID].dA1ConfiscationPayout)
+                );
+                if (foundMatchingResolutionProposals == true) {
+                    disputes[swapID].matchingProposals = MatchingProposalPair.ZERO_AND_ONE;
+                }
+            }
+            /*
+            If dispute agents 0 and 1 haven't submitted matching proposals (which also includes the possibility that they
+            haven't submitted proposals at all) check if dispute agents 1 and 2 have submitted proposals. If they have,
+            check if their proposals match.
+            */
+            if ((disputes[swapID].hasDA1Proposed && disputes[swapID].hasDA2Proposed) && !foundMatchingResolutionProposals) {
+                foundMatchingResolutionProposals = (
+                (disputes[swapID].dA1MakerPayout == disputes[swapID].dA2MakerPayout) &&
+                (disputes[swapID].dA1TakerPayout == disputes[swapID].dA2TakerPayout) &&
+                (disputes[swapID].dA1ConfiscationPayout == disputes[swapID].dA2ConfiscationPayout)
+                );
+                if (foundMatchingResolutionProposals == true) {
+                    disputes[swapID].matchingProposals = MatchingProposalPair.ONE_AND_TWO;
+                }
+            }
+            /*
+            At this point, proposals (if any) submitted by dispute agents zero and one don't match, and proposals (if any)
+            submitted by dispute agents one and two don't match, so check if dispute agents zero and two have submitted
+            proposals. If they have, check if their proposals match.
+            */
+            if ((disputes[swapID].hasDA0Proposed && disputes[swapID].hasDA2Proposed) && !foundMatchingResolutionProposals) {
+                foundMatchingResolutionProposals = (
+                (disputes[swapID].dA0MakerPayout == disputes[swapID].dA2MakerPayout) &&
+                (disputes[swapID].dA0TakerPayout == disputes[swapID].dA2TakerPayout) &&
+                (disputes[swapID].dA0ConfiscationPayout == disputes[swapID].dA2ConfiscationPayout)
+                );
+                if (foundMatchingResolutionProposals == true) {
+                    disputes[swapID].matchingProposals = MatchingProposalPair.ZERO_AND_TWO;
+                }
+            }
+            require(foundMatchingResolutionProposals, "e61"); //"e61": "Two matching resolutions must be proposed before reaction is allowed"
         }
-        /*
-        If dispute agents 0 and 1 haven't submitted matching proposals (which also includes the possibility that they
-        haven't submitted proposals at all) check if dispute agents 1 and 2 have submitted proposals. If they have,
-        check if their proposals match.
-        */
-        if ((disputes[swapID].hasDA1Proposed && disputes[swapID].hasDA2Proposed) && !foundMatchingResolutionProposals) {
-            foundMatchingResolutionProposals = (
-            (disputes[swapID].dA1MakerPayout == disputes[swapID].dA2MakerPayout) &&
-            (disputes[swapID].dA1TakerPayout == disputes[swapID].dA2TakerPayout) &&
-            (disputes[swapID].dA1ConfiscationPayout == disputes[swapID].dA2ConfiscationPayout)
-            );
-        }
-        /*
-        At this point, proposals (if any) submitted by dispute agents zero and one don't match, and proposals (if any)
-        submitted by dispute agents one and two don't match, so check if dispute agents zero and two have submitted
-        proposals. If they have, check if their proposals match.
-        */
-        if ((disputes[swapID].hasDA0Proposed && disputes[swapID].hasDA2Proposed) && !foundMatchingResolutionProposals) {
-            foundMatchingResolutionProposals = (
-            (disputes[swapID].dA0MakerPayout == disputes[swapID].dA2MakerPayout) &&
-            (disputes[swapID].dA0TakerPayout == disputes[swapID].dA2TakerPayout) &&
-            (disputes[swapID].dA0ConfiscationPayout == disputes[swapID].dA2ConfiscationPayout)
-            );
-        }
-        require(foundMatchingResolutionProposals, "e61"); //"e61": "Two matching resolutions must be proposed before reaction is allowed"
 
         //Immediately mark dispute as escalated if reaction is rejection
         if (reaction == DisputeReaction.REJECTED) {
@@ -370,13 +383,60 @@ contract CommutoSwap is CommutoSwapStorage {
 
     function closeDisputedSwap(bytes16 swapID) public {
         require(disputes[swapID].makerReaction == DisputeReaction.ACCEPTED && disputes[swapID].takerReaction == DisputeReaction.ACCEPTED, "e64"); //"e64": "Disputed swap closure requires proposal acceptance by maker and taker"
+
+        //Find proper stablecoin contract
+        ERC20 token = ERC20(swaps[swapID].stablecoin);
+
+        //Find proper payout amounts
+        uint256 makerPayout = 0;
+        uint256 takerPayout = 0;
+        uint256 confiscationPayout = 0;
+
+        if (disputes[swapID].matchingProposals == MatchingProposalPair.ZERO_AND_ONE || disputes[swapID].matchingProposals == MatchingProposalPair.ZERO_AND_TWO) {
+            makerPayout = disputes[swapID].dA0MakerPayout;
+            takerPayout = disputes[swapID].dA0TakerPayout;
+            confiscationPayout = disputes[swapID].dA0ConfiscationPayout;
+        } else {
+            makerPayout = disputes[swapID].dA1MakerPayout;
+            takerPayout = disputes[swapID].dA1TakerPayout;
+            confiscationPayout = disputes[swapID].dA1ConfiscationPayout;
+        }
+
+        //The last person to call this function must pay for the confiscated amount transfer
+        bool mustPayConfiscationAmount = false;
+        uint256 payoutAmountToCaller = 0;
+
         if (msg.sender == swaps[swapID].maker) {
             require(!disputes[swapID].hasMakerPaidOut, "e65"); //"e65": "Maker cannot close disputed swap more than once"
+            payoutAmountToCaller = makerPayout;
+            disputes[swapID].hasMakerPaidOut = true;
+            if (disputes[swapID].hasTakerPaidOut == true) {
+                //Caller is the final caller
+                mustPayConfiscationAmount = true;
+            }
         } else if (msg.sender == swaps[swapID].taker) {
             require(!disputes[swapID].hasTakerPaidOut, "e66"); //"e66": "Taker cannot close disputed swap more than once"
+            payoutAmountToCaller = takerPayout;
+            disputes[swapID].hasTakerPaidOut = true;
+            if (disputes[swapID].hasMakerPaidOut == true) {
+                //Caller is the final caller
+                mustPayConfiscationAmount = true;
+            }
         } else {
             revert("e63"); //"e63": "Only maker and taker can close disputed swap"
         }
+
+        require(token.transfer(msg.sender, payoutAmountToCaller), "e19"); //"e19": "Token transfer failed"
+        require(token.transfer(serviceFeePool, swaps[swapID].serviceFeeAmount), "e42"); //"e42": "Service fee transfer failed"
+
+        if (mustPayConfiscationAmount == true) {
+            require(token.transfer(serviceFeePool, confiscationPayout), "e67"); //"e67": "Confiscated amount transfer failed"
+            //Caller is the final caller, so mark swap as paid out
+            disputes[swapID].state = DisputeState.PAID_OUT;
+        }
+
+        emit DisputedSwapClosed(swapID, msg.sender);
+
     }
 
 }
