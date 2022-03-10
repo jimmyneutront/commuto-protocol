@@ -115,8 +115,10 @@ contract CommutoSwap is CommutoSwapStorage {
         return swaps[swapID];
     }
 
-    constructor (address _serviceFeePool, address offerOpener, address offerEditor, address offerCanceler, address offerTaker, address swapFiller, address paymentReporter, address swapCloser) public CommutoSwapStorage(offerOpener, offerEditor, offerCanceler, offerTaker, swapFiller, paymentReporter, swapCloser) {
+    constructor (address eDSPool, address _serviceFeePool, address offerOpener, address offerEditor, address offerCanceler, address offerTaker, address swapFiller, address paymentReporter, address swapCloser) public CommutoSwapStorage(offerOpener, offerEditor, offerCanceler, offerTaker, swapFiller, paymentReporter, swapCloser) {
         owner = msg.sender;
+        require(eDSPool != address(0), "e77"); //"e77": "eDSPool address cannot be zero"
+        escalatedDisputedSwapsPool = eDSPool;
         require(_serviceFeePool != address(0), "e0"); //"e0": "_serviceFeePool address cannot be zero"
         serviceFeePool = _serviceFeePool;
     }

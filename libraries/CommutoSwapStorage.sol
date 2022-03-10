@@ -12,7 +12,7 @@ contract CommutoSwapStorage {
     address public serviceFeePool = address(0);
 
     //Address to which funds for escalated disputed swaps are sent until tokenholders approve a resolution
-    address public escalatedDisputedSwapsPool;
+    address public escalatedDisputedSwapsPool = address(0);
 
     //Address of the contract to which CommutoSwap should delegate openOffer calls
     address immutable public commutoSwapOfferOpener;

@@ -77,4 +77,5 @@ commuto_swap_error_messages = {
     "e74": "Dispute cannot be escalated for lack of counterparty reaction if counterparty has reacted",
     "e75": "Only maker or taker can escalate disputed swap",
     "e76": "Dispute cannot be escalated for lack of counterparty reaction if caller has not reacted",
+    "e77": "eDSPool address cannot be zero",
 }

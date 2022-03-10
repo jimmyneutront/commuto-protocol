@@ -240,7 +240,8 @@ class CommutoSwapTest(unittest.TestCase):
         commuto_swap_abi = compiled_sol["../CommutoSwap.sol:CommutoSwap"]["abi"]
         commuto_swap_bytecode = compiled_sol["../CommutoSwap.sol:CommutoSwap"]["bin"]
         undeployed_commuto_swap_contract = w3.eth.contract(abi=commuto_swap_abi, bytecode=commuto_swap_bytecode)
-        commuto_swap_deployment_tx_hash = undeployed_commuto_swap_contract.constructor(w3.eth.accounts[2],
+        commuto_swap_deployment_tx_hash = undeployed_commuto_swap_contract.constructor(w3.eth.accounts[6],
+                                                                                       w3.eth.accounts[2],
                                                                                        CommutoSwapOfferOpener_address,
                                                                                        CommutoSwapOfferEditor_address,
                                                                                        CommutoSwapOfferCanceler_address,
