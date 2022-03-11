@@ -14,7 +14,7 @@ swaps cannot be closed by calling CommutoSwapCloser directly.
 */
 contract CommutoSwapCloser is CommutoSwapStorage {
 
-    constructor() CommutoSwapStorage(address(0), address(0), address(0), address(0), address(0), address(0), address(0)) public {}
+    constructor() CommutoSwapStorage(address(0), address(0), address(0), address(0), address(0), address(0), address(0), address(0)) public {}
 
     //Close swap and receive STBL from escrow
     /*

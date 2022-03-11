@@ -115,7 +115,7 @@ contract CommutoSwap is CommutoSwapStorage {
         return swaps[swapID];
     }
 
-    constructor (address eDSPool, address _serviceFeePool, address offerOpener, address offerEditor, address offerCanceler, address offerTaker, address swapFiller, address paymentReporter, address swapCloser) public CommutoSwapStorage(offerOpener, offerEditor, offerCanceler, offerTaker, swapFiller, paymentReporter, swapCloser) {
+    constructor (address eDSPool, address _serviceFeePool, address offerOpener, address offerEditor, address offerCanceler, address offerTaker, address swapFiller, address paymentReporter, address swapCloser, address disputeRaiser) public CommutoSwapStorage(offerOpener, offerEditor, offerCanceler, offerTaker, swapFiller, paymentReporter, swapCloser, disputeRaiser) {
         owner = msg.sender;
         require(eDSPool != address(0), "e77"); //"e77": "eDSPool address cannot be zero"
         escalatedDisputedSwapsPool = eDSPool;
@@ -238,29 +238,16 @@ contract CommutoSwap is CommutoSwapStorage {
 
     //Raise a dispute for a swap
     function raiseDispute(bytes16 swapID, address disputeAgent0, address disputeAgent1, address disputeAgent2) public {
-        //Validate arguments
-        require(swaps[swapID].isCreated, "e33"); //"e33": "A swap with the specified id does not exist"
-        require(disputeAgents[disputeAgent0], "e3"); //"e3": "Selected dispute agents must be active"
-        require(disputeAgents[disputeAgent1], "e3"); //"e3": "Selected dispute agents must be active"
-        require(disputeAgents[disputeAgent2], "e3"); //"e3": "Selected dispute agents must be active"
-        require(!swaps[swapID].hasBuyerClosed && !swaps[swapID].hasSellerClosed, "e4"); //"e4": "Dispute cannot be raised if maker or taker has already closed"
-        require(swaps[swapID].disputeRaiser == DisputeRaiser.NONE, "e53"); //"e53": "Dispute cannot be raised for an already-disputed swap"
-        if (msg.sender == swaps[swapID].maker) {
-            swaps[swapID].disputeRaiser = DisputeRaiser.MAKER;
-        } else if (msg.sender == swaps[swapID].taker) {
-            swaps[swapID].disputeRaiser = DisputeRaiser.TAKER;
-        } else {
-            revert("e44"); //"e44": "Only swap maker or taker can call this function"
-        }
-
-        //Record the block number at which the dispute is raised
-        disputes[swapID].disputeRaisedBlockNum = block.number;
-        //Record the addresses of selected dispute agents
-        disputes[swapID].disputeAgent0 = disputeAgent0;
-        disputes[swapID].disputeAgent1 = disputeAgent1;
-        disputes[swapID].disputeAgent2 = disputeAgent2;
-
-        emit DisputeRaised(swapID, disputeAgent0, disputeAgent1, disputeAgent2);
+        /*
+        Slither throws a high severity warning about the use of delegatecall. In this case it is necessary due to
+        contract size limitations, and also safe since the CommutoSwapDisputeRaiser address is immutable and set when
+        CommutoSwap is deployed, and therefore the call cannot be delegated to a malicious contract.
+        */
+        (bool success, bytes memory data) = commutoSwapDisputeRaiser.delegatecall(
+            abi.encodeWithSignature("raiseDispute(bytes16,address,address,address)",
+            swapID, disputeAgent0, disputeAgent1, disputeAgent2)
+        );
+        require(success, string (data) );
     }
 
     //Propose a resolution to a disputed swap
