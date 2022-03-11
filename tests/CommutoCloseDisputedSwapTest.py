@@ -2,8 +2,6 @@ import CommutoSwapTest
 from hexbytes import HexBytes
 from uuid import uuid4
 
-#TODO: Throw exception if smart contract call doesn't throw
-
 class CommutoCloseDisputedSwapTest(CommutoSwapTest.CommutoSwapTest):
 
     def test_closeDisputedSwap_caller_is_maker_or_taker_check(self):
@@ -98,6 +96,7 @@ class CommutoCloseDisputedSwapTest(CommutoSwapTest.CommutoSwapTest):
                 "from": self.dispute_agent_0
             }
             self.commuto_swap_contract.functions.closeDisputedSwap(newOfferID).transact(tx_details)
+            raise Exception("test_closeDisputedSwap_caller_is_maker_or_taker_check failed without raising exception")
         except ValueError as e:
             # "e63": "Only maker and taker can close disputed swap"
             if not "e63" in str(e):
@@ -192,6 +191,7 @@ class CommutoCloseDisputedSwapTest(CommutoSwapTest.CommutoSwapTest):
                 "from": self.maker_address
             }
             self.commuto_swap_contract.functions.closeDisputedSwap(newOfferID).transact(tx_details)
+            raise Exception("test_closeDisputedSwap_maker_and_taker_accept_check failed without raising exception")
         except ValueError as e:
             # "e64": "Disputed swap closure requires proposal acceptance by maker and taker"
             if not "e64" in str(e):
@@ -290,6 +290,7 @@ class CommutoCloseDisputedSwapTest(CommutoSwapTest.CommutoSwapTest):
             }
             self.commuto_swap_contract.functions.closeDisputedSwap(newOfferID).transact(tx_details)
             self.commuto_swap_contract.functions.closeDisputedSwap(newOfferID).transact(tx_details)
+            raise Exception("test_closeDisputedSwap_maker_duplicate_call_check failed without raising exception")
         except ValueError as e:
             # "e65": "Maker cannot pay out disputed swap more than once"
             if not "e65" in str(e):
@@ -388,6 +389,7 @@ class CommutoCloseDisputedSwapTest(CommutoSwapTest.CommutoSwapTest):
             }
             self.commuto_swap_contract.functions.closeDisputedSwap(newOfferID).transact(tx_details)
             self.commuto_swap_contract.functions.closeDisputedSwap(newOfferID).transact(tx_details)
+            raise Exception("test_closeDisputedSwap_taker_duplicate_call_check failed without raising exception")
         except ValueError as e:
             # "e66": "Taker cannot pay out disputed swap more than once"
             if not "e66" in str(e):
