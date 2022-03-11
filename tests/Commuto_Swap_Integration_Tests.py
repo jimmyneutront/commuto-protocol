@@ -1,9 +1,10 @@
 import CommutoSwapTest
 from hexbytes import HexBytes
+from time import sleep
 from uuid import uuid4
 
-# TODO: Test immediate escalation to token holders given rejection of resolution proposal
 # TODO: Test escalation to token holders given no response from dispute agents
+
 # TODO: Test escalation to token holders given lack of response from maker
 # TODO: Test escalation to token holders given lack of response from taker
 
@@ -453,3 +454,109 @@ class CommutoSwapIntegrationTests(CommutoSwapTest.CommutoSwapTest):
         self.assertEqual(taker_initial_dai_balance - 6, taker_final_dai_balance)
         self.assertEqual(service_fee_initial_dai_balance + 7, service_fee_final_dai_balance)
         self.assertEqual(escalatedDisputedSwapsPool_initial_balance, escalatedDisputedSwapsPool_final_balance)
+
+    def test_immediate_escalation_given_rejection(self):
+        #Test immediate escalation to token holders given rejection of resolution proposal
+        maker_initial_dai_balance = self.test_dai_contract.functions.balanceOf(self.maker_address).call()
+        taker_initial_dai_balance = self.test_dai_contract.functions.balanceOf(self.taker_address).call()
+        service_fee_initial_dai_balance = self.test_dai_contract.functions.balanceOf(self.commuto_service_fee_account) \
+            .call()
+        escalatedDisputedSwapsPool_initial_balance = self.test_dai_contract.functions.balanceOf(
+            self.w3.eth.accounts[6]).call()
+        disputed_swap_with_rejection_id = HexBytes(uuid4().bytes)
+        tx_details = {
+            "from": self.maker_address
+        }
+        newOffer = {
+            "isCreated": True,
+            "isTaken": True,
+            "maker": self.maker_address,
+            "interfaceId": HexBytes("an interface Id here".encode("utf-8").hex()),
+            "stablecoin": self.dai_deployment_tx_receipt.contractAddress,
+            "amountLowerBound": 100,
+            "amountUpperBound": 100,
+            "securityDepositAmount": 10,
+            "direction": 1,
+            "price": HexBytes("a price here".encode("utf-8").hex()),
+            "settlementMethods": ["USD-SWIFT".encode("utf-8"), ],
+            "protocolVersion": 1,
+        }
+        self.test_dai_contract.functions.increaseAllowance(
+            self.commuto_swap_deployment_tx_receipt.contractAddress,
+            11,
+        ).transact(tx_details)
+        self.commuto_swap_contract.functions.openOffer(
+            disputed_swap_with_rejection_id,
+            newOffer,
+        ).transact(tx_details)
+        tx_details = {
+            "from": self.taker_address
+        }
+        newSwap = {
+            "isCreated": False,
+            "requiresFill": True,
+            "maker": self.maker_address,
+            "makerInterfaceId": HexBytes("an interface Id here".encode("utf-8").hex()),
+            "taker": self.taker_address,
+            "takerInterfaceId": HexBytes("an interface Id here".encode("utf-8").hex()),
+            "stablecoin": self.dai_deployment_tx_receipt.contractAddress,
+            "amountLowerBound": 100,
+            "amountUpperBound": 100,
+            "securityDepositAmount": 10,
+            "takenSwapAmount": 100,
+            "serviceFeeAmount": 1,
+            "direction": 1,
+            "price": HexBytes("a price here".encode("utf-8").hex()),
+            "settlementMethod": "USD-SWIFT".encode("utf-8"),
+            "protocolVersion": 1,
+            "isPaymentSent": True,
+            "isPaymentReceived": True,
+            "hasBuyerClosed": True,
+            "hasSellerClosed": True,
+            "disputeRaiser": 0,
+        }
+        self.test_dai_contract.functions.increaseAllowance(
+            self.commuto_swap_deployment_tx_receipt.contractAddress,
+            11,
+        ).transact(tx_details)
+        self.commuto_swap_contract.functions.takeOffer(
+            disputed_swap_with_rejection_id,
+            newSwap,
+        ).transact(tx_details)
+        self.commuto_swap_contract.functions.raiseDispute(
+            disputed_swap_with_rejection_id,
+            self.dispute_agent_0,
+            self.dispute_agent_1,
+            self.dispute_agent_2
+        ).transact(tx_details)
+        tx_details = {
+            "from": self.dispute_agent_0
+        }
+        self.commuto_swap_contract.functions.proposeResolution(disputed_swap_with_rejection_id, 10, 5, 5).transact(
+            tx_details)
+        tx_details = {
+            "from": self.dispute_agent_1
+        }
+        self.commuto_swap_contract.functions.proposeResolution(disputed_swap_with_rejection_id, 10, 5, 5).transact(
+            tx_details)
+        tx_details = {
+            "from": self.dispute_agent_2
+        }
+        self.commuto_swap_contract.functions.proposeResolution(disputed_swap_with_rejection_id, 10, 5, 5).transact(
+            tx_details)
+        tx_details = {
+            "from": self.maker_address
+        }
+        sleep(3)
+        self.commuto_swap_contract.functions.reactToResolutionProposal(disputed_swap_with_rejection_id, 2).transact(
+            tx_details)
+        maker_final_dai_balance = self.test_dai_contract.functions.balanceOf(self.maker_address).call()
+        taker_final_dai_balance = self.test_dai_contract.functions.balanceOf(self.taker_address).call()
+        service_fee_final_dai_balance = self.test_dai_contract.functions.balanceOf(self.commuto_service_fee_account) \
+            .call()
+        escalatedDisputedSwapsPool_final_balance = self.test_dai_contract.functions.balanceOf(
+            self.w3.eth.accounts[6]).call()
+        self.assertEqual(maker_initial_dai_balance - 11, maker_final_dai_balance)
+        self.assertEqual(taker_initial_dai_balance - 11, taker_final_dai_balance)
+        self.assertEqual(service_fee_initial_dai_balance + 2, service_fee_final_dai_balance)
+        self.assertEqual(escalatedDisputedSwapsPool_initial_balance + 20, escalatedDisputedSwapsPool_final_balance)
