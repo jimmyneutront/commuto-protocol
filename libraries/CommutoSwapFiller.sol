@@ -14,7 +14,7 @@ intended for use via delegatecall only, so swaps cannot be filled by calling Com
 */
 contract CommutoSwapFiller is CommutoSwapStorage {
 
-    constructor() CommutoSwapStorage(address(0), address(0), address(0), address(0), address(0), address(0), address(0), address(0), address(0)) public {}
+    constructor() CommutoSwapStorage(address(0), address(0), address(0), address(0), address(0), address(0), address(0), address(0), address(0), address(0), address(0)) public {}
 
     //Fill swap (deposit takenSwapAmount of STBL) as maker and seller
     /*

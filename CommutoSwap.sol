@@ -9,6 +9,7 @@ import "./libraries/CommutoSwapStorage.sol";
 import "./libraries/CommutoSwapTypes.sol";
 import "./libraries/SafeMath.sol";
 import "./libraries/CommutoSwapPaymentReporter.sol";
+import "./libraries/CommutoSwapResolutionProposalReactor.sol";
 
 //TODO: Fee percentage set by token holders
 //TODO: Better code comments
@@ -115,12 +116,18 @@ contract CommutoSwap is CommutoSwapStorage {
         return swaps[swapID];
     }
 
-    constructor (address eDSPool, address _serviceFeePool, address offerOpener, address offerEditor, address offerCanceler, address offerTaker, address swapFiller, address paymentReporter, address swapCloser, address disputeRaiser, address resolutionProposer) public CommutoSwapStorage(offerOpener, offerEditor, offerCanceler, offerTaker, swapFiller, paymentReporter, swapCloser, disputeRaiser, resolutionProposer) {
+    function getDispute(bytes16 swapID) view public returns (Dispute memory) {
+        return disputes[swapID];
+    }
+
+    /*constructor (address eDSPool, address _serviceFeePool, address offerOpener, address offerEditor, address offerCanceler, address offerTaker, address swapFiller, address paymentReporter, address swapCloser, address disputeRaiser, address resolutionProposer, address resolutionProposalReactor) public CommutoSwapStorage(offerOpener, offerEditor, offerCanceler, offerTaker, swapFiller, paymentReporter, swapCloser, disputeRaiser, resolutionProposer, resolutionProposalReactor, disputeEscalator) {*/
+
+    constructor (address[] memory contractAddresses) public CommutoSwapStorage(contractAddresses[2], contractAddresses[3], contractAddresses[4], contractAddresses[5], contractAddresses[6], contractAddresses[7], contractAddresses[8], contractAddresses[9], contractAddresses[10], contractAddresses[11], contractAddresses[12]) {
         owner = msg.sender;
-        require(eDSPool != address(0), "e77"); //"e77": "eDSPool address cannot be zero"
-        escalatedDisputedSwapsPool = eDSPool;
-        require(_serviceFeePool != address(0), "e0"); //"e0": "_serviceFeePool address cannot be zero"
-        serviceFeePool = _serviceFeePool;
+        require(contractAddresses[0] != address(0), "e77"); //"e77": "eDSPool address cannot be zero"
+        escalatedDisputedSwapsPool = contractAddresses[0];
+        require(contractAddresses[1] != address(0), "e0"); //"e0": "_serviceFeePool address cannot be zero"
+        serviceFeePool = contractAddresses[1];
     }
 
     //Create a new swap offer
@@ -264,75 +271,34 @@ contract CommutoSwap is CommutoSwapStorage {
         require(success, string (data) );
     }
 
+    //React to the dispute agents' resolution proposals
     function reactToResolutionProposal(bytes16 swapID, DisputeReaction reaction) public {
-        require(reaction != DisputeReaction.NO_REACTION, "e58"); //"e58": "Can't react with no reaction"
-        require(disputes[swapID].state != DisputeState.ESCALATED, "e69"); //"e69": "A reaction cannot be submitted for an escalated swap"
-        if (msg.sender == swaps[swapID].maker) {
-            require(disputes[swapID].makerReaction == DisputeReaction.NO_REACTION, "e59"); //"e59": "Maker can't react to resolution proposal more than once"
-            disputes[swapID].makerReaction = reaction;
-        } else if (msg.sender == swaps[swapID].taker) {
-            require(disputes[swapID].takerReaction == DisputeReaction.NO_REACTION, "e60"); //"e60": "Taker can't react to resolution proposal more than once"
-            disputes[swapID].takerReaction = reaction;
-        } else {
-            revert("e57"); //"e57": "Only swap maker or taker can react to resolution proposal"
-        }
-
-        //Only search for matching resolution proposals if we haven't found a matching pair yet
-        if (disputes[swapID].matchingProposals == MatchingProposalPair.NO_MATCH) {
-            //Check if at least two dispute agents have submitted matching resolution proposals
-            bool foundMatchingResolutionProposals = false;
-            /*
-            Check if dispute agents 0 and 1 have submitted proposals. If they have, check if their proposals match.
-            */
-            if (disputes[swapID].hasDA0Proposed && disputes[swapID].hasDA1Proposed) {
-                foundMatchingResolutionProposals = (
-                (disputes[swapID].dA0MakerPayout == disputes[swapID].dA1MakerPayout) &&
-                (disputes[swapID].dA0TakerPayout == disputes[swapID].dA1TakerPayout) &&
-                (disputes[swapID].dA0ConfiscationPayout == disputes[swapID].dA1ConfiscationPayout)
-                );
-                if (foundMatchingResolutionProposals == true) {
-                    disputes[swapID].matchingProposals = MatchingProposalPair.ZERO_AND_ONE;
-                }
-            }
-            /*
-            If dispute agents 0 and 1 haven't submitted matching proposals (which also includes the possibility that they
-            haven't submitted proposals at all) check if dispute agents 1 and 2 have submitted proposals. If they have,
-            check if their proposals match.
-            */
-            if ((disputes[swapID].hasDA1Proposed && disputes[swapID].hasDA2Proposed) && !foundMatchingResolutionProposals) {
-                foundMatchingResolutionProposals = (
-                (disputes[swapID].dA1MakerPayout == disputes[swapID].dA2MakerPayout) &&
-                (disputes[swapID].dA1TakerPayout == disputes[swapID].dA2TakerPayout) &&
-                (disputes[swapID].dA1ConfiscationPayout == disputes[swapID].dA2ConfiscationPayout)
-                );
-                if (foundMatchingResolutionProposals == true) {
-                    disputes[swapID].matchingProposals = MatchingProposalPair.ONE_AND_TWO;
-                }
-            }
-            /*
-            At this point, proposals (if any) submitted by dispute agents zero and one don't match, and proposals (if any)
-            submitted by dispute agents one and two don't match, so check if dispute agents zero and two have submitted
-            proposals. If they have, check if their proposals match.
-            */
-            if ((disputes[swapID].hasDA0Proposed && disputes[swapID].hasDA2Proposed) && !foundMatchingResolutionProposals) {
-                foundMatchingResolutionProposals = (
-                (disputes[swapID].dA0MakerPayout == disputes[swapID].dA2MakerPayout) &&
-                (disputes[swapID].dA0TakerPayout == disputes[swapID].dA2TakerPayout) &&
-                (disputes[swapID].dA0ConfiscationPayout == disputes[swapID].dA2ConfiscationPayout)
-                );
-                if (foundMatchingResolutionProposals == true) {
-                    disputes[swapID].matchingProposals = MatchingProposalPair.ZERO_AND_TWO;
-                }
-            }
-            require(foundMatchingResolutionProposals, "e61"); //"e61": "Two matching resolutions must be proposed before reaction is allowed"
-        }
+        /*
+        Slither throws a high severity warning about the use of delegatecall. In this case it is necessary due to
+        contract size limitations, and also safe since the CommutoSwapResolutionProposalReactor and
+        CommutoSwapDisputeEscalator address are immutable and set when CommutoSwap is deployed, and therefore calls
+        cannot be delegated to a malicious contract.
+        */
+        (bool success, bytes memory data) = commutoSwapResolutionProposalReactor.delegatecall(
+            abi.encodeWithSignature("reactToResolutionProposal(bytes16,uint8)",
+            swapID, reaction)
+        );
+        require(success, string (data) );
 
         //Immediately mark dispute as escalated if reaction is rejection
         if (reaction == DisputeReaction.REJECTED) {
-            escalateDispute(swapID, EscalationReason.REJECTION);
+            /*
+            Slither throws a high severity warning about the use of delegatecall. In this case it is necessary due to
+            contract size limitations, and also safe since the CommutoSwapDisputeEscalator address is immutable and
+            set when CommutoSwap is deployed, and therefore the call cannot be delegated to a malicious contract.
+            */
+            (bool success, bytes memory data) = commutoSwapDisputeEscalator.delegatecall(
+                abi.encodeWithSignature("escalateDispute(bytes16,uint8)",
+                swapID, EscalationReason.REJECTION)
+            );
+            require(success, string (data) );
         }
 
-        emit ReactionSubmitted(swapID, msg.sender, reaction);
     }
 
     function closeDisputedSwap(bytes16 swapID) public {
@@ -393,73 +359,18 @@ contract CommutoSwap is CommutoSwapStorage {
 
     }
 
+    //Escalate a disputed swap
     function escalateDispute(bytes16 swapID, EscalationReason reason) public {
-        require(msg.sender == swaps[swapID].maker || msg.sender == swaps[swapID].taker, "e75"); //"e75": "Only maker or taker can escalate disputed swap"
-        require(disputes[swapID].state != DisputeState.ESCALATED, "e78"); //"e78": "Cannot escalate dispute if dispute has already been escalated"
-        if (reason == EscalationReason.NO_DISPUTE_AGENT_AGREEMENT) {
-            require(block.number > SafeMath.add(minimumDisputePeriod, disputes[swapID].disputeRaisedBlockNum), "e71"); //"e71": "More blocks must be mined before swap can be escalated"
-            /*
-            Check if at least two dispute agents have submitted matching resolution proposals
-            See reactToResolutionProposal() to understand logic behind this code
-            */
-            bool foundMatchingResolutionProposals = false;
-            if (disputes[swapID].hasDA0Proposed && disputes[swapID].hasDA1Proposed) {
-                foundMatchingResolutionProposals = (
-                (disputes[swapID].dA0MakerPayout == disputes[swapID].dA1MakerPayout) &&
-                (disputes[swapID].dA0TakerPayout == disputes[swapID].dA1TakerPayout) &&
-                (disputes[swapID].dA0ConfiscationPayout == disputes[swapID].dA1ConfiscationPayout)
-                );
-            }
-            if ((disputes[swapID].hasDA1Proposed && disputes[swapID].hasDA2Proposed) && !foundMatchingResolutionProposals) {
-                foundMatchingResolutionProposals = (
-                (disputes[swapID].dA1MakerPayout == disputes[swapID].dA2MakerPayout) &&
-                (disputes[swapID].dA1TakerPayout == disputes[swapID].dA2TakerPayout) &&
-                (disputes[swapID].dA1ConfiscationPayout == disputes[swapID].dA2ConfiscationPayout)
-                );
-            }
-            if ((disputes[swapID].hasDA0Proposed && disputes[swapID].hasDA2Proposed) && !foundMatchingResolutionProposals) {
-                foundMatchingResolutionProposals = (
-                (disputes[swapID].dA0MakerPayout == disputes[swapID].dA2MakerPayout) &&
-                (disputes[swapID].dA0TakerPayout == disputes[swapID].dA2TakerPayout) &&
-                (disputes[swapID].dA0ConfiscationPayout == disputes[swapID].dA2ConfiscationPayout)
-                );
-            }
-            require(!foundMatchingResolutionProposals, "e73"); //"e73": "Dispute can't be escalated for lack of dispute agent response if dispute agents have agreed on resolution proposal"
-        } else if (reason == EscalationReason.NO_COUNTERPARTY_REACTION) {
-            require(block.number > SafeMath.add(minimumDisputePeriod, disputes[swapID].disputeRaisedBlockNum), "e71"); //"e71": "More blocks must be mined before swap can be escalated"
-            if (msg.sender == swaps[swapID].maker) {
-                require(disputes[swapID].makerReaction != DisputeReaction.NO_REACTION, "e76"); //"e76": "Dispute cannot be escalated for lack of counterparty reaction if caller has not reacted"
-                require(disputes[swapID].takerReaction == DisputeReaction.NO_REACTION, "e74"); //"e74": "Dispute cannot be escalated for lack of counterparty reaction if counterparty has reacted"
-            } else if (msg.sender == swaps[swapID].taker) {
-                require(disputes[swapID].takerReaction != DisputeReaction.NO_REACTION, "e76"); //"e76": "Dispute cannot be escalated for lack of counterparty reaction if caller has not reacted"
-                require(disputes[swapID].makerReaction == DisputeReaction.NO_REACTION, "e74"); //"e74": "Dispute cannot be escalated for lack of counterparty reaction if counterparty has reacted"
-            } else {
-                revert("e75"); //"e75": "Only maker or taker can escalate disputed swap"
-            }
-        } else {
-            require(disputes[swapID].makerReaction == DisputeReaction.REJECTED || disputes[swapID].takerReaction == DisputeReaction.REJECTED, "e72"); //"e72": "Resolution proposal must be rejected to escalate dispute because of rejection"
-        }
-
-        //Find proper stablecoin contract
-        ERC20 token = ERC20(swaps[swapID].stablecoin);
-        uint256 serviceFeeAmountUpperBound = SafeMath.div(swaps[swapID].amountUpperBound, 100); //The amount the maker paid upon swap creation to pay the service fee
-        uint256 unspentServiceFee = SafeMath.sub(serviceFeeAmountUpperBound, swaps[swapID].serviceFeeAmount); //The remaining amount owed to the maker after subtracting actual service fee
-        uint256 totalSecurityDeposit = SafeMath.mul(swaps[swapID].securityDepositAmount, 2); //The sum of the maker's and taker's security deposits
-        uint256 totalWithoutSpentServiceFees = 0; //The total amount of STBL locked up by the maker and taker, excluding service fees
-        if (swaps[swapID].requiresFill == true) {
-            /*
-            See comment in proposeResolution() to understand the logic behind this code
-            */
-            totalWithoutSpentServiceFees = SafeMath.add(totalSecurityDeposit, unspentServiceFee);
-        } else {
-            totalWithoutSpentServiceFees = SafeMath.add(swaps[swapID].takenSwapAmount, SafeMath.add(totalSecurityDeposit, unspentServiceFee));
-        }
-        disputes[swapID].state = DisputeState.ESCALATED;
-
-        emit DisputeEscalated(swapID, msg.sender, reason);
-
-        require(token.transfer(escalatedDisputedSwapsPool, totalWithoutSpentServiceFees), "e70"); //"e70": "Transfer to pool for escalated disputed swaps failed"
-        require(token.transfer(serviceFeePool, SafeMath.mul(2, swaps[swapID].serviceFeeAmount)), "e42"); //"e42": "Service fee transfer failed"
+        /*
+        Slither throws a high severity warning about the use of delegatecall. In this case it is necessary due to
+        contract size limitations, and also safe since the CommutoSwapDisputeEscalator address is immutable and
+        set when CommutoSwap is deployed, and therefore the call cannot be delegated to a malicious contract.
+        */
+        (bool success, bytes memory data) = commutoSwapDisputeEscalator.delegatecall(
+            abi.encodeWithSignature("escalateDispute(bytes16,uint8)",
+            swapID, reason)
+        );
+        require(success, string (data) );
     }
 
 }

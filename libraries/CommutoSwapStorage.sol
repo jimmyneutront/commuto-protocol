@@ -41,6 +41,12 @@ contract CommutoSwapStorage {
     //Address of the contract to which CommutoSwap should delegate proposeResolution calls
     address immutable public commutoSwapResolutionProposer;
 
+    //Address of the contract to which CommutoSwap should delegate reactToResolutionProposal calls
+    address immutable public commutoSwapResolutionProposalReactor;
+
+    //Address of the contract to which CommutoSwap should delegate escalateDispute calls
+    address immutable public commutoSwapDisputeEscalator;
+
     //The number of blocks that must be mined between when a dispute is raised and when it can be escalated
     //TODO: Make this changeable by governance vote
     uint256 public minimumDisputePeriod = 5;
@@ -98,7 +104,7 @@ contract CommutoSwapStorage {
     */
     mapping (bytes16 => Dispute) internal disputes;
 
-    constructor(address offerOpener, address offerEditor, address offerCanceler, address offerTaker, address swapFiller, address paymentReporter, address swapCloser, address disputeRaiser, address resolutionProposer) public {
+    constructor(address offerOpener, address offerEditor, address offerCanceler, address offerTaker, address swapFiller, address paymentReporter, address swapCloser, address disputeRaiser, address resolutionProposer, address resolutionProposalReactor, address disputeEscalator) public {
         commutoSwapOfferOpener = offerOpener;
         commutoSwapOfferEditor = offerEditor;
         commutoSwapOfferCanceler = offerCanceler;
@@ -108,6 +114,8 @@ contract CommutoSwapStorage {
         commutoSwapCloser = swapCloser;
         commutoSwapDisputeRaiser = disputeRaiser;
         commutoSwapResolutionProposer = resolutionProposer;
+        commutoSwapResolutionProposalReactor = resolutionProposalReactor;
+        commutoSwapDisputeEscalator = disputeEscalator;
     }
 
 }

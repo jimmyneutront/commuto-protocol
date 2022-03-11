@@ -14,7 +14,7 @@ cannot be proposed by calling CommutoSwapResolutionProposer directly.
 */
 contract CommutoSwapResolutionProposer is CommutoSwapStorage{
 
-    constructor() CommutoSwapStorage(address(0), address(0), address(0), address(0), address(0), address(0), address(0), address(0), address(0)) public {}
+    constructor() CommutoSwapStorage(address(0), address(0), address(0), address(0), address(0), address(0), address(0), address(0), address(0), address(0), address(0)) public {}
 
     //Propose a resolution to a disputed swap
     function proposeResolution(bytes16 swapID, uint256 makerPayout, uint256 takerPayout, uint256 confiscationPayout) public {

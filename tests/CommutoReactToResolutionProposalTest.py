@@ -533,6 +533,12 @@ class CommutoReactToResolutionProposalTest(CommutoSwapTest.CommutoSwapTest):
     def test_reactToResolutionProposal_not_escalated_check(self):
         try:
             newOfferID = HexBytes(uuid4().bytes)
+            DisputeEscalated_event_filter = self.commuto_swap_contract.events.DisputeEscalated \
+                .createFilter(fromBlock="latest",
+                              argument_filters={
+                                  'swapID': newOfferID
+                              }
+                              )
             tx_details = {
                 "from": self.maker_address
             }
@@ -610,6 +616,8 @@ class CommutoReactToResolutionProposalTest(CommutoSwapTest.CommutoSwapTest):
                 "from": self.taker_address
             }
             self.commuto_swap_contract.functions.reactToResolutionProposal(newOfferID, 2).transact(tx_details)
+            events = DisputeEscalated_event_filter.get_new_entries()
+            dispute = self.commuto_swap_contract.functions.getDispute(newOfferID).call()
             tx_details = {
                 "from": self.maker_address
             }
