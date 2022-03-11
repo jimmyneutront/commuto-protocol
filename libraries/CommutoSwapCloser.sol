@@ -8,9 +8,9 @@ import "./CommutoSwapTypes.sol";
 import "./SafeMath.sol";
 
 /*
-Contains the closeSwap method, to which CommutoSwap delegates closeSwap calls to mark swaps as closed and complete
-STBL payment. This contract holds nothing in its own storage; its method is intended for use via delegatecall only, so
-swaps cannot be closed by calling CommutoSwapCloser directly.
+Contains the closeSwap method, to which CommutoSwap delegates closeSwap and closeDisputedSwap calls to mark swaps as
+closed and complete STBL payment. This contract holds nothing in its own storage; its method is intended for use via
+delegatecall only, so swaps cannot be closed by calling CommutoSwapCloser directly.
 */
 contract CommutoSwapCloser is CommutoSwapStorage {
 
@@ -72,6 +72,64 @@ contract CommutoSwapCloser is CommutoSwapStorage {
         } else {
             revert("e44"); //"e44": "Only swap maker or taker can call this function"
         }
+    }
+
+    function closeDisputedSwap(bytes16 swapID) public {
+        require(disputes[swapID].makerReaction == DisputeReaction.ACCEPTED && disputes[swapID].takerReaction == DisputeReaction.ACCEPTED, "e64"); //"e64": "Disputed swap closure requires proposal acceptance by maker and taker"
+
+        //Find proper stablecoin contract
+        ERC20 token = ERC20(swaps[swapID].stablecoin);
+
+        //Find proper payout amounts
+        uint256 makerPayout = 0;
+        uint256 takerPayout = 0;
+        uint256 confiscationPayout = 0;
+
+        if (disputes[swapID].matchingProposals == MatchingProposalPair.ZERO_AND_ONE || disputes[swapID].matchingProposals == MatchingProposalPair.ZERO_AND_TWO) {
+            makerPayout = disputes[swapID].dA0MakerPayout;
+            takerPayout = disputes[swapID].dA0TakerPayout;
+            confiscationPayout = disputes[swapID].dA0ConfiscationPayout;
+        } else {
+            makerPayout = disputes[swapID].dA1MakerPayout;
+            takerPayout = disputes[swapID].dA1TakerPayout;
+            confiscationPayout = disputes[swapID].dA1ConfiscationPayout;
+        }
+
+        //The last person to call this function must pay for the confiscated amount transfer
+        bool mustPayConfiscationAmount = false;
+        uint256 payoutAmountToCaller = 0;
+
+        if (msg.sender == swaps[swapID].maker) {
+            require(!disputes[swapID].hasMakerPaidOut, "e65"); //"e65": "Maker cannot close disputed swap more than once"
+            payoutAmountToCaller = makerPayout;
+            disputes[swapID].hasMakerPaidOut = true;
+            if (disputes[swapID].hasTakerPaidOut == true) {
+                //Caller is the final caller
+                mustPayConfiscationAmount = true;
+            }
+        } else if (msg.sender == swaps[swapID].taker) {
+            require(!disputes[swapID].hasTakerPaidOut, "e66"); //"e66": "Taker cannot close disputed swap more than once"
+            payoutAmountToCaller = takerPayout;
+            disputes[swapID].hasTakerPaidOut = true;
+            if (disputes[swapID].hasMakerPaidOut == true) {
+                //Caller is the final caller
+                mustPayConfiscationAmount = true;
+            }
+        } else {
+            revert("e63"); //"e63": "Only maker and taker can close disputed swap"
+        }
+
+        require(token.transfer(msg.sender, payoutAmountToCaller), "e19"); //"e19": "Token transfer failed"
+        require(token.transfer(serviceFeePool, swaps[swapID].serviceFeeAmount), "e42"); //"e42": "Service fee transfer failed"
+
+        if (mustPayConfiscationAmount == true) {
+            require(token.transfer(serviceFeePool, confiscationPayout), "e67"); //"e67": "Confiscated amount transfer failed"
+            //Caller is the final caller, so mark swap as paid out
+            disputes[swapID].state = DisputeState.PAID_OUT;
+        }
+
+        emit DisputedSwapClosed(swapID, msg.sender);
+
     }
 
 }

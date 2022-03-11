@@ -314,7 +314,7 @@ class CommutoSwapTest(unittest.TestCase):
             ["../CommutoSwap.sol"],
             allow_paths=["./"],
             output_values=["abi", "bin"],
-            optimize=True,
+            optimize=False,
             optimize_runs=1
         )
         commuto_swap_abi = compiled_sol["../CommutoSwap.sol:CommutoSwap"]["abi"]

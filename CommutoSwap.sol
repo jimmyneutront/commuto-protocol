@@ -302,61 +302,16 @@ contract CommutoSwap is CommutoSwapStorage {
     }
 
     function closeDisputedSwap(bytes16 swapID) public {
-        require(disputes[swapID].makerReaction == DisputeReaction.ACCEPTED && disputes[swapID].takerReaction == DisputeReaction.ACCEPTED, "e64"); //"e64": "Disputed swap closure requires proposal acceptance by maker and taker"
-
-        //Find proper stablecoin contract
-        ERC20 token = ERC20(swaps[swapID].stablecoin);
-
-        //Find proper payout amounts
-        uint256 makerPayout = 0;
-        uint256 takerPayout = 0;
-        uint256 confiscationPayout = 0;
-
-        if (disputes[swapID].matchingProposals == MatchingProposalPair.ZERO_AND_ONE || disputes[swapID].matchingProposals == MatchingProposalPair.ZERO_AND_TWO) {
-            makerPayout = disputes[swapID].dA0MakerPayout;
-            takerPayout = disputes[swapID].dA0TakerPayout;
-            confiscationPayout = disputes[swapID].dA0ConfiscationPayout;
-        } else {
-            makerPayout = disputes[swapID].dA1MakerPayout;
-            takerPayout = disputes[swapID].dA1TakerPayout;
-            confiscationPayout = disputes[swapID].dA1ConfiscationPayout;
-        }
-
-        //The last person to call this function must pay for the confiscated amount transfer
-        bool mustPayConfiscationAmount = false;
-        uint256 payoutAmountToCaller = 0;
-
-        if (msg.sender == swaps[swapID].maker) {
-            require(!disputes[swapID].hasMakerPaidOut, "e65"); //"e65": "Maker cannot close disputed swap more than once"
-            payoutAmountToCaller = makerPayout;
-            disputes[swapID].hasMakerPaidOut = true;
-            if (disputes[swapID].hasTakerPaidOut == true) {
-                //Caller is the final caller
-                mustPayConfiscationAmount = true;
-            }
-        } else if (msg.sender == swaps[swapID].taker) {
-            require(!disputes[swapID].hasTakerPaidOut, "e66"); //"e66": "Taker cannot close disputed swap more than once"
-            payoutAmountToCaller = takerPayout;
-            disputes[swapID].hasTakerPaidOut = true;
-            if (disputes[swapID].hasMakerPaidOut == true) {
-                //Caller is the final caller
-                mustPayConfiscationAmount = true;
-            }
-        } else {
-            revert("e63"); //"e63": "Only maker and taker can close disputed swap"
-        }
-
-        require(token.transfer(msg.sender, payoutAmountToCaller), "e19"); //"e19": "Token transfer failed"
-        require(token.transfer(serviceFeePool, swaps[swapID].serviceFeeAmount), "e42"); //"e42": "Service fee transfer failed"
-
-        if (mustPayConfiscationAmount == true) {
-            require(token.transfer(serviceFeePool, confiscationPayout), "e67"); //"e67": "Confiscated amount transfer failed"
-            //Caller is the final caller, so mark swap as paid out
-            disputes[swapID].state = DisputeState.PAID_OUT;
-        }
-
-        emit DisputedSwapClosed(swapID, msg.sender);
-
+        /*
+        Slither throws a high severity warning about the use of delegatecall. In this case it is necessary due to
+        contract size limitations, and also safe since the CommutoSwapCloser address is immutable and set when
+        CommutoSwap is deployed, and therefore the call cannot be delegated to a malicious contract.
+        */
+        (bool success, bytes memory data) = commutoSwapCloser.delegatecall(
+            abi.encodeWithSignature("closeDisputedSwap(bytes16)",
+            swapID)
+        );
+        require(success, string (data) );
     }
 
     //Escalate a disputed swap
