@@ -120,8 +120,22 @@ contract CommutoSwap is CommutoSwapStorage {
         return disputes[swapID];
     }
 
-    /*constructor (address eDSPool, address _serviceFeePool, address offerOpener, address offerEditor, address offerCanceler, address offerTaker, address swapFiller, address paymentReporter, address swapCloser, address disputeRaiser, address resolutionProposer, address resolutionProposalReactor) public CommutoSwapStorage(offerOpener, offerEditor, offerCanceler, offerTaker, swapFiller, paymentReporter, swapCloser, disputeRaiser, resolutionProposer, resolutionProposalReactor, disputeEscalator) {*/
-
+    /*
+    Addresses:
+    0: Escalated Disputed Swaps Pool
+    1: Service Fee Pool
+    2: CommutoSwapOfferOpener
+    3: CommutoSwapOfferEditor
+    4: CommutoSwapOfferCanceler
+    5: CommutoSwapOfferTaker
+    6: CommutoSwapFiller
+    7: CommutoSwapPaymentReporter
+    8: CommutoSwapCloser
+    9: CommutoSwapDisputeRaiser
+    10: CommutoSwapResolutionProposer
+    11: CommutoSwapResolutionProposalReactor
+    12: CommutoSwapDisputeEscalator
+    */
     constructor (address[] memory contractAddresses) public CommutoSwapStorage(contractAddresses[2], contractAddresses[3], contractAddresses[4], contractAddresses[5], contractAddresses[6], contractAddresses[7], contractAddresses[8], contractAddresses[9], contractAddresses[10], contractAddresses[11], contractAddresses[12]) {
         owner = msg.sender;
         require(contractAddresses[0] != address(0), "e77"); //"e77": "eDSPool address cannot be zero"
