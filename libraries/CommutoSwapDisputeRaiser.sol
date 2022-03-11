@@ -9,12 +9,12 @@ import "./SafeMath.sol";
 
 /*
 Contains the raiseDispute method, to which CommutoSwap delegates raiseDispute calls to raise disputes. This contract
-holds nothing in its own storage; its method is only via delegatecall, so disputes cannot be raised by calling
-CommutoSwapDisputeRaiser directly.
+holds nothing in its own storage; its method is intended only for use via delegatecall, so disputes cannot be raised by
+calling CommutoSwapDisputeRaiser directly.
 */
 contract CommutoSwapDisputeRaiser is CommutoSwapStorage {
 
-    constructor() CommutoSwapStorage(address(0), address(0), address(0), address(0), address(0), address(0), address(0), address(0)) public {}
+    constructor() CommutoSwapStorage(address(0), address(0), address(0), address(0), address(0), address(0), address(0), address(0), address(0)) public {}
 
     //Raise a dispute for a swap
     /*

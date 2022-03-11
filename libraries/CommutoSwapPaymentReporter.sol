@@ -12,7 +12,7 @@ CommutoSwapPaymentReporter directly.
 */
 contract CommutoSwapPaymentReporter is CommutoSwapStorage {
 
-    constructor() CommutoSwapStorage(address(0), address(0), address(0), address(0), address(0), address(0), address(0), address(0)) public {}
+    constructor() CommutoSwapStorage(address(0), address(0), address(0), address(0), address(0), address(0), address(0), address(0), address(0)) public {}
 
     //Report payment sent for swap
     /*

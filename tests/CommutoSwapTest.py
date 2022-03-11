@@ -248,6 +248,26 @@ class CommutoSwapTest(unittest.TestCase):
         CommutoSwapDisputeRaiser_address = w3.eth.wait_for_transaction_receipt(
             CommutoSwapDisputeRaiser_deployment_tx_hash).contractAddress
 
+        # Deploy CommutoSwapResolutionProposer contract
+        compiled_CommutoSwapResolutionProposer = compile_files(
+            ["../libraries/CommutoSwapResolutionProposer.sol"],
+            allow_paths=["./"],
+            output_values=["abi", "bin"],
+            optimize=False,
+        )
+        CommutoSwapResolutionProposer_abi = \
+            compiled_CommutoSwapResolutionProposer[
+                "../libraries/CommutoSwapResolutionProposer.sol:CommutoSwapResolutionProposer"]["abi"]
+        CommutoSwapResolutionProposer_bytecode = \
+            compiled_CommutoSwapResolutionProposer[
+                "../libraries/CommutoSwapResolutionProposer.sol:CommutoSwapResolutionProposer"]["bin"]
+        undeployed_CommutoSwapResolutionProposer = w3.eth.contract(abi=CommutoSwapResolutionProposer_abi,
+                                                              bytecode=CommutoSwapResolutionProposer_bytecode)
+        CommutoSwapResolutionProposer_deployment_tx_hash = undeployed_CommutoSwapResolutionProposer.constructor() \
+            .transact(tx_details)
+        CommutoSwapResolutionProposer_address = w3.eth.wait_for_transaction_receipt(
+            CommutoSwapResolutionProposer_deployment_tx_hash).contractAddress
+
         #Deploy CommutoSwap contract
         #TODO: Reduce contract size
         compiled_sol = compile_files(
@@ -269,7 +289,8 @@ class CommutoSwapTest(unittest.TestCase):
                                                                                        CommutoSwapFiller_address,
                                                                                        CommutoSwapPaymentReporter_address,
                                                                                        CommutoSwapCloser_address,
-                                                                                       CommutoSwapDisputeRaiser_address
+                                                                                       CommutoSwapDisputeRaiser_address,
+                                                                                       CommutoSwapResolutionProposer_address
                                                                                        ).transact(tx_details)
         self.commuto_swap_deployment_tx_receipt = w3.eth.wait_for_transaction_receipt(commuto_swap_deployment_tx_hash)
         self.commuto_swap_contract = w3.eth.contract(
