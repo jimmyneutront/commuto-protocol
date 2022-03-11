@@ -72,6 +72,7 @@ class CommutoReportPaymentReceivedTest(CommutoSwapTest.CommutoSwapTest):
                 "isPaymentReceived": True,
                 "hasBuyerClosed": True,
                 "hasSellerClosed": True,
+                "disputeRaiser": 0,
             }
             self.test_dai_contract.functions.increaseAllowance(
                 self.commuto_swap_deployment_tx_receipt.contractAddress,
@@ -153,6 +154,7 @@ class CommutoReportPaymentReceivedTest(CommutoSwapTest.CommutoSwapTest):
                 "isPaymentReceived": True,
                 "hasBuyerClosed": True,
                 "hasSellerClosed": True,
+                "disputeRaiser": 0,
             }
             self.test_dai_contract.functions.increaseAllowance(
                 self.commuto_swap_deployment_tx_receipt.contractAddress,
@@ -246,6 +248,7 @@ class CommutoReportPaymentReceivedTest(CommutoSwapTest.CommutoSwapTest):
                 "isPaymentReceived": True,
                 "hasBuyerClosed": True,
                 "hasSellerClosed": True,
+                "disputeRaiser": 0,
             }
             self.test_dai_contract.functions.increaseAllowance(
                 self.commuto_swap_deployment_tx_receipt.contractAddress,
@@ -324,6 +327,7 @@ class CommutoReportPaymentReceivedTest(CommutoSwapTest.CommutoSwapTest):
                 "isPaymentReceived": True,
                 "hasBuyerClosed": True,
                 "hasSellerClosed": True,
+                "disputeRaiser": 0,
             }
             self.test_dai_contract.functions.increaseAllowance(
                 self.commuto_swap_deployment_tx_receipt.contractAddress,
