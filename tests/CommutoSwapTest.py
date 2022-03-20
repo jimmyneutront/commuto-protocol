@@ -391,5 +391,16 @@ class CommutoSwapTest(unittest.TestCase):
         tx_hash = self.commuto_swap_contract.functions.setDisputeAgentActive(self.dispute_agent_2, True).transact(tx_details)
         w3.eth.wait_for_transaction_receipt(tx_hash)
 
+        #Deploy CommutoToken contract
+        compiled_sol = compile_files(
+            ["../libraries/governance/CommutoToken.sol"],
+            allow_paths=[""],
+            output_values=["abi", "bin"],
+            optimize=False,
+            solc_version="0.8.2",
+        )
+        # TODO: Mint CMTO tokens
+        # TODO: Deploy governance
+
     def test_setup(self):
         pass

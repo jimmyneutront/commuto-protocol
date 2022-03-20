@@ -2,6 +2,7 @@
 #TODO: Update readme: <br>
 install openzepplin contracts
 install solidity 0.8
+install solidity compilers with solcx instead of solc-select
 don't select a global version of solc
 just npm init in the root directory of this repo, no need for new directory
 
