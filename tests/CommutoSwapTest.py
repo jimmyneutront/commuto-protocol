@@ -1,4 +1,4 @@
-from solcx import compile_files, link_code
+from solcx import compile_files, import_installed_solc
 import unittest
 from web3 import Web3
 
@@ -7,7 +7,7 @@ class CommutoSwapTest(unittest.TestCase):
     def setUp(self) -> None:
         # TODO: Start hardhat node
         # Establish connection to web3 provider
-        w3 = Web3(Web3.HTTPProvider("http://192.168.1.12:8545"))
+        w3 = Web3(Web3.HTTPProvider("http://192.168.0.195:8545"))
         # Check connection
         if not w3.isConnected():
             raise Exception("No connection to Web3 Provider")
@@ -105,12 +105,16 @@ class CommutoSwapTest(unittest.TestCase):
         tx_hash = test_usdt_contract.functions.mint(ERC20_recipient_account_one, token_mint_amount).transact(tx_details)
         w3.eth.wait_for_transaction_receipt(tx_hash)
 
+        #Find installed versions of solc
+        import_installed_solc()
+
         #Deploy CommutoSwapOfferOpener contract
         compiled_CommutoSwapOfferOpener = compile_files(
             ["../libraries/CommutoSwapOfferOpener.sol"],
             allow_paths=["./"],
             output_values=["abi", "bin"],
             optimize=False,
+            solc_version="0.6.12",
         )
         CommutoSwapOfferOpener_abi = compiled_CommutoSwapOfferOpener["../libraries/CommutoSwapOfferOpener.sol:CommutoSwapOfferOpener"]["abi"]
         CommutoSwapOfferOpener_bytecode = compiled_CommutoSwapOfferOpener["../libraries/CommutoSwapOfferOpener.sol:CommutoSwapOfferOpener"]["bin"]
@@ -124,6 +128,7 @@ class CommutoSwapTest(unittest.TestCase):
             allow_paths=["./"],
             output_values=["abi", "bin"],
             optimize=False,
+            solc_version="0.6.12",
         )
         CommutoSwapOfferEditor_abi = \
         compiled_CommutoSwapOfferEditor["../libraries/CommutoSwapOfferEditor.sol:CommutoSwapOfferEditor"]["abi"]
@@ -141,6 +146,7 @@ class CommutoSwapTest(unittest.TestCase):
             allow_paths=["./"],
             output_values=["abi", "bin"],
             optimize=False,
+            solc_version="0.6.12",
         )
         CommutoSwapOfferCanceler_abi = \
             compiled_CommutoSwapOfferCanceler["../libraries/CommutoSwapOfferCanceler.sol:CommutoSwapOfferCanceler"]["abi"]
@@ -158,6 +164,7 @@ class CommutoSwapTest(unittest.TestCase):
             allow_paths=["./"],
             output_values=["abi", "bin"],
             optimize=False,
+            solc_version="0.6.12",
         )
         CommutoSwapOfferTaker_abi = \
             compiled_CommutoSwapOfferTaker["../libraries/CommutoSwapOfferTaker.sol:CommutoSwapOfferTaker"][
@@ -177,6 +184,7 @@ class CommutoSwapTest(unittest.TestCase):
             allow_paths=["./"],
             output_values=["abi", "bin"],
             optimize=False,
+            solc_version="0.6.12",
         )
         CommutoSwapFiller_abi = \
             compiled_CommutoSwapFiller["../libraries/CommutoSwapFiller.sol:CommutoSwapFiller"][
@@ -196,6 +204,7 @@ class CommutoSwapTest(unittest.TestCase):
             allow_paths=["./"],
             output_values=["abi", "bin"],
             optimize=False,
+            solc_version="0.6.12",
         )
         CommutoSwapPaymentReporter_abi = \
             compiled_CommutoSwapPaymentReporter["../libraries/CommutoSwapPaymentReporter.sol:" \
@@ -215,6 +224,7 @@ class CommutoSwapTest(unittest.TestCase):
             allow_paths=["./"],
             output_values=["abi", "bin"],
             optimize=False,
+            solc_version="0.6.12",
         )
         CommutoSwapCloser_abi = \
             compiled_CommutoSwapCloser["../libraries/CommutoSwapCloser.sol:CommutoSwapCloser"][
@@ -234,6 +244,7 @@ class CommutoSwapTest(unittest.TestCase):
             allow_paths=["./"],
             output_values=["abi", "bin"],
             optimize=False,
+            solc_version="0.6.12",
         )
         CommutoSwapDisputeRaiser_abi = \
             compiled_CommutoSwapDisputeRaiser["../libraries/CommutoSwapDisputeRaiser.sol:CommutoSwapDisputeRaiser"][
@@ -254,6 +265,7 @@ class CommutoSwapTest(unittest.TestCase):
             allow_paths=["./"],
             output_values=["abi", "bin"],
             optimize=False,
+            solc_version="0.6.12",
         )
         CommutoSwapResolutionProposer_abi = \
             compiled_CommutoSwapResolutionProposer[
@@ -274,6 +286,7 @@ class CommutoSwapTest(unittest.TestCase):
             allow_paths=["./"],
             output_values=["abi", "bin"],
             optimize=False,
+            solc_version="0.6.12",
         )
         CommutoSwapResolutionProposalReactor_abi = \
             compiled_CommutoSwapResolutionProposalReactor[
@@ -294,6 +307,7 @@ class CommutoSwapTest(unittest.TestCase):
             allow_paths=["./"],
             output_values=["abi", "bin"],
             optimize=False,
+            solc_version="0.6.12",
         )
         CommutoSwapDisputeEscalator_abi = \
             compiled_CommutoSwapDisputeEscalator[
@@ -309,13 +323,13 @@ class CommutoSwapTest(unittest.TestCase):
             CommutoSwapDisputeEscalator_deployment_tx_hash).contractAddress
 
         #Deploy CommutoSwap contract
-        #TODO: Reduce contract size
         compiled_sol = compile_files(
             ["../CommutoSwap.sol"],
             allow_paths=["./"],
             output_values=["abi", "bin"],
             optimize=False,
-            optimize_runs=1
+            optimize_runs=1,
+            solc_version="0.6.12",
         )
         commuto_swap_abi = compiled_sol["../CommutoSwap.sol:CommutoSwap"]["abi"]
         commuto_swap_bytecode = compiled_sol["../CommutoSwap.sol:CommutoSwap"]["bin"]

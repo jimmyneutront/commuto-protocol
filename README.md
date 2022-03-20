@@ -1,5 +1,10 @@
 # Commuto Protocol
-#TODO: Update readme <br>
+#TODO: Update readme: <br>
+install openzepplin contracts
+install solidity 0.8
+don't select a global version of solc
+just npm init in the root directory of this repo, no need for new directory
+
 The Commuto Protocol is a decentralized exchange that allows users to exchange fiat currencies and stablecoins quickly, 
 affordably, safely, and in a censorship-resistant manner, without the use of a trusted intermediary.
 

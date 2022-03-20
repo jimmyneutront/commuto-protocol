@@ -12,7 +12,8 @@ import "./libraries/CommutoSwapPaymentReporter.sol";
 import "./libraries/CommutoSwapResolutionProposalReactor.sol";
 
 //TODO: Fee percentage set by token holders
-//TODO: Better code comments
+//TODO: Update documentation for dispute resolution
+//TODO: Update documentation for governance
 contract CommutoSwap is CommutoSwapStorage {
 
     //Set the supported state of a settlement method
