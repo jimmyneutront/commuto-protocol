@@ -7,7 +7,7 @@ class CommutoSwapTest(unittest.TestCase):
     def setUp(self) -> None:
         # TODO: Start hardhat node
         # Establish connection to web3 provider
-        w3 = Web3(Web3.HTTPProvider("http://192.168.0.195:8545"))
+        w3 = Web3(Web3.HTTPProvider("http://192.168.1.12:8545"))
         # Check connection
         if not w3.isConnected():
             raise Exception("No connection to Web3 Provider")
@@ -107,6 +107,29 @@ class CommutoSwapTest(unittest.TestCase):
 
         #Find installed versions of solc
         import_installed_solc()
+
+        #TODO: Deploy CommutoToken contract
+        compiled_sol = compile_files(
+            ["../libraries/governance/CommutoToken.sol"],
+            allow_paths=[""],
+            output_values=["abi", "bin"],
+            optimize=False,
+            solc_version="0.8.2",
+        )
+        # TODO: Mint CMTO tokens
+
+        #TODO: Deploy CommutoGovernor contract
+        compiled_sol = compile_files(
+            ["../libraries/governance/CommutoGovernor.sol"],
+            allow_paths=[""],
+            output_values=["abi", "bin"],
+            optimize=False,
+            solc_version="0.8.2",
+        )
+
+        #TODO: Compile and deploy timelock
+
+        # TODO: Configure governance
 
         #Deploy CommutoSwapOfferOpener contract
         compiled_CommutoSwapOfferOpener = compile_files(
@@ -390,17 +413,6 @@ class CommutoSwapTest(unittest.TestCase):
         w3.eth.wait_for_transaction_receipt(tx_hash)
         tx_hash = self.commuto_swap_contract.functions.setDisputeAgentActive(self.dispute_agent_2, True).transact(tx_details)
         w3.eth.wait_for_transaction_receipt(tx_hash)
-
-        #Deploy CommutoToken contract
-        compiled_sol = compile_files(
-            ["../libraries/governance/CommutoToken.sol"],
-            allow_paths=[""],
-            output_values=["abi", "bin"],
-            optimize=False,
-            solc_version="0.8.2",
-        )
-        # TODO: Mint CMTO tokens
-        # TODO: Deploy governance
 
     def test_setup(self):
         pass
