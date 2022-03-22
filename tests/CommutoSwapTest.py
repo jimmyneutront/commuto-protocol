@@ -108,14 +108,24 @@ class CommutoSwapTest(unittest.TestCase):
         #Find installed versions of solc
         import_installed_solc()
 
-        #TODO: Deploy CommutoToken contract
-        compiled_sol = compile_files(
+        #Deploy CommutoToken contract
+        compiled_CommutoToken = compile_files(
             ["../libraries/governance/CommutoToken.sol"],
             allow_paths=[""],
             output_values=["abi", "bin"],
             optimize=False,
             solc_version="0.8.2",
         )
+        CommutoToken_abi = compiled_CommutoToken["../libraries/governance/CommutoToken.sol:CommutoToken"]["abi"]
+        CommutoToken_bytecode = compiled_CommutoToken["../libraries/governance/CommutoToken.sol:CommutoToken"]["bin"]
+        undeployed_CommutoToken_contract = w3.eth.contract(abi=CommutoToken_abi, bytecode=CommutoToken_bytecode)
+        CommutoToken_deployment_tx_hash = undeployed_CommutoToken_contract.constructor().transact(tx_details)
+        CommutoToken_address = w3.eth.wait_for_transaction_receipt(CommutoToken_deployment_tx_hash).contractAddress
+        self.CommutoToken_contract = w3.eth.contract(
+            address=CommutoToken_address,
+            abi=CommutoToken_abi
+        )
+
         # TODO: Mint CMTO tokens
 
         #TODO: Deploy CommutoGovernor contract
@@ -128,6 +138,8 @@ class CommutoSwapTest(unittest.TestCase):
         )
 
         #TODO: Compile and deploy timelock
+
+        #TODO: Transfer control of CommutoToken contract to timelock
 
         # TODO: Configure governance
 
