@@ -128,6 +128,32 @@ class CommutoSwapTest(unittest.TestCase):
 
         # TODO: Mint CMTO tokens
 
+        #Deploy Timelock
+        compiled_Timelock = compile_files(
+            ["../node_modules/@openzeppelin/contracts/governance/TimelockController.sol"],
+            allow_paths=[""],
+            output_values=["abi", "bin"],
+            optimize=False,
+            solc_version="0.8.2"
+        )
+        Timelock_abi = compiled_Timelock["../node_modules/@openzeppelin/contracts/governance/TimelockController.sol:" \
+                                         "TimelockController"]["abi"]
+        Timelock_bytecode = compiled_Timelock["../node_modules/@openzeppelin/contracts/governance/" \
+                                              "TimelockController.sol:TimelockController"]["bin"]
+        undeployed_Timelock_contract = w3.eth.contract(abi=Timelock_abi, bytecode=Timelock_bytecode)
+        Timelock_deployment_tx_hash = undeployed_Timelock_contract.constructor(
+            86400, #minDelay: Timelocked operations can be completed after 86400 blocks (3 days on BSC)
+            [w3.eth.accounts[2],], #Since CommutoGovernor isn't deployed yet, temporarily make this address the proposer
+            ['0x0000000000000000000000000000000000000000',], #Allow any account to execute operations
+        ).transact(tx_details)
+        Timelock_address = w3.eth.wait_for_transaction_receipt(Timelock_deployment_tx_hash).contractAddress
+        self.Timelock_contract = w3.eth.contract(
+            address=Timelock_address,
+            abi=Timelock_abi,
+        )
+
+        # TODO: Transfer control of CommutoToken contract to timelock
+
         #TODO: Deploy CommutoGovernor contract
         compiled_sol = compile_files(
             ["../libraries/governance/CommutoGovernor.sol"],
@@ -137,11 +163,9 @@ class CommutoSwapTest(unittest.TestCase):
             solc_version="0.8.2",
         )
 
-        #TODO: Compile and deploy timelock
-
-        #TODO: Transfer control of CommutoToken contract to timelock
-
         # TODO: Configure governance
+
+        #TODO: make CommutoGovernor the admin and only proposer of the timelock
 
         #Deploy CommutoSwapOfferOpener contract
         compiled_CommutoSwapOfferOpener = compile_files(
