@@ -127,7 +127,11 @@ class CommutoSwapTest(unittest.TestCase):
             abi=CommutoToken_abi
         )
 
-        # TODO: Mint CMTO tokens
+        #Mint CMTO tokens
+        self.CommutoToken_contract.functions.mint(
+            w3.eth.accounts[2],
+            100
+        ).transact(tx_details)
 
         #Deploy Timelock
         compiled_Timelock = compile_files(

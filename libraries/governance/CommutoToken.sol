@@ -5,7 +5,7 @@ import "../../node_modules/@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "../../node_modules/@openzeppelin/contracts/token/ERC20/extensions/draft-ERC20Permit.sol";
 import "../../node_modules/@openzeppelin/contracts/token/ERC20/extensions/ERC20Votes.sol";
 
-//TODO: Restrict new token minting to governance contract
+//TODO: Test mint, burn and changeTimelock functions
 contract CommutoToken is ERC20, ERC20Permit, ERC20Votes {
     constructor() ERC20("CommutoToken", "CMTO") ERC20Permit("CommutoToken") {
         timelock = msg.sender;
@@ -24,9 +24,17 @@ contract CommutoToken is ERC20, ERC20Permit, ERC20Votes {
         timelock = newTimelock;
     }
 
-    //TODO: Mint function
+    //Mint function
+    function mint(address to, uint256 amount) public {
+        require(msg.sender == timelock, "e79"); //"e79": "Only the current Timelock can call this function"
+        _mint(to, amount);
+    }
 
-    //TODO: Burn function
+    //Burn function
+    function burn(address account, uint256 amount) public {
+        require(msg.sender == timelock, "e79"); //"e79": "Only the current Timelock can call this function"
+        _burn(account, amount);
+    }
 
     //Overrides required by Solidity
 
