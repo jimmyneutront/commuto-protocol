@@ -1,3 +1,4 @@
+from hexbytes import HexBytes
 from solcx import compile_files, import_installed_solc
 import unittest
 from web3 import Web3
@@ -181,9 +182,26 @@ class CommutoSwapTest(unittest.TestCase):
             abi=CommutoGovernor_abi,
         )
 
-        # TODO: Configure governance
-
-        #TODO: make CommutoGovernor the admin and only proposer of the timelock
+        # Make CommutoGovernor a Proposer of of Timelock
+        self.Timelock_contract.functions.grantRole(
+            HexBytes("b09aa5aeb3702cfd50b6b62bc4532604938f21248a27a1d5ca736082b6819cc1"), #Proposer role identifier
+            CommutoGovernor_address
+        )
+        #Make Timelock an Admin of itself
+        self.Timelock_contract.functions.grantRole(
+            HexBytes("5f58e3a2316349923ce3780f8d587db2d72378aed66a8261c916544fa6846ca5"), #Admin role identifier
+            Timelock_address
+        ).transact(tx_details)
+        #Renounce temporary Proposer role
+        self.Timelock_contract.functions.renounceRole(
+            HexBytes("b09aa5aeb3702cfd50b6b62bc4532604938f21248a27a1d5ca736082b6819cc1"),  # Proposer role identifier
+            w3.eth.accounts[2],
+        ).transact(tx_details)
+        # Renounce temporary Admin role
+        self.Timelock_contract.functions.renounceRole(
+            HexBytes("5f58e3a2316349923ce3780f8d587db2d72378aed66a8261c916544fa6846ca5"), #Admin role identifier
+            w3.eth.accounts[2],
+        ).transact(tx_details)
 
         #Deploy CommutoSwapOfferOpener contract
         compiled_CommutoSwapOfferOpener = compile_files(
@@ -467,6 +485,8 @@ class CommutoSwapTest(unittest.TestCase):
         w3.eth.wait_for_transaction_receipt(tx_hash)
         tx_hash = self.commuto_swap_contract.functions.setDisputeAgentActive(self.dispute_agent_2, True).transact(tx_details)
         w3.eth.wait_for_transaction_receipt(tx_hash)
+
+        #TODO: transfer control of CommutoSwap to Timelock
 
     def test_setup(self):
         pass
