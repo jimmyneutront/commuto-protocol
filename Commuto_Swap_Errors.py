@@ -79,4 +79,5 @@ commuto_swap_error_messages = {
     "e76": "Dispute cannot be escalated for lack of counterparty reaction if caller has not reacted",
     "e77": "eDSPool address cannot be zero",
     "e78": "Cannot escalate dispute if dispute has already been escalated",
+    "e79": "Only the current Timelock can call this function",
 }

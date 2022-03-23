@@ -153,7 +153,10 @@ class CommutoSwapTest(unittest.TestCase):
             abi=Timelock_abi,
         )
 
-        # TODO: Transfer control of CommutoToken contract to timelock
+        #Transfer control of CommutoToken contract to Timelock
+        self.CommutoToken_contract.functions.changeTimelock(
+            Timelock_address
+        ).transact(tx_details)
 
         #Deploy CommutoGovernor contract
         compiled_CommutoGovernor = compile_files(
