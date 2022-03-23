@@ -154,13 +154,31 @@ class CommutoSwapTest(unittest.TestCase):
 
         # TODO: Transfer control of CommutoToken contract to timelock
 
-        #TODO: Deploy CommutoGovernor contract
-        compiled_sol = compile_files(
+        #Deploy CommutoGovernor contract
+        compiled_CommutoGovernor = compile_files(
             ["../libraries/governance/CommutoGovernor.sol"],
             allow_paths=[""],
             output_values=["abi", "bin"],
             optimize=False,
             solc_version="0.8.2",
+        )
+        CommutoGovernor_abi = compiled_CommutoGovernor["../libraries/governance/CommutoGovernor.sol:" \
+                                                       "CommutoGovernor"]["abi"]
+        CommutoGovernor_bytecode = compiled_CommutoGovernor["../libraries/governance/CommutoGovernor.sol:" \
+                                                       "CommutoGovernor"]["bin"]
+        undeployed_CommutoGovernor_contract = w3.eth.contract(
+            abi=CommutoGovernor_abi,
+            bytecode=CommutoGovernor_bytecode
+        )
+        CommutoGovernor_deployment_tx_hash = undeployed_CommutoGovernor_contract.constructor(
+            CommutoToken_address,
+            Timelock_address,
+        ).transact(tx_details)
+        CommutoGovernor_address = w3.eth.wait_for_transaction_receipt(CommutoGovernor_deployment_tx_hash)\
+            .contractAddress
+        self.CommutoGovernor_contract = w3.eth.contract(
+            address=CommutoGovernor_address,
+            abi=CommutoGovernor_abi,
         )
 
         # TODO: Configure governance
