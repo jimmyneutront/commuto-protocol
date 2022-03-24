@@ -8,7 +8,7 @@ Establishes the contract storage layout for CommutoSwap and all the contracts to
 */
 contract CommutoSwapStorage {
 
-    address public owner = address(0);
+    address public timelock = address(0);
     address public serviceFeePool = address(0);
 
     //Address to which funds for escalated disputed swaps are sent until tokenholders approve a resolution
