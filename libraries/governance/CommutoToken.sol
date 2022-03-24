@@ -5,7 +5,6 @@ import "../../node_modules/@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "../../node_modules/@openzeppelin/contracts/token/ERC20/extensions/draft-ERC20Permit.sol";
 import "../../node_modules/@openzeppelin/contracts/token/ERC20/extensions/ERC20Votes.sol";
 
-//TODO: Test mint, burn and changeTimelock functions
 contract CommutoToken is ERC20, ERC20Permit, ERC20Votes {
     constructor() ERC20("CommutoToken", "CMTO") ERC20Permit("CommutoToken") {
         timelock = msg.sender;
