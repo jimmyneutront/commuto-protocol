@@ -1,6 +1,5 @@
 import CommutoSwapTest
 from hexbytes import HexBytes
-from time import sleep
 from uuid import uuid4
 
 class CommutoEscalateDisputeTest(CommutoSwapTest.CommutoSwapTest):
@@ -174,7 +173,7 @@ class CommutoEscalateDisputeTest(CommutoSwapTest.CommutoSwapTest):
                 "from": self.dispute_agent_1
             }
             self.commuto_swap_contract.functions.proposeResolution(newOfferID, 10, 10, 0).transact(tx_details)
-            sleep(7)
+            self.mine_blocks(3)
             tx_details = {
                 "from": self.maker_address
             }
@@ -349,7 +348,7 @@ class CommutoEscalateDisputeTest(CommutoSwapTest.CommutoSwapTest):
                 "from": self.taker_address
             }
             self.commuto_swap_contract.functions.reactToResolutionProposal(newOfferID, 1).transact(tx_details)
-            sleep(2)
+            self.mine_blocks(1)
             tx_details = {
                 "from": self.taker_address
             }
@@ -536,7 +535,7 @@ class CommutoEscalateDisputeTest(CommutoSwapTest.CommutoSwapTest):
                 "from": self.maker_address
             }
             self.commuto_swap_contract.functions.reactToResolutionProposal(newOfferID, 1).transact(tx_details)
-            sleep(2)
+            self.mine_blocks(1)
             tx_details = {
                 "from": self.maker_address
             }
@@ -707,7 +706,7 @@ class CommutoEscalateDisputeTest(CommutoSwapTest.CommutoSwapTest):
                 self.dispute_agent_1,
                 self.dispute_agent_2
             ).transact(tx_details)
-            sleep(6)
+            self.mine_blocks(5)
             tx_details = {
                 "from": self.maker_address
             }
@@ -880,7 +879,7 @@ class CommutoEscalateDisputeTest(CommutoSwapTest.CommutoSwapTest):
             self.dispute_agent_1,
             self.dispute_agent_2
         ).transact(tx_details)
-        sleep(6)
+        self.mine_blocks(5)
         tx_details = {
             "from": self.maker_address
         }

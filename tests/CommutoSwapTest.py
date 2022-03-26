@@ -497,3 +497,6 @@ class CommutoSwapTest(unittest.TestCase):
 
     def test_setup(self):
         pass
+
+    def mine_blocks(self, blocks_to_mine):
+        self.w3.provider.make_request("hardhat_mine", [hex(blocks_to_mine)])
