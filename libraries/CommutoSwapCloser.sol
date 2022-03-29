@@ -44,7 +44,8 @@ contract CommutoSwapCloser is CommutoSwapStorage {
         //If caller is buyer and maker, return security deposit, swap amount, and serviceFeeUpperBound - serviceFeeAmount, and send service fee to pool
         else if (swaps[swapID].direction == SwapDirection.BUY && swaps[swapID].maker == msg.sender) {
             require(!swaps[swapID].hasBuyerClosed, "e41"); //"e41": "Buyer has already closed swap"
-            uint256 serviceFeeAmountUpperBound = SafeMath.div(swaps[swapID].amountUpperBound, 100);
+            //TODO: Service fee calculated here
+            uint256 serviceFeeAmountUpperBound = SafeMath.mul(swaps[swapID].serviceFeeRate, SafeMath.div(swaps[swapID].amountUpperBound, 10000));
             returnAmount = SafeMath.add(SafeMath.add(swaps[swapID].securityDepositAmount, swaps[swapID].takenSwapAmount), SafeMath.sub(serviceFeeAmountUpperBound, swaps[swapID].serviceFeeAmount));
             swaps[swapID].hasBuyerClosed = true;
             emit BuyerClosed(swapID);
@@ -63,7 +64,8 @@ contract CommutoSwapCloser is CommutoSwapStorage {
         //If caller is seller and maker, return security deposit and serviceFeeUpperBound - serviceFeeAmount, and send service fee to pool
         else if (swaps[swapID].direction == SwapDirection.SELL && swaps[swapID].maker == msg.sender) {
             require(!swaps[swapID].hasSellerClosed, "e43"); //"e43": "Seller has already closed swap"
-            uint256 serviceFeeAmountUpperBound = SafeMath.div(swaps[swapID].amountUpperBound, 100);
+            //TODO: Service fee calculated here
+            uint256 serviceFeeAmountUpperBound = SafeMath.mul(swaps[swapID].serviceFeeRate, SafeMath.div(swaps[swapID].amountUpperBound, 10000));
             returnAmount = SafeMath.add(swaps[swapID].securityDepositAmount, SafeMath.sub(serviceFeeAmountUpperBound, swaps[swapID].serviceFeeAmount));
             swaps[swapID].hasSellerClosed = true;
             emit SellerClosed(swapID);
@@ -119,6 +121,10 @@ contract CommutoSwapCloser is CommutoSwapStorage {
             revert("e63"); //"e63": "Only maker and taker can close disputed swap"
         }
 
+        /*
+        Note: Unspent service fees aren't dealt with here, because they are included in the maker payout, taker payout,
+        or confiscation payout.
+        */
         require(token.transfer(msg.sender, payoutAmountToCaller), "e19"); //"e19": "Token transfer failed"
         require(token.transfer(serviceFeePool, swaps[swapID].serviceFeeAmount), "e42"); //"e42": "Service fee transfer failed"
 

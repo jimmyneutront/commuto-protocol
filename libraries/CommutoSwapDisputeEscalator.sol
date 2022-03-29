@@ -66,7 +66,8 @@ contract CommutoSwapDisputeEscalator is CommutoSwapStorage {
 
         //Find proper stablecoin contract
         ERC20 token = ERC20(swaps[swapID].stablecoin);
-        uint256 serviceFeeAmountUpperBound = SafeMath.div(swaps[swapID].amountUpperBound, 100); //The amount the maker paid upon swap creation to pay the service fee
+        //TODO: Service fee calculated here
+        uint256 serviceFeeAmountUpperBound = SafeMath.mul(swaps[swapID].serviceFeeRate, SafeMath.div(swaps[swapID].amountUpperBound, 10000)); //The amount the maker paid upon swap creation to pay the service fee
         uint256 unspentServiceFee = SafeMath.sub(serviceFeeAmountUpperBound, swaps[swapID].serviceFeeAmount); //The remaining amount owed to the maker after subtracting actual service fee
         uint256 totalSecurityDeposit = SafeMath.mul(swaps[swapID].securityDepositAmount, 2); //The sum of the maker's and taker's security deposits
         uint256 totalWithoutSpentServiceFees = 0; //The total amount of STBL locked up by the maker and taker, excluding service fees

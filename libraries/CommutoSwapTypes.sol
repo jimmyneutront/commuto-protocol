@@ -51,6 +51,7 @@ struct Offer {
     uint256 amountLowerBound;
     uint256 amountUpperBound;
     uint256 securityDepositAmount;
+    uint256 serviceFeeRate;
     SwapDirection direction;
     bytes price;
     bytes[] settlementMethods;
@@ -70,6 +71,7 @@ struct Swap {
     uint256 securityDepositAmount;
     uint256 takenSwapAmount;
     uint256 serviceFeeAmount;
+    uint256 serviceFeeRate;
     SwapDirection direction;
     bytes price;
     bytes settlementMethod;

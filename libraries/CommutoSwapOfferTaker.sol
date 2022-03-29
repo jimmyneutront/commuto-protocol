@@ -43,7 +43,9 @@ contract CommutoSwapOfferTaker is CommutoSwapStorage {
         ERC20 token = ERC20(offers[offerID].stablecoin);
 
         //Calculate required total amount
-        newSwap.serviceFeeAmount = SafeMath.div(newSwap.takenSwapAmount, 100);
+        //TODO: Service fee calculated here
+        newSwap.serviceFeeAmount = SafeMath.mul(offers[offerID].serviceFeeRate, SafeMath.div(newSwap.takenSwapAmount, 10000));
+        //newSwap.serviceFeeAmount = SafeMath.mul(offers[offerID].serviceFeeRate, SafeMath.div(newSwap.takenSwapAmount, 10000));
         /*
         Slither complains that "totalAmount" is never initialized. However, compilation fails if this declaration takes place
         within the if/else statements, so it must remain here. Additionally, if initialization doesn't take place within
@@ -66,6 +68,7 @@ contract CommutoSwapOfferTaker is CommutoSwapStorage {
         newSwap.isCreated = true;
         newSwap.taker = msg.sender;
         offers[offerID].isTaken = true;
+        newSwap.serviceFeeRate = offers[offerID].serviceFeeRate;
         newSwap.isPaymentSent = false;
         newSwap.isPaymentReceived = false;
         newSwap.hasBuyerClosed = false;

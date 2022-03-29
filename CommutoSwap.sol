@@ -153,7 +153,7 @@ contract CommutoSwap is CommutoSwapStorage {
         CommutoSwap is deployed, and therefore the call cannot be delegated to a malicious contract.
         */
         (bool success, bytes memory data) = commutoSwapOfferOpener.delegatecall(
-            abi.encodeWithSignature("openOffer(bytes16,(bool,bool,address,bytes,address,uint256,uint256,uint256,uint8,bytes,bytes[],uint256))",
+            abi.encodeWithSignature("openOffer(bytes16,(bool,bool,address,bytes,address,uint256,uint256,uint256,uint256,uint8,bytes,bytes[],uint256))",
             offerID, newOffer)
         );
         require(success, string (data) );
@@ -167,7 +167,7 @@ contract CommutoSwap is CommutoSwapStorage {
         CommutoSwap is deployed, and therefore the call cannot be delegated to a malicious contract.
         */
         (bool success, bytes memory data) = commutoSwapOfferEditor.delegatecall(
-            abi.encodeWithSignature("editOffer(bytes16,(bool,bool,address,bytes,address,uint256,uint256,uint256,uint8,bytes,bytes[],uint256),bool,bool)",
+            abi.encodeWithSignature("editOffer(bytes16,(bool,bool,address,bytes,address,uint256,uint256,uint256,uint256,uint8,bytes,bytes[],uint256),bool,bool)",
             offerID, editedOffer, editPrice, editSettlementMethods)
         );
         require(success, string (data) );
@@ -195,7 +195,7 @@ contract CommutoSwap is CommutoSwapStorage {
         CommutoSwap is deployed, and therefore the call cannot be delegated to a malicious contract.
         */
         (bool success, bytes memory data) = commutoSwapOfferTaker.delegatecall(
-            abi.encodeWithSignature("takeOffer(bytes16,(bool,bool,address,bytes,address,bytes,address,uint256,uint256,uint256,uint256,uint256,uint8,bytes,bytes,uint256,bool,bool,bool,bool,uint8))",
+            abi.encodeWithSignature("takeOffer(bytes16,(bool,bool,address,bytes,address,bytes,address,uint256,uint256,uint256,uint256,uint256,uint256,uint8,bytes,bytes,uint256,bool,bool,bool,bool,uint8))",
             offerID, newSwap)
         );
         require(success, string (data) );

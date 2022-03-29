@@ -30,7 +30,9 @@ contract CommutoSwapOfferCanceler is CommutoSwapStorage {
         ERC20 token = ERC20(offers[offerID].stablecoin);
 
         //Calculate total amount in escrow
-        uint256 serviceFeeAmountUpperBound = SafeMath.div(offers[offerID].amountUpperBound, 100);
+        //TODO: Service fee calculated here
+        uint256 serviceFeeAmountUpperBound = SafeMath.mul(offers[offerID].serviceFeeRate, SafeMath.div(offers[offerID].amountUpperBound, 10000));
+        //uint256 serviceFeeAmountUpperBound = SafeMath.mul(offers[offerID].serviceFeeRate, SafeMath.div(offers[offerID].amountUpperBound, 10000));
         /*
         Slither complains that "totalAmount" is never initialized. However, compilation fails if this declaration takes place
         within the if/else statements, so it must remain here. Additionally, if initialization doesn't take place within

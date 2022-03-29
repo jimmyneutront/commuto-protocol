@@ -17,9 +17,10 @@ class CommutoReactToResolutionProposalTest(CommutoSwapTest.CommutoSwapTest):
                 "maker": self.maker_address,
                 "interfaceId": HexBytes("an interface Id here".encode("utf-8").hex()),
                 "stablecoin": self.dai_deployment_tx_receipt.contractAddress,
-                "amountLowerBound": 100,
-                "amountUpperBound": 100,
-                "securityDepositAmount": 10,
+                "amountLowerBound": 10000,
+                "amountUpperBound": 10000,
+                "securityDepositAmount": 1000,
+                "serviceFeeRate": 100,
                 "direction": 1,
                 "price": HexBytes("a price here".encode("utf-8").hex()),
                 "settlementMethods": ["USD-SWIFT".encode("utf-8"), ],
@@ -27,7 +28,7 @@ class CommutoReactToResolutionProposalTest(CommutoSwapTest.CommutoSwapTest):
             }
             self.test_dai_contract.functions.increaseAllowance(
                 self.commuto_swap_deployment_tx_receipt.contractAddress,
-                11,
+                1100,
             ).transact(tx_details)
             self.commuto_swap_contract.functions.openOffer(
                 newOfferID,
@@ -44,11 +45,12 @@ class CommutoReactToResolutionProposalTest(CommutoSwapTest.CommutoSwapTest):
                 "taker": self.taker_address,
                 "takerInterfaceId": HexBytes("an interface Id here".encode("utf-8").hex()),
                 "stablecoin": self.dai_deployment_tx_receipt.contractAddress,
-                "amountLowerBound": 100,
-                "amountUpperBound": 100,
-                "securityDepositAmount": 10,
-                "takenSwapAmount": 100,
-                "serviceFeeAmount": 1,
+                "amountLowerBound": 10000,
+                "amountUpperBound": 10000,
+                "securityDepositAmount": 1000,
+                "takenSwapAmount": 10000,
+                "serviceFeeAmount": 100,
+                "serviceFeeRate": 100,
                 "direction": 1,
                 "price": HexBytes("a price here".encode("utf-8").hex()),
                 "settlementMethod": "USD-SWIFT".encode("utf-8"),
@@ -61,7 +63,7 @@ class CommutoReactToResolutionProposalTest(CommutoSwapTest.CommutoSwapTest):
             }
             self.test_dai_contract.functions.increaseAllowance(
                 self.commuto_swap_deployment_tx_receipt.contractAddress,
-                11,
+                1100,
             ).transact(tx_details)
             self.commuto_swap_contract.functions.takeOffer(
                 newOfferID,
@@ -97,9 +99,10 @@ class CommutoReactToResolutionProposalTest(CommutoSwapTest.CommutoSwapTest):
                 "maker": self.maker_address,
                 "interfaceId": HexBytes("an interface Id here".encode("utf-8").hex()),
                 "stablecoin": self.dai_deployment_tx_receipt.contractAddress,
-                "amountLowerBound": 100,
-                "amountUpperBound": 100,
-                "securityDepositAmount": 10,
+                "amountLowerBound": 10000,
+                "amountUpperBound": 10000,
+                "securityDepositAmount": 1000,
+                "serviceFeeRate": 100,
                 "direction": 1,
                 "price": HexBytes("a price here".encode("utf-8").hex()),
                 "settlementMethods": ["USD-SWIFT".encode("utf-8"), ],
@@ -107,7 +110,7 @@ class CommutoReactToResolutionProposalTest(CommutoSwapTest.CommutoSwapTest):
             }
             self.test_dai_contract.functions.increaseAllowance(
                 self.commuto_swap_deployment_tx_receipt.contractAddress,
-                11,
+                1100,
             ).transact(tx_details)
             self.commuto_swap_contract.functions.openOffer(
                 newOfferID,
@@ -124,11 +127,12 @@ class CommutoReactToResolutionProposalTest(CommutoSwapTest.CommutoSwapTest):
                 "taker": self.taker_address,
                 "takerInterfaceId": HexBytes("an interface Id here".encode("utf-8").hex()),
                 "stablecoin": self.dai_deployment_tx_receipt.contractAddress,
-                "amountLowerBound": 100,
-                "amountUpperBound": 100,
-                "securityDepositAmount": 10,
-                "takenSwapAmount": 100,
-                "serviceFeeAmount": 1,
+                "amountLowerBound": 10000,
+                "amountUpperBound": 10000,
+                "securityDepositAmount": 1000,
+                "takenSwapAmount": 10000,
+                "serviceFeeAmount": 100,
+                "serviceFeeRate": 100,
                 "direction": 1,
                 "price": HexBytes("a price here".encode("utf-8").hex()),
                 "settlementMethod": "USD-SWIFT".encode("utf-8"),
@@ -141,7 +145,7 @@ class CommutoReactToResolutionProposalTest(CommutoSwapTest.CommutoSwapTest):
             }
             self.test_dai_contract.functions.increaseAllowance(
                 self.commuto_swap_deployment_tx_receipt.contractAddress,
-                11,
+                1100,
             ).transact(tx_details)
             self.commuto_swap_contract.functions.takeOffer(
                 newOfferID,
@@ -156,7 +160,7 @@ class CommutoReactToResolutionProposalTest(CommutoSwapTest.CommutoSwapTest):
             tx_details = {
                 "from": self.dispute_agent_0
             }
-            self.commuto_swap_contract.functions.proposeResolution(newOfferID, 10, 10, 0).transact(tx_details)
+            self.commuto_swap_contract.functions.proposeResolution(newOfferID, 1000, 1000, 0).transact(tx_details)
             tx_details = {
                 "from": self.taker_address
             }
@@ -180,9 +184,10 @@ class CommutoReactToResolutionProposalTest(CommutoSwapTest.CommutoSwapTest):
                 "maker": self.maker_address,
                 "interfaceId": HexBytes("an interface Id here".encode("utf-8").hex()),
                 "stablecoin": self.dai_deployment_tx_receipt.contractAddress,
-                "amountLowerBound": 100,
-                "amountUpperBound": 100,
-                "securityDepositAmount": 10,
+                "amountLowerBound": 10000,
+                "amountUpperBound": 10000,
+                "securityDepositAmount": 1000,
+                "serviceFeeRate": 100,
                 "direction": 1,
                 "price": HexBytes("a price here".encode("utf-8").hex()),
                 "settlementMethods": ["USD-SWIFT".encode("utf-8"), ],
@@ -190,7 +195,7 @@ class CommutoReactToResolutionProposalTest(CommutoSwapTest.CommutoSwapTest):
             }
             self.test_dai_contract.functions.increaseAllowance(
                 self.commuto_swap_deployment_tx_receipt.contractAddress,
-                11,
+                1100,
             ).transact(tx_details)
             self.commuto_swap_contract.functions.openOffer(
                 newOfferID,
@@ -207,11 +212,12 @@ class CommutoReactToResolutionProposalTest(CommutoSwapTest.CommutoSwapTest):
                 "taker": self.taker_address,
                 "takerInterfaceId": HexBytes("an interface Id here".encode("utf-8").hex()),
                 "stablecoin": self.dai_deployment_tx_receipt.contractAddress,
-                "amountLowerBound": 100,
-                "amountUpperBound": 100,
-                "securityDepositAmount": 10,
-                "takenSwapAmount": 100,
-                "serviceFeeAmount": 1,
+                "amountLowerBound": 10000,
+                "amountUpperBound": 10000,
+                "securityDepositAmount": 1000,
+                "takenSwapAmount": 10000,
+                "serviceFeeAmount": 100,
+                "serviceFeeRate": 100,
                 "direction": 1,
                 "price": HexBytes("a price here".encode("utf-8").hex()),
                 "settlementMethod": "USD-SWIFT".encode("utf-8"),
@@ -224,7 +230,7 @@ class CommutoReactToResolutionProposalTest(CommutoSwapTest.CommutoSwapTest):
             }
             self.test_dai_contract.functions.increaseAllowance(
                 self.commuto_swap_deployment_tx_receipt.contractAddress,
-                11,
+                1100,
             ).transact(tx_details)
             self.commuto_swap_contract.functions.takeOffer(
                 newOfferID,
@@ -239,11 +245,11 @@ class CommutoReactToResolutionProposalTest(CommutoSwapTest.CommutoSwapTest):
             tx_details = {
                 "from": self.dispute_agent_0
             }
-            self.commuto_swap_contract.functions.proposeResolution(newOfferID, 10, 10, 0).transact(tx_details)
+            self.commuto_swap_contract.functions.proposeResolution(newOfferID, 1000, 1000, 0).transact(tx_details)
             tx_details = {
                 "from": self.dispute_agent_1
             }
-            self.commuto_swap_contract.functions.proposeResolution(newOfferID, 10, 10, 0).transact(tx_details)
+            self.commuto_swap_contract.functions.proposeResolution(newOfferID, 1000, 1000, 0).transact(tx_details)
             tx_details = {
                 "from": self.maker_address
             }
@@ -268,9 +274,10 @@ class CommutoReactToResolutionProposalTest(CommutoSwapTest.CommutoSwapTest):
                 "maker": self.maker_address,
                 "interfaceId": HexBytes("an interface Id here".encode("utf-8").hex()),
                 "stablecoin": self.dai_deployment_tx_receipt.contractAddress,
-                "amountLowerBound": 100,
-                "amountUpperBound": 100,
-                "securityDepositAmount": 10,
+                "amountLowerBound": 10000,
+                "amountUpperBound": 10000,
+                "securityDepositAmount": 1000,
+                "serviceFeeRate": 100,
                 "direction": 1,
                 "price": HexBytes("a price here".encode("utf-8").hex()),
                 "settlementMethods": ["USD-SWIFT".encode("utf-8"), ],
@@ -278,7 +285,7 @@ class CommutoReactToResolutionProposalTest(CommutoSwapTest.CommutoSwapTest):
             }
             self.test_dai_contract.functions.increaseAllowance(
                 self.commuto_swap_deployment_tx_receipt.contractAddress,
-                11,
+                1100,
             ).transact(tx_details)
             self.commuto_swap_contract.functions.openOffer(
                 newOfferID,
@@ -295,11 +302,12 @@ class CommutoReactToResolutionProposalTest(CommutoSwapTest.CommutoSwapTest):
                 "taker": self.taker_address,
                 "takerInterfaceId": HexBytes("an interface Id here".encode("utf-8").hex()),
                 "stablecoin": self.dai_deployment_tx_receipt.contractAddress,
-                "amountLowerBound": 100,
-                "amountUpperBound": 100,
-                "securityDepositAmount": 10,
-                "takenSwapAmount": 100,
-                "serviceFeeAmount": 1,
+                "amountLowerBound": 10000,
+                "amountUpperBound": 10000,
+                "securityDepositAmount": 1000,
+                "takenSwapAmount": 10000,
+                "serviceFeeAmount": 100,
+                "serviceFeeRate": 100,
                 "direction": 1,
                 "price": HexBytes("a price here".encode("utf-8").hex()),
                 "settlementMethod": "USD-SWIFT".encode("utf-8"),
@@ -312,7 +320,7 @@ class CommutoReactToResolutionProposalTest(CommutoSwapTest.CommutoSwapTest):
             }
             self.test_dai_contract.functions.increaseAllowance(
                 self.commuto_swap_deployment_tx_receipt.contractAddress,
-                11,
+                1100,
             ).transact(tx_details)
             self.commuto_swap_contract.functions.takeOffer(
                 newOfferID,
@@ -327,11 +335,11 @@ class CommutoReactToResolutionProposalTest(CommutoSwapTest.CommutoSwapTest):
             tx_details = {
                 "from": self.dispute_agent_0
             }
-            self.commuto_swap_contract.functions.proposeResolution(newOfferID, 10, 10, 0).transact(tx_details)
+            self.commuto_swap_contract.functions.proposeResolution(newOfferID, 1000, 1000, 0).transact(tx_details)
             tx_details = {
                 "from": self.dispute_agent_1
             }
-            self.commuto_swap_contract.functions.proposeResolution(newOfferID, 10, 10, 0).transact(tx_details)
+            self.commuto_swap_contract.functions.proposeResolution(newOfferID, 1000, 1000, 0).transact(tx_details)
             tx_details = {
                 "from": self.taker_address
             }
@@ -357,9 +365,10 @@ class CommutoReactToResolutionProposalTest(CommutoSwapTest.CommutoSwapTest):
                 "maker": self.maker_address,
                 "interfaceId": HexBytes("an interface Id here".encode("utf-8").hex()),
                 "stablecoin": self.dai_deployment_tx_receipt.contractAddress,
-                "amountLowerBound": 100,
-                "amountUpperBound": 100,
-                "securityDepositAmount": 10,
+                "amountLowerBound": 10000,
+                "amountUpperBound": 10000,
+                "securityDepositAmount": 1000,
+                "serviceFeeRate": 100,
                 "direction": 1,
                 "price": HexBytes("a price here".encode("utf-8").hex()),
                 "settlementMethods": ["USD-SWIFT".encode("utf-8"), ],
@@ -367,7 +376,7 @@ class CommutoReactToResolutionProposalTest(CommutoSwapTest.CommutoSwapTest):
             }
             self.test_dai_contract.functions.increaseAllowance(
                 self.commuto_swap_deployment_tx_receipt.contractAddress,
-                11,
+                1100,
             ).transact(tx_details)
             self.commuto_swap_contract.functions.openOffer(
                 newOfferID,
@@ -384,11 +393,12 @@ class CommutoReactToResolutionProposalTest(CommutoSwapTest.CommutoSwapTest):
                 "taker": self.taker_address,
                 "takerInterfaceId": HexBytes("an interface Id here".encode("utf-8").hex()),
                 "stablecoin": self.dai_deployment_tx_receipt.contractAddress,
-                "amountLowerBound": 100,
-                "amountUpperBound": 100,
-                "securityDepositAmount": 10,
-                "takenSwapAmount": 100,
-                "serviceFeeAmount": 1,
+                "amountLowerBound": 10000,
+                "amountUpperBound": 10000,
+                "securityDepositAmount": 1000,
+                "takenSwapAmount": 10000,
+                "serviceFeeAmount": 100,
+                "serviceFeeRate": 100,
                 "direction": 1,
                 "price": HexBytes("a price here".encode("utf-8").hex()),
                 "settlementMethod": "USD-SWIFT".encode("utf-8"),
@@ -401,7 +411,7 @@ class CommutoReactToResolutionProposalTest(CommutoSwapTest.CommutoSwapTest):
             }
             self.test_dai_contract.functions.increaseAllowance(
                 self.commuto_swap_deployment_tx_receipt.contractAddress,
-                11,
+                1100,
             ).transact(tx_details)
             self.commuto_swap_contract.functions.takeOffer(
                 newOfferID,
@@ -416,15 +426,15 @@ class CommutoReactToResolutionProposalTest(CommutoSwapTest.CommutoSwapTest):
             tx_details = {
                 "from": self.dispute_agent_0
             }
-            self.commuto_swap_contract.functions.proposeResolution(newOfferID, 10, 10, 0).transact(tx_details)
+            self.commuto_swap_contract.functions.proposeResolution(newOfferID, 1000, 1000, 0).transact(tx_details)
             tx_details = {
                 "from": self.dispute_agent_1
             }
-            self.commuto_swap_contract.functions.proposeResolution(newOfferID, 11, 9, 0).transact(tx_details)
+            self.commuto_swap_contract.functions.proposeResolution(newOfferID, 1100, 900, 0).transact(tx_details)
             tx_details = {
                 "from": self.dispute_agent_2
             }
-            self.commuto_swap_contract.functions.proposeResolution(newOfferID, 9, 11, 0).transact(tx_details)
+            self.commuto_swap_contract.functions.proposeResolution(newOfferID, 900, 1100, 0).transact(tx_details)
             tx_details = {
                 "from": self.taker_address
             }
@@ -452,9 +462,10 @@ class CommutoReactToResolutionProposalTest(CommutoSwapTest.CommutoSwapTest):
             "maker": self.maker_address,
             "interfaceId": HexBytes("an interface Id here".encode("utf-8").hex()),
             "stablecoin": self.dai_deployment_tx_receipt.contractAddress,
-            "amountLowerBound": 100,
-            "amountUpperBound": 100,
-            "securityDepositAmount": 10,
+            "amountLowerBound": 10000,
+            "amountUpperBound": 10000,
+            "securityDepositAmount": 1000,
+            "serviceFeeRate": 100,
             "direction": 1,
             "price": HexBytes("a price here".encode("utf-8").hex()),
             "settlementMethods": ["USD-SWIFT".encode("utf-8"), ],
@@ -462,7 +473,7 @@ class CommutoReactToResolutionProposalTest(CommutoSwapTest.CommutoSwapTest):
         }
         self.test_dai_contract.functions.increaseAllowance(
             self.commuto_swap_deployment_tx_receipt.contractAddress,
-            11,
+            1100,
         ).transact(tx_details)
         self.commuto_swap_contract.functions.openOffer(
             newOfferID,
@@ -479,11 +490,12 @@ class CommutoReactToResolutionProposalTest(CommutoSwapTest.CommutoSwapTest):
             "taker": self.taker_address,
             "takerInterfaceId": HexBytes("an interface Id here".encode("utf-8").hex()),
             "stablecoin": self.dai_deployment_tx_receipt.contractAddress,
-            "amountLowerBound": 100,
-            "amountUpperBound": 100,
-            "securityDepositAmount": 10,
-            "takenSwapAmount": 100,
-            "serviceFeeAmount": 1,
+            "amountLowerBound": 10000,
+            "amountUpperBound": 10000,
+            "securityDepositAmount": 1000,
+            "takenSwapAmount": 10000,
+            "serviceFeeAmount": 100,
+            "serviceFeeRate": 100,
             "direction": 1,
             "price": HexBytes("a price here".encode("utf-8").hex()),
             "settlementMethod": "USD-SWIFT".encode("utf-8"),
@@ -496,7 +508,7 @@ class CommutoReactToResolutionProposalTest(CommutoSwapTest.CommutoSwapTest):
         }
         self.test_dai_contract.functions.increaseAllowance(
             self.commuto_swap_deployment_tx_receipt.contractAddress,
-            11,
+            1100,
         ).transact(tx_details)
         self.commuto_swap_contract.functions.takeOffer(
             newOfferID,
@@ -511,15 +523,15 @@ class CommutoReactToResolutionProposalTest(CommutoSwapTest.CommutoSwapTest):
         tx_details = {
             "from": self.dispute_agent_0
         }
-        self.commuto_swap_contract.functions.proposeResolution(newOfferID, 10, 10, 0).transact(tx_details)
+        self.commuto_swap_contract.functions.proposeResolution(newOfferID, 1000, 1000, 0).transact(tx_details)
         tx_details = {
             "from": self.dispute_agent_1
         }
-        self.commuto_swap_contract.functions.proposeResolution(newOfferID, 10, 10, 0).transact(tx_details)
+        self.commuto_swap_contract.functions.proposeResolution(newOfferID, 1000, 1000, 0).transact(tx_details)
         tx_details = {
             "from": self.dispute_agent_2
         }
-        self.commuto_swap_contract.functions.proposeResolution(newOfferID, 10, 10, 0).transact(tx_details)
+        self.commuto_swap_contract.functions.proposeResolution(newOfferID, 1000, 1000, 0).transact(tx_details)
         tx_details = {
             "from": self.taker_address
         }
@@ -548,9 +560,10 @@ class CommutoReactToResolutionProposalTest(CommutoSwapTest.CommutoSwapTest):
                 "maker": self.maker_address,
                 "interfaceId": HexBytes("an interface Id here".encode("utf-8").hex()),
                 "stablecoin": self.dai_deployment_tx_receipt.contractAddress,
-                "amountLowerBound": 100,
-                "amountUpperBound": 100,
-                "securityDepositAmount": 10,
+                "amountLowerBound": 10000,
+                "amountUpperBound": 10000,
+                "securityDepositAmount": 1000,
+                "serviceFeeRate": 100,
                 "direction": 1,
                 "price": HexBytes("a price here".encode("utf-8").hex()),
                 "settlementMethods": ["USD-SWIFT".encode("utf-8"), ],
@@ -558,7 +571,7 @@ class CommutoReactToResolutionProposalTest(CommutoSwapTest.CommutoSwapTest):
             }
             self.test_dai_contract.functions.increaseAllowance(
                 self.commuto_swap_deployment_tx_receipt.contractAddress,
-                11,
+                1100,
             ).transact(tx_details)
             self.commuto_swap_contract.functions.openOffer(
                 newOfferID,
@@ -575,11 +588,12 @@ class CommutoReactToResolutionProposalTest(CommutoSwapTest.CommutoSwapTest):
                 "taker": self.taker_address,
                 "takerInterfaceId": HexBytes("an interface Id here".encode("utf-8").hex()),
                 "stablecoin": self.dai_deployment_tx_receipt.contractAddress,
-                "amountLowerBound": 100,
-                "amountUpperBound": 100,
-                "securityDepositAmount": 10,
-                "takenSwapAmount": 100,
-                "serviceFeeAmount": 1,
+                "amountLowerBound": 10000,
+                "amountUpperBound": 10000,
+                "securityDepositAmount": 1000,
+                "takenSwapAmount": 10000,
+                "serviceFeeAmount": 100,
+                "serviceFeeRate": 100,
                 "direction": 1,
                 "price": HexBytes("a price here".encode("utf-8").hex()),
                 "settlementMethod": "USD-SWIFT".encode("utf-8"),
@@ -592,7 +606,7 @@ class CommutoReactToResolutionProposalTest(CommutoSwapTest.CommutoSwapTest):
             }
             self.test_dai_contract.functions.increaseAllowance(
                 self.commuto_swap_deployment_tx_receipt.contractAddress,
-                11,
+                1100,
             ).transact(tx_details)
             self.commuto_swap_contract.functions.takeOffer(
                 newOfferID,
@@ -607,11 +621,11 @@ class CommutoReactToResolutionProposalTest(CommutoSwapTest.CommutoSwapTest):
             tx_details = {
                 "from": self.dispute_agent_0
             }
-            self.commuto_swap_contract.functions.proposeResolution(newOfferID, 10, 10, 0).transact(tx_details)
+            self.commuto_swap_contract.functions.proposeResolution(newOfferID, 1000, 1000, 0).transact(tx_details)
             tx_details = {
                 "from": self.dispute_agent_1
             }
-            self.commuto_swap_contract.functions.proposeResolution(newOfferID, 10, 10, 0).transact(tx_details)
+            self.commuto_swap_contract.functions.proposeResolution(newOfferID, 1000, 1000, 0).transact(tx_details)
             tx_details = {
                 "from": self.taker_address
             }

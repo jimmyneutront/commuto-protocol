@@ -47,6 +47,13 @@ contract CommutoSwapStorage {
     //Address of the contract to which CommutoSwap should delegate escalateDispute calls
     address immutable public commutoSwapDisputeEscalator;
 
+    /*
+    The percentage times 100 of the taken swap amount that the maker and taker must each pay as a service fee. So a
+    value of 100 corresponds to a 1 percent service fee. This allows support for fees as low as 0.01 percent.
+    */
+    //TODO: Make this changeable by governance vote
+    uint256 public serviceFeeRate = 100;
+
     //The number of blocks that must be mined between when a dispute is raised and when it can be escalated
     //TODO: Make this changeable by governance vote
     uint256 public minimumDisputePeriod = 5;

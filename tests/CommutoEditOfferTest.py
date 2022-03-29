@@ -16,9 +16,10 @@ class CommutoEditOfferTest(CommutoSwapTest.CommutoSwapTest):
                 "maker": self.maker_address,
                 "interfaceId": HexBytes("an interface Id here".encode("utf-8").hex()),
                 "stablecoin": self.dai_deployment_tx_receipt.contractAddress,
-                "amountLowerBound": 100,
-                "amountUpperBound": 100,
-                "securityDepositAmount": 10,
+                "amountLowerBound": 10000,
+                "amountUpperBound": 10000,
+                "securityDepositAmount": 1000,
+                "serviceFeeRate": 100,
                 "direction": 1,
                 "price": HexBytes("a price here".encode("utf-8").hex()),
                 "settlementMethods": ["USD-SWIFT".encode("utf-8"), ],
@@ -49,9 +50,10 @@ class CommutoEditOfferTest(CommutoSwapTest.CommutoSwapTest):
                 "maker": self.maker_address,
                 "interfaceId": HexBytes("an interface Id here".encode("utf-8").hex()),
                 "stablecoin": self.dai_deployment_tx_receipt.contractAddress,
-                "amountLowerBound": 100,
-                "amountUpperBound": 100,
-                "securityDepositAmount": 10,
+                "amountLowerBound": 10000,
+                "amountUpperBound": 10000,
+                "securityDepositAmount": 1000,
+                "serviceFeeRate": 100,
                 "direction": 1,
                 "price": HexBytes("a price here".encode("utf-8").hex()),
                 "settlementMethods": ["USD-SWIFT".encode("utf-8"), ],
@@ -59,7 +61,7 @@ class CommutoEditOfferTest(CommutoSwapTest.CommutoSwapTest):
             }
             self.test_dai_contract.functions.increaseAllowance(
                 self.commuto_swap_deployment_tx_receipt.contractAddress,
-                11,
+                1100,
             ).transact(tx_details)
             self.commuto_swap_contract.functions.openOffer(
                 newOfferID,
@@ -76,11 +78,12 @@ class CommutoEditOfferTest(CommutoSwapTest.CommutoSwapTest):
                 "taker": self.taker_address,
                 "takerInterfaceId": HexBytes("an interface Id here".encode("utf-8").hex()),
                 "stablecoin": self.dai_deployment_tx_receipt.contractAddress,
-                "amountLowerBound": 100,
-                "amountUpperBound": 100,
-                "securityDepositAmount": 10,
-                "takenSwapAmount": 100,
-                "serviceFeeAmount": 1,
+                "amountLowerBound": 10000,
+                "amountUpperBound": 10000,
+                "securityDepositAmount": 1000,
+                "takenSwapAmount": 10000,
+                "serviceFeeAmount": 100,
+                "serviceFeeRate": 100,
                 "direction": 1,
                 "price": HexBytes("a price here".encode("utf-8").hex()),
                 "settlementMethod": "USD-SWIFT".encode("utf-8"),
@@ -93,7 +96,7 @@ class CommutoEditOfferTest(CommutoSwapTest.CommutoSwapTest):
             }
             self.test_dai_contract.functions.increaseAllowance(
                 self.commuto_swap_deployment_tx_receipt.contractAddress,
-                11,
+                1100,
             ).transact(tx_details)
             self.commuto_swap_contract.functions.takeOffer(
                 newOfferID,
@@ -108,9 +111,10 @@ class CommutoEditOfferTest(CommutoSwapTest.CommutoSwapTest):
                 "maker": self.maker_address,
                 "interfaceId": HexBytes("an interface Id here".encode("utf-8").hex()),
                 "stablecoin": self.dai_deployment_tx_receipt.contractAddress,
-                "amountLowerBound": 100,
-                "amountUpperBound": 100,
-                "securityDepositAmount": 10,
+                "amountLowerBound": 10000,
+                "amountUpperBound": 10000,
+                "securityDepositAmount": 1000,
+                "serviceFeeRate": 100,
                 "direction": 1,
                 "price": HexBytes("a price here".encode("utf-8").hex()),
                 "settlementMethods": ["USD-SWIFT".encode("utf-8"), ],
@@ -141,9 +145,10 @@ class CommutoEditOfferTest(CommutoSwapTest.CommutoSwapTest):
                 "maker": self.maker_address,
                 "interfaceId": HexBytes("an interface Id here".encode("utf-8").hex()),
                 "stablecoin": self.dai_deployment_tx_receipt.contractAddress,
-                "amountLowerBound": 100,
-                "amountUpperBound": 100,
-                "securityDepositAmount": 10,
+                "amountLowerBound": 10000,
+                "amountUpperBound": 10000,
+                "securityDepositAmount": 1000,
+                "serviceFeeRate": 100,
                 "direction": 1,
                 "price": HexBytes("a price here".encode("utf-8").hex()),
                 "settlementMethods": ["USD-SWIFT".encode("utf-8"), ],
@@ -151,7 +156,7 @@ class CommutoEditOfferTest(CommutoSwapTest.CommutoSwapTest):
             }
             self.test_dai_contract.functions.increaseAllowance(
                 self.commuto_swap_deployment_tx_receipt.contractAddress,
-                11,
+                1100,
             ).transact(tx_details)
             self.commuto_swap_contract.functions.openOffer(
                 newOfferID,
@@ -166,9 +171,10 @@ class CommutoEditOfferTest(CommutoSwapTest.CommutoSwapTest):
                 "maker": self.maker_address,
                 "interfaceId": HexBytes("an interface Id here".encode("utf-8").hex()),
                 "stablecoin": self.dai_deployment_tx_receipt.contractAddress,
-                "amountLowerBound": 100,
-                "amountUpperBound": 100,
-                "securityDepositAmount": 10,
+                "amountLowerBound": 10000,
+                "amountUpperBound": 10000,
+                "securityDepositAmount": 1000,
+                "serviceFeeRate": 100,
                 "direction": 1,
                 "price": HexBytes("a price here".encode("utf-8").hex()),
                 "settlementMethods": ["USD-SWIFT".encode("utf-8"), ],
@@ -199,9 +205,10 @@ class CommutoEditOfferTest(CommutoSwapTest.CommutoSwapTest):
                 "maker": self.maker_address,
                 "interfaceId": HexBytes("an interface Id here".encode("utf-8").hex()),
                 "stablecoin": self.dai_deployment_tx_receipt.contractAddress,
-                "amountLowerBound": 100,
-                "amountUpperBound": 100,
-                "securityDepositAmount": 10,
+                "amountLowerBound": 10000,
+                "amountUpperBound": 10000,
+                "securityDepositAmount": 1000,
+                "serviceFeeRate": 100,
                 "direction": 1,
                 "price": HexBytes("a price here".encode("utf-8").hex()),
                 "settlementMethods": ["USD-SWIFT".encode("utf-8"), ],
@@ -209,7 +216,7 @@ class CommutoEditOfferTest(CommutoSwapTest.CommutoSwapTest):
             }
             self.test_dai_contract.functions.increaseAllowance(
                 self.commuto_swap_deployment_tx_receipt.contractAddress,
-                11,
+                1100,
             ).transact(tx_details)
             self.commuto_swap_contract.functions.openOffer(
                 newOfferID,
@@ -224,9 +231,10 @@ class CommutoEditOfferTest(CommutoSwapTest.CommutoSwapTest):
                 "maker": self.maker_address,
                 "interfaceId": HexBytes("an interface Id here".encode("utf-8").hex()),
                 "stablecoin": self.dai_deployment_tx_receipt.contractAddress,
-                "amountLowerBound": 100,
-                "amountUpperBound": 100,
-                "securityDepositAmount": 10,
+                "amountLowerBound": 10000,
+                "amountUpperBound": 10000,
+                "securityDepositAmount": 1000,
+                "serviceFeeRate": 100,
                 "direction": 1,
                 "price": HexBytes("an edited price here".encode("utf-8").hex()),
                 "settlementMethods": ["EUR-SEPA".encode("utf-8"), ],
@@ -241,8 +249,8 @@ class CommutoEditOfferTest(CommutoSwapTest.CommutoSwapTest):
             offer = self.commuto_swap_contract.functions.getOffer(
                 newOfferID,
             ).call()
-            if not (offer[9] == HexBytes("an edited price here".encode("utf-8").hex()) and \
-                    offer[10] == ["EUR-SEPA".encode("utf-8"), ]):
+            if not (offer[10] == HexBytes("an edited price here".encode("utf-8").hex()) and \
+                    offer[11] == ["EUR-SEPA".encode("utf-8"), ]):
                 raise (Exception("test_editOffer_edit_offer failed due to offer editing failure"))
         except ValueError as e:
             raise e
