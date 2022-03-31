@@ -6,7 +6,7 @@ class CommutoTokenTest(CommutoSwapTest.CommutoSwapTest):
         #Ensure that changeTimelock cannot be called by any account other than Timelock
         try:
             tx_details = {
-                "from": self.w3.eth.accounts[2],
+                "from": self.w3.eth.accounts[6],
             }
             self.CommutoToken_contract.functions.changeTimelock(
                 self.w3.eth.accounts[2],
@@ -17,11 +17,23 @@ class CommutoTokenTest(CommutoSwapTest.CommutoSwapTest):
             if not "e79" in str(e):
                 raise e
 
+    def test_changeTimelock_event_emission_check(self):
+        #Ensure that changeTimelock emits TimelockChanged event upon successful change
+        TimelockChanged_filter = self.CommutoToken_contract.events.TimelockChanged.createFilter(fromBlock="latest")
+        tx_details = {
+            "from": self.w3.eth.accounts[2],
+        }
+        self.CommutoToken_contract.functions.changeTimelock(self.Timelock_contract.address).transact(tx_details)
+        events = TimelockChanged_filter.get_new_entries()
+        self.assertEqual(len(events), 1)
+        self.assertEqual(events[0]["args"]["oldTimelock"], self.w3.eth.accounts[2])
+        self.assertEqual(events[0]["args"]["newTimelock"], self.Timelock_contract.address)
+
     def test_mint_caller_is_timelock(self):
         #Ensure that mint cannot be called by any account other than Timelock
         try:
             tx_details = {
-                "from": self.w3.eth.accounts[2],
+                "from": self.w3.eth.accounts[6],
             }
             self.CommutoToken_contract.functions.mint(
                 self.w3.eth.accounts[2],
@@ -37,7 +49,7 @@ class CommutoTokenTest(CommutoSwapTest.CommutoSwapTest):
         #Ensure that burn cannot be called by any account other than Timelock
         try:
             tx_details = {
-                "from": self.w3.eth.accounts[2],
+                "from": self.w3.eth.accounts[6],
             }
             self.CommutoToken_contract.functions.burn(
                 self.w3.eth.accounts[2],

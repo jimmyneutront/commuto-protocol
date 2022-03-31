@@ -502,5 +502,5 @@ class CommutoSwapTest(unittest.TestCase):
             "from": self.w3.eth.accounts[2]
         }
         self.CommutoToken_contract.functions.changeTimelock(
-            self.Timelock_contract.contractAddress
+            self.Timelock_contract.address
         ).transact(tx_details)
