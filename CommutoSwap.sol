@@ -11,10 +11,21 @@ import "./libraries/SafeMath.sol";
 import "./libraries/CommutoSwapPaymentReporter.sol";
 import "./libraries/CommutoSwapResolutionProposalReactor.sol";
 
-//TODO: Fee percentage set by token holders
 //TODO: Update documentation for dispute resolution
 //TODO: Update documentation for governance
 contract CommutoSwap is CommutoSwapStorage {
+
+    //Set the new service fee rate
+    function setServiceFeeRate(uint256 newServiceFeeRate) public {
+        require(msg.sender == timelock, "e79"); //"e79": "Only the current Timelock can call this function"
+        serviceFeeRate = newServiceFeeRate;
+        emit ServiceFeeRateChanged(newServiceFeeRate);
+    }
+
+    //Get the service fee rate
+    function getServiceFeeRate() public view returns (uint256) {
+        return serviceFeeRate;
+    }
 
     //Set the supported state of a settlement method
     function setSettlementMethodSupport(bytes calldata settlementMethod, bool support) public {
