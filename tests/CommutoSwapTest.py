@@ -157,11 +157,6 @@ class CommutoSwapTest(unittest.TestCase):
             abi=Timelock_abi,
         )
 
-        #Transfer control of CommutoToken contract to Timelock
-        self.CommutoToken_contract.functions.changeTimelock(
-            Timelock_address
-        ).transact(tx_details)
-
         #Deploy CommutoGovernor contract
         compiled_CommutoGovernor = compile_files(
             ["../libraries/governance/CommutoGovernor.sol"],
@@ -500,3 +495,12 @@ class CommutoSwapTest(unittest.TestCase):
 
     def mine_blocks(self, blocks_to_mine):
         self.w3.provider.make_request("hardhat_mine", [hex(blocks_to_mine)])
+
+    def give_Timelock_CommutoToken_control(self):
+        # Transfer control of CommutoToken contract to Timelock
+        tx_details = {
+            "from": self.w3.eth.accounts[2]
+        }
+        self.CommutoToken_contract.functions.changeTimelock(
+            self.Timelock_contract.contractAddress
+        ).transact(tx_details)
