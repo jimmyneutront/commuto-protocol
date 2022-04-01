@@ -54,7 +54,6 @@ contract CommutoSwapStorage {
     uint256 public serviceFeeRate = 100;
 
     //The number of blocks that must be mined between when a dispute is raised and when it can be escalated
-    //TODO: Make this changeable by governance vote
     uint256 public minimumDisputePeriod = 5;
 
     //The current version of the Commuto Protocol
@@ -98,6 +97,7 @@ contract CommutoSwapStorage {
     event DisputedSwapClosed(bytes16 swapID, address closer);
     event DisputeEscalated(bytes16 swapID, address escalator, EscalationReason reason);
     event ServiceFeeRateChanged(uint256 newServiceFeeRate);
+    event MinimumDisputePeriodChanged(uint256 newMinimumDisputePeriod);
 
     /*
     Mappings containing all offers, the settlement methods of each offer, and all swaps.

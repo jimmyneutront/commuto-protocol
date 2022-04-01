@@ -27,6 +27,18 @@ contract CommutoSwap is CommutoSwapStorage {
         return serviceFeeRate;
     }
 
+    //Set the new minimum dispute period
+    function setMinimumDisputePeriod(uint256 newMinimumDisputePeriod) public {
+        require(msg.sender == timelock, "e79"); //"e79": "Only the current Timelock can call this function"
+        minimumDisputePeriod = newMinimumDisputePeriod;
+        emit MinimumDisputePeriodChanged(newMinimumDisputePeriod);
+    }
+
+    //Get the minimum dispute period
+    function getMinimumDisputePeriod() public view returns (uint256) {
+        return minimumDisputePeriod;
+    }
+
     //Set the supported state of a settlement method
     function setSettlementMethodSupport(bytes calldata settlementMethod, bool support) public {
         require(msg.sender == timelock, "e45"); //"e45": "Only timelock can set settlement method support",
