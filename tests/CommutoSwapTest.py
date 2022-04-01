@@ -488,13 +488,8 @@ class CommutoSwapTest(unittest.TestCase):
         tx_hash = self.commuto_swap_contract.functions.setDisputeAgentActive(self.dispute_agent_2, True).transact(tx_details)
         w3.eth.wait_for_transaction_receipt(tx_hash)
 
-        #TODO: transfer control of CommutoSwap to Timelock
-
     def test_setup(self):
         pass
-
-    def mine_blocks(self, blocks_to_mine):
-        self.w3.provider.make_request("hardhat_mine", [hex(blocks_to_mine)])
 
     def give_Timelock_CommutoToken_control(self):
         # Transfer control of CommutoToken contract to Timelock
@@ -504,3 +499,15 @@ class CommutoSwapTest(unittest.TestCase):
         self.CommutoToken_contract.functions.changeTimelock(
             self.Timelock_contract.address
         ).transact(tx_details)
+
+    def give_Timelock_CommutoSwap_control(self):
+        # Transfer control of CommutoSwap contract to Timelock
+        tx_details = {
+            "from": self.w3.eth.accounts[2]
+        }
+        self.commuto_swap_contract.functions.changeTimelock(
+            self.Timelock_contract.address
+        ).transact(tx_details)
+
+    def mine_blocks(self, blocks_to_mine):
+        self.w3.provider.make_request("hardhat_mine", [hex(blocks_to_mine)])

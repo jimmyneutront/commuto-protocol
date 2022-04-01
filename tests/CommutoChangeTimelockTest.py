@@ -1,6 +1,6 @@
 import CommutoSwapTest
 
-class CommutoSwapChangeTimelockTest(CommutoSwapTest.CommutoSwapTest):
+class CommutoChangeTimelockTest(CommutoSwapTest.CommutoSwapTest):
 
     def test_changeTimelock_caller_is_timelock(self):
         #Ensure that changeTimelock cannot be called by any account other than the timelock
