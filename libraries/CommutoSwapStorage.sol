@@ -98,6 +98,7 @@ contract CommutoSwapStorage {
     event DisputeEscalated(bytes16 swapID, address escalator, EscalationReason reason);
     event ServiceFeeRateChanged(uint256 newServiceFeeRate);
     event MinimumDisputePeriodChanged(uint256 newMinimumDisputePeriod);
+    event TimelockChanged(address oldTimelock, address newTimelock);
 
     /*
     Mappings containing all offers, the settlement methods of each offer, and all swaps.

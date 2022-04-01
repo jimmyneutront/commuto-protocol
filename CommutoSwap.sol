@@ -15,6 +15,13 @@ import "./libraries/CommutoSwapResolutionProposalReactor.sol";
 //TODO: Update documentation for governance
 contract CommutoSwap is CommutoSwapStorage {
 
+    //Transfer control of CommutoToken to a new timelock
+    function changeTimelock(address newTimelock) public {
+        require(msg.sender == timelock, "e79"); //"e79": "Only the current Timelock can call this function"
+        emit TimelockChanged(timelock, newTimelock);
+        timelock = newTimelock;
+    }
+
     //Set the new service fee rate
     function setServiceFeeRate(uint256 newServiceFeeRate) public {
         require(msg.sender == timelock, "e79"); //"e79": "Only the current Timelock can call this function"
