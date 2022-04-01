@@ -5,6 +5,7 @@ from uuid import uuid4
 class CommutoSetServiceFeeRateTest(CommutoSwapTest.CommutoSwapTest):
 
     def test_setServiceFeeRate_caller_is_timelock(self):
+        #Ensure the caller of the setServiceFeeRate function is the timelock
         try:
             tx_details = {
                 "from": self.w3.eth.accounts[6],
