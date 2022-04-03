@@ -26,7 +26,8 @@ enum DisputeReaction {
 enum DisputeState {
     OPEN, //Disputed swap is neither paid out nor escalated
     PAID_OUT, //Maker and taker both accepted dispute result and one of them called closeDisputedSwap
-    ESCALATED //Maker and taker didn't both accept dispute result and one of them is escalating dispute to CMTO tokenholders
+    ESCALATED, //Maker and taker didn't both accept dispute result and one of them is escalating dispute to CMTO tokenholders
+    ESCALATED_PAID_OUT //A proposal was approved and executed and the swap is completed
 }
 
 enum MatchingProposalPair {
@@ -106,4 +107,5 @@ struct Dispute {
     DisputeState state;
     bool hasMakerPaidOut;
     bool hasTakerPaidOut;
+    uint256 totalWithoutSpentServiceFees;
 }

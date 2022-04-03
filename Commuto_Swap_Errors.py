@@ -70,7 +70,7 @@ commuto_swap_error_messages = {
     "e67": "Confiscated amount transfer failed",
     "e68": "A resolution cannot be proposed for an escalated swap",
     "e69": "A reaction cannot be submitted for an escalated swap",
-    "e70": "Transfer to pool for escalated disputed swaps failed",
+    "e70": "closeEscalatedSwap can only be called for escalated swaps",
     "e71": "More blocks must be mined before swap can be escalated",
     "e72": "Resolution proposal must be rejected to escalate dispute because of rejection",
     "e73": "Dispute can't be escalated for lack of dispute agent response if dispute agents have agreed on resolution proposal",
@@ -80,4 +80,8 @@ commuto_swap_error_messages = {
     "e77": "eDSPool address cannot be zero",
     "e78": "Cannot escalate dispute if dispute has already been escalated",
     "e79": "Only the current Timelock can call this function",
+    "e80": "",
+    "e81": "Total payout amount must equal total without spent service fees",
+    "e82": "Token transfer to maker failed",
+    "e83": "Token transfer to taker failed",
 }

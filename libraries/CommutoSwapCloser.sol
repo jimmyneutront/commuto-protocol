@@ -138,4 +138,25 @@ contract CommutoSwapCloser is CommutoSwapStorage {
 
     }
 
+    function closeEscalatedSwap(bytes16 swapID, uint256 makerPayout, uint256 takerPayout, uint256 confiscationPayout) public {
+        require(msg.sender == timelock, "e79"); //"e79": "Only the current Timelock can call this function"
+        require(disputes[swapID].state == DisputeState.ESCALATED, "e70"); //"e70": "closeEscalatedSwap can only be called for escalated swaps"
+        require(SafeMath.add(SafeMath.add(makerPayout, takerPayout), confiscationPayout) == disputes[swapID].totalWithoutSpentServiceFees, "e81"); //"e81": "Total payout amount must equal total without spent service fees"
+
+        //Find proper stablecoin contract
+        ERC20 token = ERC20(swaps[swapID].stablecoin);
+
+        //Mark swap as paid out and closed
+        disputes[swapID].hasMakerPaidOut = true;
+        disputes[swapID].hasTakerPaidOut = true;
+        disputes[swapID].state = DisputeState.ESCALATED_PAID_OUT;
+
+        emit EscalatedSwapClosed(swapID, makerPayout, takerPayout, confiscationPayout);
+
+        //Pay maker, taker and service fee pool
+        require(token.transfer(swaps[swapID].maker, makerPayout), "e82"); //"e82": "Token transfer to maker failed",
+        require(token.transfer(swaps[swapID].taker, takerPayout), "e83"); //"e83": "Token transfer to taker failed",
+        require(token.transfer(serviceFeePool, confiscationPayout), "e67"); //"e67": "Confiscated amount transfer failed"
+    }
+
 }

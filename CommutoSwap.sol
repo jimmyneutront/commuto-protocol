@@ -11,6 +11,7 @@ import "./libraries/SafeMath.sol";
 import "./libraries/CommutoSwapPaymentReporter.sol";
 import "./libraries/CommutoSwapResolutionProposalReactor.sol";
 
+//TODO: Remove all references to disputed/escalated swaps pool
 //TODO: Update documentation for dispute resolution
 //TODO: Update documentation for governance
 contract CommutoSwap is CommutoSwapStorage {
@@ -346,6 +347,7 @@ contract CommutoSwap is CommutoSwapStorage {
 
     }
 
+    //Close a swap that has been disputed
     function closeDisputedSwap(bytes16 swapID) public {
         /*
         Slither throws a high severity warning about the use of delegatecall. In this case it is necessary due to
@@ -369,6 +371,20 @@ contract CommutoSwap is CommutoSwapStorage {
         (bool success, bytes memory data) = commutoSwapDisputeEscalator.delegatecall(
             abi.encodeWithSignature("escalateDispute(bytes16,uint8)",
             swapID, reason)
+        );
+        require(success, string (data) );
+    }
+
+    //Close a swap that has been escalated, using an approved governance proposal executed by the timelock
+    function closeEscalatedSwap(bytes16 swapID, uint256 makerPayout, uint256 takerPayout, uint256 confiscationPayout) public {
+        /*
+        Slither throws a high severity warning about the use of delegatecall. In this case it is necessary due to
+        contract size limitations, and also safe since the CommutoSwapCloser address is immutable and set when
+        CommutoSwap is deployed, and therefore the call cannot be delegated to a malicious contract.
+        */
+        (bool success, bytes memory data) = commutoSwapCloser.delegatecall(
+            abi.encodeWithSignature("closeEscalatedSwap(bytes16,uint256,uint256,uint256)",
+            swapID, makerPayout, takerPayout, confiscationPayout)
         );
         require(success, string (data) );
     }

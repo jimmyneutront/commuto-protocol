@@ -80,10 +80,10 @@ contract CommutoSwapDisputeEscalator is CommutoSwapStorage {
             totalWithoutSpentServiceFees = SafeMath.add(swaps[swapID].takenSwapAmount, SafeMath.add(totalSecurityDeposit, unspentServiceFee));
         }
         disputes[swapID].state = DisputeState.ESCALATED;
+        disputes[swapID].totalWithoutSpentServiceFees = totalWithoutSpentServiceFees;
 
         emit DisputeEscalated(swapID, msg.sender, reason);
 
-        require(token.transfer(escalatedDisputedSwapsPool, totalWithoutSpentServiceFees), "e70"); //"e70": "Transfer to pool for escalated disputed swaps failed"
         require(token.transfer(serviceFeePool, SafeMath.mul(2, swaps[swapID].serviceFeeAmount)), "e42"); //"e42": "Service fee transfer failed"
     }
 }
