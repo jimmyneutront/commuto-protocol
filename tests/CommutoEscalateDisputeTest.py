@@ -730,6 +730,7 @@ class CommutoEscalateDisputeTest(CommutoSwapTest.CommutoSwapTest):
                 raise e
 
     def test_escalateDispute_duplicate_escalation_check(self):
+        #Ensure that a swap can't be escalated more than once
         try:
             newOfferID = HexBytes(uuid4().bytes)
             tx_details = {
