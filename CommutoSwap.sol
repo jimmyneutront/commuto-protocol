@@ -153,7 +153,7 @@ contract CommutoSwap is CommutoSwapStorage {
     }
 
     /*
-    Addresses:
+    Addresses: (OLD)
     0: Escalated Disputed Swaps Pool
     1: Service Fee Pool
     2: CommutoSwapOfferOpener
@@ -168,12 +168,25 @@ contract CommutoSwap is CommutoSwapStorage {
     11: CommutoSwapResolutionProposalReactor
     12: CommutoSwapDisputeEscalator
     */
-    constructor (address[] memory contractAddresses) public CommutoSwapStorage(contractAddresses[2], contractAddresses[3], contractAddresses[4], contractAddresses[5], contractAddresses[6], contractAddresses[7], contractAddresses[8], contractAddresses[9], contractAddresses[10], contractAddresses[11], contractAddresses[12]) {
+    /*
+    Addresses: (OLD)
+    0: Service Fee Pool
+    1: CommutoSwapOfferOpener
+    2: CommutoSwapOfferEditor
+    3: CommutoSwapOfferCanceler
+    4: CommutoSwapOfferTaker
+    5: CommutoSwapFiller
+    6: CommutoSwapPaymentReporter
+    7: CommutoSwapCloser
+    8: CommutoSwapDisputeRaiser
+    9: CommutoSwapResolutionProposer
+    10: CommutoSwapResolutionProposalReactor
+    11: CommutoSwapDisputeEscalator
+    */
+    constructor (address[] memory contractAddresses) public CommutoSwapStorage(contractAddresses[1], contractAddresses[2], contractAddresses[3], contractAddresses[4], contractAddresses[5], contractAddresses[6], contractAddresses[7], contractAddresses[8], contractAddresses[9], contractAddresses[10], contractAddresses[11]) {
         timelock = msg.sender;
-        require(contractAddresses[0] != address(0), "e77"); //"e77": "eDSPool address cannot be zero"
-        escalatedDisputedSwapsPool = contractAddresses[0];
-        require(contractAddresses[1] != address(0), "e0"); //"e0": "_serviceFeePool address cannot be zero"
-        serviceFeePool = contractAddresses[1];
+        require(contractAddresses[0] != address(0), "e0"); //"e0": "_serviceFeePool address cannot be zero"
+        serviceFeePool = contractAddresses[0];
     }
 
     //Create a new swap offer

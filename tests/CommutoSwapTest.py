@@ -8,7 +8,7 @@ class CommutoSwapTest(unittest.TestCase):
     def setUp(self) -> None:
         # TODO: Start hardhat node
         # Establish connection to web3 provider
-        w3 = Web3(Web3.HTTPProvider("http://192.168.1.12:8545"))
+        w3 = Web3(Web3.HTTPProvider("http://192.168.0.195:8545"))
         # Check connection
         if not w3.isConnected():
             raise Exception("No connection to Web3 Provider")
@@ -432,7 +432,6 @@ class CommutoSwapTest(unittest.TestCase):
         commuto_swap_bytecode = compiled_sol["../CommutoSwap.sol:CommutoSwap"]["bin"]
         undeployed_commuto_swap_contract = w3.eth.contract(abi=commuto_swap_abi, bytecode=commuto_swap_bytecode)
         commuto_swap_deployment_tx_hash = undeployed_commuto_swap_contract.constructor([
-                                                                                       w3.eth.accounts[6],
                                                                                        w3.eth.accounts[2],
                                                                                        CommutoSwapOfferOpener_address,
                                                                                        CommutoSwapOfferEditor_address,

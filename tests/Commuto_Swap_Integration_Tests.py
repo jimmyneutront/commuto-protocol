@@ -350,7 +350,6 @@ class CommutoSwapIntegrationTests(CommutoSwapTest.CommutoSwapTest):
         taker_initial_dai_balance = self.test_dai_contract.functions.balanceOf(self.taker_address).call()
         service_fee_initial_dai_balance = self.test_dai_contract.functions.balanceOf(self.commuto_service_fee_account) \
             .call()
-        escalatedDisputedSwapsPool_initial_balance = self.test_dai_contract.functions.balanceOf(self.w3.eth.accounts[6]).call()
         disputed_swap_with_agreement_id = HexBytes(uuid4().bytes)
         tx_details = {
             "from": self.maker_address
@@ -456,7 +455,6 @@ class CommutoSwapIntegrationTests(CommutoSwapTest.CommutoSwapTest):
         self.assertEqual(maker_initial_dai_balance - 100, maker_final_dai_balance)
         self.assertEqual(taker_initial_dai_balance - 600, taker_final_dai_balance)
         self.assertEqual(service_fee_initial_dai_balance + 700, service_fee_final_dai_balance)
-        self.assertEqual(escalatedDisputedSwapsPool_initial_balance, escalatedDisputedSwapsPool_final_balance)
 
     def test_immediate_escalation_given_rejection(self):
         #Test immediate escalation to token holders given rejection of resolution proposal
@@ -572,8 +570,6 @@ class CommutoSwapIntegrationTests(CommutoSwapTest.CommutoSwapTest):
         taker_initial_dai_balance = self.test_dai_contract.functions.balanceOf(self.taker_address).call()
         service_fee_initial_dai_balance = self.test_dai_contract.functions.balanceOf(self.commuto_service_fee_account) \
             .call()
-        escalatedDisputedSwapsPool_initial_balance = self.test_dai_contract.functions.balanceOf(
-            self.w3.eth.accounts[6]).call()
         disputed_swap_with_no_response_id = HexBytes(uuid4().bytes)
         tx_details = {
             "from": self.maker_address
@@ -664,8 +660,6 @@ class CommutoSwapIntegrationTests(CommutoSwapTest.CommutoSwapTest):
         taker_initial_dai_balance = self.test_dai_contract.functions.balanceOf(self.taker_address).call()
         service_fee_initial_dai_balance = self.test_dai_contract.functions.balanceOf(self.commuto_service_fee_account) \
             .call()
-        escalatedDisputedSwapsPool_initial_balance = self.test_dai_contract.functions.balanceOf(
-            self.w3.eth.accounts[6]).call()
         disputed_swap_no_maker_response = HexBytes(uuid4().bytes)
         tx_details = {
             "from": self.maker_address
@@ -776,8 +770,6 @@ class CommutoSwapIntegrationTests(CommutoSwapTest.CommutoSwapTest):
         taker_initial_dai_balance = self.test_dai_contract.functions.balanceOf(self.taker_address).call()
         service_fee_initial_dai_balance = self.test_dai_contract.functions.balanceOf(self.commuto_service_fee_account) \
             .call()
-        escalatedDisputedSwapsPool_initial_balance = self.test_dai_contract.functions.balanceOf(
-            self.w3.eth.accounts[6]).call()
         disputed_swap_no_taker_response = HexBytes(uuid4().bytes)
         tx_details = {
             "from": self.maker_address
