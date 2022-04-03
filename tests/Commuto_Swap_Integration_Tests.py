@@ -464,8 +464,6 @@ class CommutoSwapIntegrationTests(CommutoSwapTest.CommutoSwapTest):
         taker_initial_dai_balance = self.test_dai_contract.functions.balanceOf(self.taker_address).call()
         service_fee_initial_dai_balance = self.test_dai_contract.functions.balanceOf(self.commuto_service_fee_account) \
             .call()
-        escalatedDisputedSwapsPool_initial_balance = self.test_dai_contract.functions.balanceOf(
-            self.w3.eth.accounts[6]).call()
         disputed_swap_with_rejection_id = HexBytes(uuid4().bytes)
         tx_details = {
             "from": self.maker_address
@@ -554,16 +552,19 @@ class CommutoSwapIntegrationTests(CommutoSwapTest.CommutoSwapTest):
         }
         self.commuto_swap_contract.functions.reactToResolutionProposal(disputed_swap_with_rejection_id, 2).transact(
             tx_details)
+        tx_details = {
+            "from": self.w3.eth.accounts[2]
+        }
+        self.commuto_swap_contract.functions.closeEscalatedSwap(disputed_swap_with_rejection_id,
+                                                                500, 0, 1500
+                                                                ).transact(tx_details)
         maker_final_dai_balance = self.test_dai_contract.functions.balanceOf(self.maker_address).call()
         taker_final_dai_balance = self.test_dai_contract.functions.balanceOf(self.taker_address).call()
         service_fee_final_dai_balance = self.test_dai_contract.functions.balanceOf(self.commuto_service_fee_account) \
             .call()
-        escalatedDisputedSwapsPool_final_balance = self.test_dai_contract.functions.balanceOf(
-            self.w3.eth.accounts[6]).call()
-        self.assertEqual(maker_initial_dai_balance - 1100, maker_final_dai_balance)
+        self.assertEqual(maker_initial_dai_balance - 600, maker_final_dai_balance)
         self.assertEqual(taker_initial_dai_balance - 1100, taker_final_dai_balance)
-        self.assertEqual(service_fee_initial_dai_balance + 200, service_fee_final_dai_balance)
-        self.assertEqual(escalatedDisputedSwapsPool_initial_balance + 2000, escalatedDisputedSwapsPool_final_balance)
+        self.assertEqual(service_fee_initial_dai_balance + 1700, service_fee_final_dai_balance)
 
     def test_escalation_given_no_response(self):
         #Test escalation to token holders given no response from dispute agents
@@ -643,16 +644,19 @@ class CommutoSwapIntegrationTests(CommutoSwapTest.CommutoSwapTest):
         ).transact(tx_details)
         self.mine_blocks(5)
         self.commuto_swap_contract.functions.escalateDispute(disputed_swap_with_no_response_id, 1).transact(tx_details)
+        tx_details = {
+            "from": self.w3.eth.accounts[2]
+        }
+        self.commuto_swap_contract.functions.closeEscalatedSwap(disputed_swap_with_no_response_id,
+                                                                500, 0, 1500
+                                                                ).transact(tx_details)
         maker_final_dai_balance = self.test_dai_contract.functions.balanceOf(self.maker_address).call()
         taker_final_dai_balance = self.test_dai_contract.functions.balanceOf(self.taker_address).call()
         service_fee_final_dai_balance = self.test_dai_contract.functions.balanceOf(self.commuto_service_fee_account) \
             .call()
-        escalatedDisputedSwapsPool_final_balance = self.test_dai_contract.functions.balanceOf(
-            self.w3.eth.accounts[6]).call()
-        self.assertEqual(maker_initial_dai_balance - 1100, maker_final_dai_balance)
+        self.assertEqual(maker_initial_dai_balance - 600, maker_final_dai_balance)
         self.assertEqual(taker_initial_dai_balance - 1100, taker_final_dai_balance)
-        self.assertEqual(service_fee_initial_dai_balance + 200, service_fee_final_dai_balance)
-        self.assertEqual(escalatedDisputedSwapsPool_initial_balance + 2000, escalatedDisputedSwapsPool_final_balance)
+        self.assertEqual(service_fee_initial_dai_balance + 1700, service_fee_final_dai_balance)
 
     def test_escalation_no_maker_response(self):
         #Test escalation to token holders given lack of response from maker
@@ -752,16 +756,19 @@ class CommutoSwapIntegrationTests(CommutoSwapTest.CommutoSwapTest):
             tx_details)
         self.mine_blocks(1)
         self.commuto_swap_contract.functions.escalateDispute(disputed_swap_no_maker_response, 2).transact(tx_details)
+        tx_details = {
+            "from": self.w3.eth.accounts[2]
+        }
+        self.commuto_swap_contract.functions.closeEscalatedSwap(disputed_swap_no_maker_response,
+                                                                500, 0, 1500
+                                                                ).transact(tx_details)
         maker_final_dai_balance = self.test_dai_contract.functions.balanceOf(self.maker_address).call()
         taker_final_dai_balance = self.test_dai_contract.functions.balanceOf(self.taker_address).call()
         service_fee_final_dai_balance = self.test_dai_contract.functions.balanceOf(self.commuto_service_fee_account) \
             .call()
-        escalatedDisputedSwapsPool_final_balance = self.test_dai_contract.functions.balanceOf(
-            self.w3.eth.accounts[6]).call()
-        self.assertEqual(maker_initial_dai_balance - 1100, maker_final_dai_balance)
+        self.assertEqual(maker_initial_dai_balance - 600, maker_final_dai_balance)
         self.assertEqual(taker_initial_dai_balance - 1100, taker_final_dai_balance)
-        self.assertEqual(service_fee_initial_dai_balance + 200, service_fee_final_dai_balance)
-        self.assertEqual(escalatedDisputedSwapsPool_initial_balance + 2000, escalatedDisputedSwapsPool_final_balance)
+        self.assertEqual(service_fee_initial_dai_balance + 1700, service_fee_final_dai_balance)
 
     def test_escalation_no_taker_response(self):
         #Test escalation to token holders given lack of response from taker
@@ -861,13 +868,16 @@ class CommutoSwapIntegrationTests(CommutoSwapTest.CommutoSwapTest):
             tx_details)
         self.mine_blocks(1)
         self.commuto_swap_contract.functions.escalateDispute(disputed_swap_no_taker_response, 2).transact(tx_details)
+        tx_details = {
+            "from": self.w3.eth.accounts[2]
+        }
+        self.commuto_swap_contract.functions.closeEscalatedSwap(disputed_swap_no_taker_response,
+                                                                500, 0, 1500
+                                                                ).transact(tx_details)
         maker_final_dai_balance = self.test_dai_contract.functions.balanceOf(self.maker_address).call()
         taker_final_dai_balance = self.test_dai_contract.functions.balanceOf(self.taker_address).call()
         service_fee_final_dai_balance = self.test_dai_contract.functions.balanceOf(self.commuto_service_fee_account) \
             .call()
-        escalatedDisputedSwapsPool_final_balance = self.test_dai_contract.functions.balanceOf(
-            self.w3.eth.accounts[6]).call()
-        self.assertEqual(maker_initial_dai_balance - 1100, maker_final_dai_balance)
+        self.assertEqual(maker_initial_dai_balance - 600, maker_final_dai_balance)
         self.assertEqual(taker_initial_dai_balance - 1100, taker_final_dai_balance)
-        self.assertEqual(service_fee_initial_dai_balance + 200, service_fee_final_dai_balance)
-        self.assertEqual(escalatedDisputedSwapsPool_initial_balance + 2000, escalatedDisputedSwapsPool_final_balance)
+        self.assertEqual(service_fee_initial_dai_balance + 1700, service_fee_final_dai_balance)
