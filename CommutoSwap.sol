@@ -11,8 +11,6 @@ import "./libraries/SafeMath.sol";
 import "./libraries/CommutoSwapPaymentReporter.sol";
 import "./libraries/CommutoSwapResolutionProposalReactor.sol";
 
-//TODO: Remove all references to disputed/escalated swaps pool
-//TODO: Update documentation for dispute resolution
 //TODO: Update documentation for governance
 contract CommutoSwap is CommutoSwapStorage {
 
@@ -31,7 +29,7 @@ contract CommutoSwap is CommutoSwapStorage {
     }
 
     //Get the service fee rate
-    function getServiceFeeRate() public view returns (uint256) {
+    function getServiceFeeRate() view public returns (uint256) {
         return serviceFeeRate;
     }
 
@@ -43,7 +41,7 @@ contract CommutoSwap is CommutoSwapStorage {
     }
 
     //Get the minimum dispute period
-    function getMinimumDisputePeriod() public view returns (uint256) {
+    function getMinimumDisputePeriod() view public returns (uint256) {
         return minimumDisputePeriod;
     }
 
@@ -152,37 +150,6 @@ contract CommutoSwap is CommutoSwapStorage {
         return disputes[swapID];
     }
 
-    /*
-    Addresses: (OLD)
-    0: Escalated Disputed Swaps Pool
-    1: Service Fee Pool
-    2: CommutoSwapOfferOpener
-    3: CommutoSwapOfferEditor
-    4: CommutoSwapOfferCanceler
-    5: CommutoSwapOfferTaker
-    6: CommutoSwapFiller
-    7: CommutoSwapPaymentReporter
-    8: CommutoSwapCloser
-    9: CommutoSwapDisputeRaiser
-    10: CommutoSwapResolutionProposer
-    11: CommutoSwapResolutionProposalReactor
-    12: CommutoSwapDisputeEscalator
-    */
-    /*
-    Addresses: (OLD)
-    0: Service Fee Pool
-    1: CommutoSwapOfferOpener
-    2: CommutoSwapOfferEditor
-    3: CommutoSwapOfferCanceler
-    4: CommutoSwapOfferTaker
-    5: CommutoSwapFiller
-    6: CommutoSwapPaymentReporter
-    7: CommutoSwapCloser
-    8: CommutoSwapDisputeRaiser
-    9: CommutoSwapResolutionProposer
-    10: CommutoSwapResolutionProposalReactor
-    11: CommutoSwapDisputeEscalator
-    */
     constructor (address[] memory contractAddresses) public CommutoSwapStorage(contractAddresses[1], contractAddresses[2], contractAddresses[3], contractAddresses[4], contractAddresses[5], contractAddresses[6], contractAddresses[7], contractAddresses[8], contractAddresses[9], contractAddresses[10], contractAddresses[11]) {
         timelock = msg.sender;
         require(contractAddresses[0] != address(0), "e0"); //"e0": "_serviceFeePool address cannot be zero"

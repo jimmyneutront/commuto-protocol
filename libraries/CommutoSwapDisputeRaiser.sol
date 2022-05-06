@@ -21,6 +21,7 @@ contract CommutoSwapDisputeRaiser is CommutoSwapStorage {
     This function should only be called by CommutoSwap's raiseDispute function. No attempt raise a dispute by directly
     calling this method will succeed.
     */
+    //TODO: make sure the dispute agent addresses are different
     function raiseDispute(bytes16 swapID, address disputeAgent0, address disputeAgent1, address disputeAgent2) public {
         //Validate arguments
         require(swaps[swapID].isCreated, "e33"); //"e33": "A swap with the specified id does not exist"

@@ -93,10 +93,10 @@ contract CommutoSwapStorage {
     event ReactionSubmitted(bytes16 swapID, address addr, DisputeReaction reaction);
     event DisputedSwapClosed(bytes16 swapID, address closer);
     event DisputeEscalated(bytes16 swapID, address escalator, EscalationReason reason);
+    event EscalatedSwapClosed(bytes16 swapID, uint256 makerPayout, uint256 takerPayout, uint256 confiscationPayout);
     event ServiceFeeRateChanged(uint256 newServiceFeeRate);
     event MinimumDisputePeriodChanged(uint256 newMinimumDisputePeriod);
     event TimelockChanged(address oldTimelock, address newTimelock);
-    event EscalatedSwapClosed(bytes16 swapID, uint256 makerPayout, uint256 takerPayout, uint256 confiscationPayout);
 
     /*
     Mappings containing all offers, the settlement methods of each offer, and all swaps.
