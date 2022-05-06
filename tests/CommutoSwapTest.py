@@ -8,7 +8,7 @@ class CommutoSwapTest(unittest.TestCase):
     def setUp(self) -> None:
         # TODO: Start hardhat node
         # Establish connection to web3 provider
-        w3 = Web3(Web3.HTTPProvider("http://192.168.0.195:8545"))
+        w3 = Web3(Web3.HTTPProvider("http://192.168.1.15:8545"))
         # Check connection
         if not w3.isConnected():
             raise Exception("No connection to Web3 Provider")

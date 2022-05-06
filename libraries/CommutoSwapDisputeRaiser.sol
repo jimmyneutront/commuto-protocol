@@ -21,13 +21,13 @@ contract CommutoSwapDisputeRaiser is CommutoSwapStorage {
     This function should only be called by CommutoSwap's raiseDispute function. No attempt raise a dispute by directly
     calling this method will succeed.
     */
-    //TODO: make sure the dispute agent addresses are different
     function raiseDispute(bytes16 swapID, address disputeAgent0, address disputeAgent1, address disputeAgent2) public {
         //Validate arguments
         require(swaps[swapID].isCreated, "e33"); //"e33": "A swap with the specified id does not exist"
         require(disputeAgents[disputeAgent0], "e3"); //"e3": "Selected dispute agents must be active"
         require(disputeAgents[disputeAgent1], "e3"); //"e3": "Selected dispute agents must be active"
         require(disputeAgents[disputeAgent2], "e3"); //"e3": "Selected dispute agents must be active"
+        require(disputeAgent0 != disputeAgent1 && disputeAgent0 != disputeAgent2 && disputeAgent1 != disputeAgent2, "e77"); //"e77": "All dispute agents must be different"
         require(!swaps[swapID].hasBuyerClosed && !swaps[swapID].hasSellerClosed, "e4"); //"e4": "Dispute cannot be raised if maker or taker has already closed"
         require(swaps[swapID].disputeRaiser == DisputeRaiser.NONE, "e53"); //"e53": "Dispute cannot be raised for an already-disputed swap"
         if (msg.sender == swaps[swapID].maker) {
