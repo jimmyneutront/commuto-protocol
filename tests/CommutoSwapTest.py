@@ -133,7 +133,7 @@ class CommutoSwapTest(unittest.TestCase):
             100
         ).transact(tx_details)
 
-        #Deploy Timelock
+        #Deploy primary timelock
         compiled_primary_timelock = compile_files(
             ["../node_modules/@openzeppelin/contracts/governance/TimelockController.sol"],
             allow_paths=[""],
@@ -149,7 +149,7 @@ class CommutoSwapTest(unittest.TestCase):
         primary_timelock_bytecode)
         primary_timelock_deployment_tx_hash = undeployed_primary_timelock_contract.constructor(
             86400, #minDelay: Timelocked operations can be completed after 86400 blocks (3 days on BSC)
-            [w3.eth.accounts[2],], #Since CommutoGovernor isn't deployed yet, temporarily make this address the proposer
+            [w3.eth.accounts[2], ], #Since the primary governor isn't deployed yet, temporarily make this address the proposer
             ['0x0000000000000000000000000000000000000000',], #Allow any account to execute operations
         ).transact(tx_details)
         primary_timelock_address = w3.eth.wait_for_transaction_receipt(primary_timelock_deployment_tx_hash)\
@@ -206,6 +206,32 @@ class CommutoSwapTest(unittest.TestCase):
             HexBytes("5f58e3a2316349923ce3780f8d587db2d72378aed66a8261c916544fa6846ca5"), #Admin role identifier
             w3.eth.accounts[2],
         ).transact(tx_details)
+
+        #Deploy dispute resolution timelock
+        compiled_dispute_resolution_timelock = compile_files(
+            ["../node_modules/@openzeppelin/contracts/governance/TimelockController.sol"],
+            allow_paths=[""],
+            output_values=["abi", "bin"],
+            optimize=False,
+            solc_version="0.8.2"
+        )
+        dispute_resolution_timelock_abi = compiled_dispute_resolution_timelock["../" \
+            "node_modules/@openzeppelin/contracts/governance/TimelockController.sol:TimelockController"]["abi"]
+        dispute_resolution_timelock_bytecode = compiled_dispute_resolution_timelock["../" \
+            "node_modules/@openzeppelin/contracts/governance/TimelockController.sol:TimelockController"]["bin"]
+        undeployed_dispute_resolution_timelock_contract = w3.eth.contract(abi=dispute_resolution_timelock_abi, bytecode=
+        dispute_resolution_timelock_bytecode)
+        dispute_resolution_timelock_deployment_tx_hash = undeployed_dispute_resolution_timelock_contract.constructor(
+            86400,  # minDelay: Timelocked operations can be completed after 86400 blocks (3 days on BSC)
+            [w3.eth.accounts[2], ], #Since the dispute resolution timelock isn't deployed yet, temporarily make this address the proposer
+            ['0x0000000000000000000000000000000000000000', ],  # Allow any account to execute operations
+        ).transact(tx_details)
+        dispute_resolution_timelock_address = w3.eth.wait_for_transaction_receipt(primary_timelock_deployment_tx_hash)\
+            .contractAddress
+        self.dispute_resolution_timelock_contract = w3.eth.contract(
+            address=dispute_resolution_timelock_address,
+            abi=dispute_resolution_timelock_abi,
+        )
 
         #Deploy CommutoSwapOfferOpener contract
         compiled_CommutoSwapOfferOpener = compile_files(

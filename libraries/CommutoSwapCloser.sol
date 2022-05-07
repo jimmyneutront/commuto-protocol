@@ -139,7 +139,7 @@ contract CommutoSwapCloser is CommutoSwapStorage {
     }
 
     function closeEscalatedSwap(bytes16 swapID, uint256 makerPayout, uint256 takerPayout, uint256 confiscationPayout) public {
-        require(msg.sender == primaryTimelock, "e79"); //"e79": "Only the current primary timelock can call this function"
+        require(msg.sender == primaryTimelock || msg.sender == disputeResolutionTimelock, "e80"); //"e80": "Only the current primary timelock or dispute resolution timelock can call this function"
         require(disputes[swapID].state == DisputeState.ESCALATED, "e70"); //"e70": "closeEscalatedSwap can only be called for escalated swaps"
         require(SafeMath.add(SafeMath.add(makerPayout, takerPayout), confiscationPayout) == disputes[swapID].totalWithoutSpentServiceFees, "e81"); //"e81": "Total payout amount must equal total without spent service fees"
 

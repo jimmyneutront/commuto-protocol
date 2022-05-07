@@ -14,16 +14,23 @@ import "./libraries/CommutoSwapResolutionProposalReactor.sol";
 //TODO: Update documentation for governance
 contract CommutoSwap is CommutoSwapStorage {
 
-    //Transfer control of CommutoToken to a new timelock
+    //Transfer control of CommutoSwap to a new timelock
     function changePrimaryTimelock(address newPrimaryTimelock) public {
-        require(msg.sender == primaryTimelock, "e79"); //"e79": "Only the current primary timelock can call this function",
+        require(msg.sender == primaryTimelock, "e79"); //"e79": "Only the current primary timelock can call this function"
         emit PrimaryTimelockChanged(primaryTimelock, newPrimaryTimelock);
         primaryTimelock = newPrimaryTimelock;
     }
 
+    //Transfer dispute resolution control to a new timelock
+    function changeDisputeResolutionTimelock(address newDisputeResolutionTimelock) public {
+        require(msg.sender == primaryTimelock, "e79"); //"e79": "Only the current primary timelock can call this function"
+        emit DisputeResolutionTimelockChanged(disputeResolutionTimelock, newDisputeResolutionTimelock);
+        disputeResolutionTimelock = newDisputeResolutionTimelock;
+    }
+
     //Set the new service fee rate
     function setServiceFeeRate(uint256 newServiceFeeRate) public {
-        require(msg.sender == primaryTimelock, "e79"); //"e79": "Only the current primary timelock can call this function",
+        require(msg.sender == primaryTimelock, "e79"); //"e79": "Only the current primary timelock can call this function"
         serviceFeeRate = newServiceFeeRate;
         emit ServiceFeeRateChanged(newServiceFeeRate);
     }
@@ -35,7 +42,7 @@ contract CommutoSwap is CommutoSwapStorage {
 
     //Set the new minimum dispute period
     function setMinimumDisputePeriod(uint256 newMinimumDisputePeriod) public {
-        require(msg.sender == primaryTimelock, "e79"); //"e79": "Only the current primary timelock can call this function",
+        require(msg.sender == primaryTimelock, "e79"); //"e79": "Only the current primary timelock can call this function"
         minimumDisputePeriod = newMinimumDisputePeriod;
         emit MinimumDisputePeriodChanged(newMinimumDisputePeriod);
     }
@@ -47,7 +54,7 @@ contract CommutoSwap is CommutoSwapStorage {
 
     //Set the supported state of a settlement method
     function setSettlementMethodSupport(bytes calldata settlementMethod, bool support) public {
-        require(msg.sender == primaryTimelock, "e45"); //"e45": "Only the current primary timelock can set settlement method support",
+        require(msg.sender == primaryTimelock, "e45"); //"e45": "Only the current primary timelock can set settlement method support"
         bool foundSettlementMethod = false;
         for (uint i = 0; i < supportedSettlementMethods.length; i++) {
             if (sha256(supportedSettlementMethods[i]) == sha256(settlementMethod) && support == false) {
@@ -75,7 +82,7 @@ contract CommutoSwap is CommutoSwapStorage {
 
     //Set the supported state of a settlement method
     function setStablecoinSupport(address stablecoin, bool support) public {
-        require(msg.sender == primaryTimelock, "e49"); //"e49": "Only the current primary timelock can set stablecoin support",
+        require(msg.sender == primaryTimelock, "e49"); //"e49": "Only the current primary timelock can set stablecoin support"
         bool foundStablecoin = false;
         for (uint i = 0; i < supportedStablecoins.length; i++) {
             if (supportedStablecoins[i] == stablecoin && support == false) {
@@ -152,6 +159,7 @@ contract CommutoSwap is CommutoSwapStorage {
 
     constructor (address[] memory contractAddresses) public CommutoSwapStorage(contractAddresses[1], contractAddresses[2], contractAddresses[3], contractAddresses[4], contractAddresses[5], contractAddresses[6], contractAddresses[7], contractAddresses[8], contractAddresses[9], contractAddresses[10], contractAddresses[11]) {
         primaryTimelock = msg.sender;
+        disputeResolutionTimelock = msg.sender;
         require(contractAddresses[0] != address(0), "e0"); //"e0": "_serviceFeePool address cannot be zero"
         serviceFeePool = contractAddresses[0];
     }

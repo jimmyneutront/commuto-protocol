@@ -9,6 +9,8 @@ Establishes the contract storage layout for CommutoSwap and all the contracts to
 contract CommutoSwapStorage {
 
     address public primaryTimelock = address(0);
+    address public disputeResolutionTimelock = address(0);
+    //TODO: get rid of serviceFeePool and make all service fees be sent to the primary timelock
     address public serviceFeePool = address(0);
 
     //Address of the contract to which CommutoSwap should delegate openOffer calls
@@ -97,6 +99,7 @@ contract CommutoSwapStorage {
     event ServiceFeeRateChanged(uint256 newServiceFeeRate);
     event MinimumDisputePeriodChanged(uint256 newMinimumDisputePeriod);
     event PrimaryTimelockChanged(address oldPrimaryTimelock, address newPrimaryTimelock);
+    event DisputeResolutionTimelockChanged(address oldDisputeResolutionTimelock, address newDisputeResolutionTimelock);
 
     /*
     Mappings containing all offers, the settlement methods of each offer, and all swaps.

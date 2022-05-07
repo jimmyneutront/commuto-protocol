@@ -4,8 +4,8 @@ from uuid import uuid4
 
 class CommutoCloseEscalatedSwapTest(CommutoSwapTest.CommutoSwapTest):
 
-    def test_closeEscalatedSwap_caller_is_primary_timelock(self):
-        #Ensure the caller of closeEscalatedSwap is the primary timelock
+    def test_closeEscalatedSwap_caller_is_primary_or_dispute_resolution_timelock(self):
+        #Ensure the caller of closeEscalatedSwap is the primary timelock or dispute resolution timelock
         try:
             nonExistentOfferID = HexBytes(uuid4().bytes)
             tx_details = {
@@ -13,7 +13,7 @@ class CommutoCloseEscalatedSwapTest(CommutoSwapTest.CommutoSwapTest):
             }
             self.commuto_swap_contract.functions.closeEscalatedSwap(nonExistentOfferID, 1000, 500, 500).transact(tx_details)
         except ValueError as e:
-            self.assertTrue("e79" in str(e))
+            self.assertTrue("e80" in str(e))
 
     def test_closeEscalatedSwap_duplicate_call_check(self):
         """

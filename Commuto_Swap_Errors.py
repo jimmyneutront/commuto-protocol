@@ -80,7 +80,7 @@ commuto_swap_error_messages = {
     "e77": "All dispute agents must be different",
     "e78": "Cannot escalate dispute if dispute has already been escalated",
     "e79": "Only the current primary timelock can call this function",
-    "e80": "",
+    "e80": "Only the current primary timelock or dispute resolution timelock can call this function",
     "e81": "Total payout amount must equal total without spent service fees",
     "e82": "Token transfer to maker failed",
     "e83": "Token transfer to taker failed",
