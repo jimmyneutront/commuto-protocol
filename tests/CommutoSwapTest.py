@@ -8,7 +8,7 @@ class CommutoSwapTest(unittest.TestCase):
     def setUp(self) -> None:
         # TODO: Start hardhat node
         # Establish connection to web3 provider
-        w3 = Web3(Web3.HTTPProvider("http://192.168.1.15:8545"))
+        w3 = Web3(Web3.HTTPProvider("http://192.168.0.195:8545"))
         # Check connection
         if not w3.isConnected():
             raise Exception("No connection to Web3 Provider")
@@ -134,73 +134,75 @@ class CommutoSwapTest(unittest.TestCase):
         ).transact(tx_details)
 
         #Deploy Timelock
-        compiled_Timelock = compile_files(
+        compiled_primary_timelock = compile_files(
             ["../node_modules/@openzeppelin/contracts/governance/TimelockController.sol"],
             allow_paths=[""],
             output_values=["abi", "bin"],
             optimize=False,
             solc_version="0.8.2"
         )
-        Timelock_abi = compiled_Timelock["../node_modules/@openzeppelin/contracts/governance/TimelockController.sol:" \
-                                         "TimelockController"]["abi"]
-        Timelock_bytecode = compiled_Timelock["../node_modules/@openzeppelin/contracts/governance/" \
+        primary_timelock_abi = compiled_primary_timelock["../node_modules/@openzeppelin/contracts/governance/" \
+                                                         "TimelockController.sol:TimelockController"]["abi"]
+        primary_timelock_bytecode = compiled_primary_timelock["../node_modules/@openzeppelin/contracts/governance/" \
                                               "TimelockController.sol:TimelockController"]["bin"]
-        undeployed_Timelock_contract = w3.eth.contract(abi=Timelock_abi, bytecode=Timelock_bytecode)
-        Timelock_deployment_tx_hash = undeployed_Timelock_contract.constructor(
+        undeployed_primary_timelock_contract = w3.eth.contract(abi=primary_timelock_abi, bytecode=
+        primary_timelock_bytecode)
+        primary_timelock_deployment_tx_hash = undeployed_primary_timelock_contract.constructor(
             86400, #minDelay: Timelocked operations can be completed after 86400 blocks (3 days on BSC)
             [w3.eth.accounts[2],], #Since CommutoGovernor isn't deployed yet, temporarily make this address the proposer
             ['0x0000000000000000000000000000000000000000',], #Allow any account to execute operations
         ).transact(tx_details)
-        Timelock_address = w3.eth.wait_for_transaction_receipt(Timelock_deployment_tx_hash).contractAddress
-        self.Timelock_contract = w3.eth.contract(
-            address=Timelock_address,
-            abi=Timelock_abi,
+        primary_timelock_address = w3.eth.wait_for_transaction_receipt(primary_timelock_deployment_tx_hash)\
+            .contractAddress
+        self.primary_timelock_contract = w3.eth.contract(
+            address=primary_timelock_address,
+            abi=primary_timelock_abi,
         )
 
         #Deploy CommutoGovernor contract
-        compiled_CommutoGovernor = compile_files(
+        compiled_primary_governor = compile_files(
             ["../libraries/governance/CommutoGovernor.sol"],
             allow_paths=[""],
             output_values=["abi", "bin"],
             optimize=False,
             solc_version="0.8.2",
         )
-        CommutoGovernor_abi = compiled_CommutoGovernor["../libraries/governance/CommutoGovernor.sol:" \
+        primary_governor_abi = compiled_primary_governor["../libraries/governance/CommutoGovernor.sol:" \
                                                        "CommutoGovernor"]["abi"]
-        CommutoGovernor_bytecode = compiled_CommutoGovernor["../libraries/governance/CommutoGovernor.sol:" \
+        primary_governor_bytecode = compiled_primary_governor["../libraries/governance/CommutoGovernor.sol:" \
                                                        "CommutoGovernor"]["bin"]
-        undeployed_CommutoGovernor_contract = w3.eth.contract(
-            abi=CommutoGovernor_abi,
-            bytecode=CommutoGovernor_bytecode
+        undeployed_primary_governor_contract = w3.eth.contract(
+            abi=primary_governor_abi,
+            bytecode=primary_governor_bytecode
         )
-        CommutoGovernor_deployment_tx_hash = undeployed_CommutoGovernor_contract.constructor(
+        primary_governor_deployment_tx_hash = undeployed_primary_governor_contract.constructor(
             CommutoToken_address,
-            Timelock_address,
+            primary_timelock_address,
         ).transact(tx_details)
-        CommutoGovernor_address = w3.eth.wait_for_transaction_receipt(CommutoGovernor_deployment_tx_hash)\
+        primary_governor_address = w3.eth.wait_for_transaction_receipt(primary_governor_deployment_tx_hash)\
             .contractAddress
         self.CommutoGovernor_contract = w3.eth.contract(
-            address=CommutoGovernor_address,
-            abi=CommutoGovernor_abi,
+            address=primary_governor_address,
+            abi=primary_governor_abi,
         )
 
-        # Make CommutoGovernor a Proposer of of Timelock
-        self.Timelock_contract.functions.grantRole(
+        # Make CommutoGovernor a Proposer of of primary timelock
+        self.primary_timelock_contract.functions.grantRole(
             HexBytes("b09aa5aeb3702cfd50b6b62bc4532604938f21248a27a1d5ca736082b6819cc1"), #Proposer role identifier
-            CommutoGovernor_address
+            primary_governor_address
         )
-        #Make Timelock an Admin of itself
-        self.Timelock_contract.functions.grantRole(
+        #Make the primary timelock an Admin of itself
+        self.primary_timelock_contract.functions.grantRole(
             HexBytes("5f58e3a2316349923ce3780f8d587db2d72378aed66a8261c916544fa6846ca5"), #Admin role identifier
-            Timelock_address
+            primary_timelock_address
         ).transact(tx_details)
         #Renounce temporary Proposer role
-        self.Timelock_contract.functions.renounceRole(
+        self.primary_timelock_contract.functions.renounceRole(
             HexBytes("b09aa5aeb3702cfd50b6b62bc4532604938f21248a27a1d5ca736082b6819cc1"),  # Proposer role identifier
             w3.eth.accounts[2],
         ).transact(tx_details)
         # Renounce temporary Admin role
-        self.Timelock_contract.functions.renounceRole(
+        self.primary_timelock_contract.functions.renounceRole(
             HexBytes("5f58e3a2316349923ce3780f8d587db2d72378aed66a8261c916544fa6846ca5"), #Admin role identifier
             w3.eth.accounts[2],
         ).transact(tx_details)
@@ -490,22 +492,22 @@ class CommutoSwapTest(unittest.TestCase):
     def test_setup(self):
         pass
 
-    def give_Timelock_CommutoToken_control(self):
-        # Transfer control of CommutoToken contract to Timelock
+    def give_primary_timelock_CommutoToken_control(self):
+        # Transfer control of CommutoToken contract to the primary timelock
         tx_details = {
             "from": self.w3.eth.accounts[2]
         }
         self.CommutoToken_contract.functions.changeTimelock(
-            self.Timelock_contract.address
+            self.primary_timelock_contract.address
         ).transact(tx_details)
 
-    def give_Timelock_CommutoSwap_control(self):
-        # Transfer control of CommutoSwap contract to Timelock
+    def give_primary_timelock_CommutoSwap_control(self):
+        # Transfer control of CommutoSwap contract to the primary timelock
         tx_details = {
             "from": self.w3.eth.accounts[2]
         }
-        self.commuto_swap_contract.functions.changeTimelock(
-            self.Timelock_contract.address
+        self.commuto_swap_contract.functions.changePrimaryTimelock(
+            self.primary_timelock_contract.address
         ).transact(tx_details)
 
     def mine_blocks(self, blocks_to_mine):

@@ -8,7 +8,7 @@ Establishes the contract storage layout for CommutoSwap and all the contracts to
 */
 contract CommutoSwapStorage {
 
-    address public timelock = address(0);
+    address public primaryTimelock = address(0);
     address public serviceFeePool = address(0);
 
     //Address of the contract to which CommutoSwap should delegate openOffer calls
@@ -96,7 +96,7 @@ contract CommutoSwapStorage {
     event EscalatedSwapClosed(bytes16 swapID, uint256 makerPayout, uint256 takerPayout, uint256 confiscationPayout);
     event ServiceFeeRateChanged(uint256 newServiceFeeRate);
     event MinimumDisputePeriodChanged(uint256 newMinimumDisputePeriod);
-    event TimelockChanged(address oldTimelock, address newTimelock);
+    event PrimaryTimelockChanged(address oldPrimaryTimelock, address newPrimaryTimelock);
 
     /*
     Mappings containing all offers, the settlement methods of each offer, and all swaps.

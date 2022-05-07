@@ -4,8 +4,8 @@ from uuid import uuid4
 
 class CommutoCloseEscalatedSwapTest(CommutoSwapTest.CommutoSwapTest):
 
-    def test_closeEscalatedSwap_caller_is_timelock(self):
-        #Ensure the caller of closeEscalatedSwap is the timelock
+    def test_closeEscalatedSwap_caller_is_primary_timelock(self):
+        #Ensure the caller of closeEscalatedSwap is the primary timelock
         try:
             nonExistentOfferID = HexBytes(uuid4().bytes)
             tx_details = {
@@ -269,7 +269,7 @@ class CommutoCloseEscalatedSwapTest(CommutoSwapTest.CommutoSwapTest):
             "from": self.w3.eth.accounts[2],
         }
         self.commuto_swap_contract.functions.closeEscalatedSwap(newOfferID, 1000, 1000, 0).transact(tx_details)
-        events = EscalatedSwapClosed_filter.get_new_events()
+        events = EscalatedSwapClosed_filter.get_new_entries()
         self.assertEqual(len(events), 1)
         self.assertEqual(events[0]["args"]["swapID"], newOfferID)
         self.assertEqual(events[0]["args"]["makerPayout"], 1000)
