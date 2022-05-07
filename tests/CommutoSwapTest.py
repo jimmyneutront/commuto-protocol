@@ -133,7 +133,7 @@ class CommutoSwapTest(unittest.TestCase):
             100
         ).transact(tx_details)
 
-        #Deploy primary timelock
+        #Deploy Primary TimelockController
         compiled_primary_timelock = compile_files(
             ["../node_modules/@openzeppelin/contracts/governance/TimelockController.sol"],
             allow_paths=[""],
@@ -178,27 +178,27 @@ class CommutoSwapTest(unittest.TestCase):
         primary_governor_deployment_tx_hash = undeployed_primary_governor_contract.constructor(
             CommutoToken_address,
             primary_timelock_address,
-            40, #40 percent quorum fraction
-            1 #1 percent proposal threshold
+            40, # 40 percent quorum fraction
+            1 # 1 percent proposal threshold
         ).transact(tx_details)
         primary_governor_address = w3.eth.wait_for_transaction_receipt(primary_governor_deployment_tx_hash)\
             .contractAddress
-        self.CommutoGovernor_contract = w3.eth.contract(
+        self.primary_governor_contract = w3.eth.contract(
             address=primary_governor_address,
             abi=primary_governor_abi,
         )
 
-        # Make CommutoGovernor a Proposer of of primary timelock
+        # Make Primary Governor a Proposer of the Primary TimelockController
         self.primary_timelock_contract.functions.grantRole(
             HexBytes("b09aa5aeb3702cfd50b6b62bc4532604938f21248a27a1d5ca736082b6819cc1"), #Proposer role identifier
             primary_governor_address
-        )
-        #Make the primary timelock an Admin of itself
+        ).transact(tx_details)
+        # Make the Primary TimelockController an Admin of itself
         self.primary_timelock_contract.functions.grantRole(
             HexBytes("5f58e3a2316349923ce3780f8d587db2d72378aed66a8261c916544fa6846ca5"), #Admin role identifier
             primary_timelock_address
         ).transact(tx_details)
-        #Renounce temporary Proposer role
+        # Renounce temporary Proposer role
         self.primary_timelock_contract.functions.renounceRole(
             HexBytes("b09aa5aeb3702cfd50b6b62bc4532604938f21248a27a1d5ca736082b6819cc1"),  # Proposer role identifier
             w3.eth.accounts[2],
@@ -209,7 +209,7 @@ class CommutoSwapTest(unittest.TestCase):
             w3.eth.accounts[2],
         ).transact(tx_details)
 
-        #Deploy dispute resolution timelock
+        #Deploy Dispute Resolution Timelock
         compiled_dispute_resolution_timelock = compile_files(
             ["../node_modules/@openzeppelin/contracts/governance/TimelockController.sol"],
             allow_paths=[""],
@@ -228,12 +228,62 @@ class CommutoSwapTest(unittest.TestCase):
             [w3.eth.accounts[2], ], #Since the dispute resolution timelock isn't deployed yet, temporarily make this address the proposer
             ['0x0000000000000000000000000000000000000000', ],  # Allow any account to execute operations
         ).transact(tx_details)
-        dispute_resolution_timelock_address = w3.eth.wait_for_transaction_receipt(primary_timelock_deployment_tx_hash)\
-            .contractAddress
+        dispute_resolution_timelock_address = w3.eth\
+            .wait_for_transaction_receipt(dispute_resolution_timelock_deployment_tx_hash).contractAddress
         self.dispute_resolution_timelock_contract = w3.eth.contract(
             address=dispute_resolution_timelock_address,
             abi=dispute_resolution_timelock_abi,
         )
+
+        # Deploy Dispute Resolution Governor contract
+        compiled_dispute_resolution_governor = compile_files(
+            ["../libraries/governance/CommutoGovernor.sol"],
+            allow_paths=[""],
+            output_values=["abi", "bin"],
+            optimize=False,
+            solc_version="0.8.2",
+        )
+        dispute_resolution_governor_abi = compiled_dispute_resolution_governor["../" \
+            "libraries/governance/CommutoGovernor.sol:CommutoGovernor"]["abi"]
+        dispute_resolution_governor_bytecode = compiled_dispute_resolution_governor["../" \
+            "libraries/governance/CommutoGovernor.sol:CommutoGovernor"]["bin"]
+        undeployed_dispute_resolution_governor_contract = w3.eth.contract(
+            abi=dispute_resolution_governor_abi,
+            bytecode=dispute_resolution_governor_bytecode
+        )
+        dispute_resolution_governor_deployment_tx_hash = undeployed_dispute_resolution_governor_contract.constructor(
+            CommutoToken_address,
+            dispute_resolution_timelock_address,
+            1, # 1 percent quorum fraction
+            0 # 0 percent proposal threshold
+        ).transact(tx_details)
+        dispute_resolution_governor_address = w3\
+            .eth.wait_for_transaction_receipt(dispute_resolution_governor_deployment_tx_hash).contractAddress
+        self.dispute_resolution_governor_contract = w3.eth.contract(
+            address=dispute_resolution_governor_address,
+            abi=dispute_resolution_governor_abi,
+        )
+
+        #Make Dispute Resolution Governor a Proposer of the Dispute Resolution TimelockController
+        self.dispute_resolution_timelock_contract.functions.grantRole(
+            HexBytes("b09aa5aeb3702cfd50b6b62bc4532604938f21248a27a1d5ca736082b6819cc1"),  # Proposer role identifier
+            dispute_resolution_governor_address
+        ).transact(tx_details)
+        # Make the Dispute Resolution TimelockController an Admin of itself
+        self.dispute_resolution_timelock_contract.functions.grantRole(
+            HexBytes("5f58e3a2316349923ce3780f8d587db2d72378aed66a8261c916544fa6846ca5"),  # Admin role identifier
+            dispute_resolution_timelock_address
+        ).transact(tx_details)
+        # Renounce temporary Proposer role
+        self.dispute_resolution_timelock_contract.functions.renounceRole(
+            HexBytes("b09aa5aeb3702cfd50b6b62bc4532604938f21248a27a1d5ca736082b6819cc1"),  # Proposer role identifier
+            w3.eth.accounts[2],
+        ).transact(tx_details)
+        # Renounce temporary Admin role
+        self.dispute_resolution_timelock_contract.functions.renounceRole(
+            HexBytes("5f58e3a2316349923ce3780f8d587db2d72378aed66a8261c916544fa6846ca5"),  # Admin role identifier
+            w3.eth.accounts[2],
+        ).transact(tx_details)
 
         #Deploy CommutoSwapOfferOpener contract
         compiled_CommutoSwapOfferOpener = compile_files(
@@ -536,6 +586,15 @@ class CommutoSwapTest(unittest.TestCase):
         }
         self.commuto_swap_contract.functions.changePrimaryTimelock(
             self.primary_timelock_contract.address
+        ).transact(tx_details)
+
+    def give_dispute_resolution_timelock_partial_CommutoSwap_control(self):
+        # Transfer dispute resolution duties to the dispute resolution timelockcontroller
+        tx_details = {
+            "from": self.w3.eth.accounts[2]
+        }
+        self.commuto_swap_contract.functions.changeDisputeResolutionTimelock(
+            self.dispute_resolution_timelock_contract.address
         ).transact(tx_details)
 
     def mine_blocks(self, blocks_to_mine):
