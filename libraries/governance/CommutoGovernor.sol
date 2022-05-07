@@ -9,12 +9,17 @@ import "../../node_modules/@openzeppelin/contracts/governance/extensions/Governo
 
 
 contract CommutoGovernor is Governor, GovernorVotes, GovernorVotesQuorumFraction, GovernorCountingSimple, GovernorTimelockControl {
-    constructor (IVotes commutoToken, TimelockController _timelock)
+
+    uint256 public proposalThresholdValue;
+
+    constructor (IVotes commutoToken, TimelockController _timelock, uint256 quorumFraction, uint256 _proposalThreshold)
         Governor("CommutoGovernor")
         GovernorVotes(commutoToken)
-        GovernorVotesQuorumFraction(4) //4% of all issued tokens must be used to abstain or vote in favor
+        GovernorVotesQuorumFraction(quorumFraction) //percentage of all issued tokens that must be used to abstain or vote in favor
         GovernorTimelockControl(_timelock)
-    {}
+    {
+        proposalThresholdValue = _proposalThreshold;
+    }
 
     function votingDelay() public pure override returns (uint256) {
         return 28800; // 1 day on BSC
@@ -24,8 +29,8 @@ contract CommutoGovernor is Governor, GovernorVotes, GovernorVotesQuorumFraction
         return 201600; // 1 week on BSC
     }
 
-    function proposalThreshold() public pure override returns (uint256) {
-        return 0;
+    function proposalThreshold() public view override returns (uint256) {
+        return proposalThresholdValue;
     }
 
     //Overrides required by solidity
