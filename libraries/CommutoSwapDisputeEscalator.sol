@@ -84,6 +84,6 @@ contract CommutoSwapDisputeEscalator is CommutoSwapStorage {
 
         emit DisputeEscalated(swapID, msg.sender, reason);
 
-        require(token.transfer(serviceFeePool, SafeMath.mul(2, swaps[swapID].serviceFeeAmount)), "e42"); //"e42": "Service fee transfer failed"
+        require(token.transfer(primaryTimelock, SafeMath.mul(2, swaps[swapID].serviceFeeAmount)), "e42"); //"e42": "Service fee transfer failed"
     }
 }

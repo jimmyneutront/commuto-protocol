@@ -8,7 +8,7 @@ class CommutoSwapTest(unittest.TestCase):
     def setUp(self) -> None:
         # TODO: Start hardhat node
         # Establish connection to web3 provider
-        w3 = Web3(Web3.HTTPProvider("http://192.168.0.195:8545"))
+        w3 = Web3(Web3.HTTPProvider("http://192.168.1.15:8545"))
         # Check connection
         if not w3.isConnected():
             raise Exception("No connection to Web3 Provider")
@@ -79,7 +79,7 @@ class CommutoSwapTest(unittest.TestCase):
 
         usdt_deployment_tx_hash = undeployed_test_usdt_contract.constructor().transact(tx_details)
         self.usdt_deployment_tx_receipt = w3.eth.wait_for_transaction_receipt(usdt_deployment_tx_hash)
-        test_usdt_contract = w3.eth.contract(
+        self.test_usdt_contract = w3.eth.contract(
             address=self.usdt_deployment_tx_receipt.contractAddress,
             abi=test_usdt_abi
         )
@@ -101,9 +101,9 @@ class CommutoSwapTest(unittest.TestCase):
         w3.eth.wait_for_transaction_receipt(tx_hash)
         tx_hash = self.test_dai_contract.functions.mint(ERC20_recipient_account_one, token_mint_amount).transact(tx_details)
         w3.eth.wait_for_transaction_receipt(tx_hash)
-        tx_hash = test_usdt_contract.functions.mint(ERC20_recipient_account_zero, token_mint_amount).transact(tx_details)
+        tx_hash = self.test_usdt_contract.functions.mint(ERC20_recipient_account_zero, token_mint_amount).transact(tx_details)
         w3.eth.wait_for_transaction_receipt(tx_hash)
-        tx_hash = test_usdt_contract.functions.mint(ERC20_recipient_account_one, token_mint_amount).transact(tx_details)
+        tx_hash = self.test_usdt_contract.functions.mint(ERC20_recipient_account_one, token_mint_amount).transact(tx_details)
         w3.eth.wait_for_transaction_receipt(tx_hash)
 
         #Find installed versions of solc
@@ -512,7 +512,6 @@ class CommutoSwapTest(unittest.TestCase):
         commuto_swap_bytecode = compiled_sol["../CommutoSwap.sol:CommutoSwap"]["bin"]
         undeployed_commuto_swap_contract = w3.eth.contract(abi=commuto_swap_abi, bytecode=commuto_swap_bytecode)
         commuto_swap_deployment_tx_hash = undeployed_commuto_swap_contract.constructor([
-                                                                                       w3.eth.accounts[2],
                                                                                        CommutoSwapOfferOpener_address,
                                                                                        CommutoSwapOfferEditor_address,
                                                                                        CommutoSwapOfferCanceler_address,

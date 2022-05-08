@@ -10,8 +10,6 @@ contract CommutoSwapStorage {
 
     address public primaryTimelock = address(0);
     address public disputeResolutionTimelock = address(0);
-    //TODO: get rid of serviceFeePool and make all service fees be sent to the primary timelock
-    address public serviceFeePool = address(0);
 
     //Address of the contract to which CommutoSwap should delegate openOffer calls
     address immutable public commutoSwapOfferOpener;

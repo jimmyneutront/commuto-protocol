@@ -39,7 +39,7 @@ contract CommutoSwapCloser is CommutoSwapStorage {
             swaps[swapID].hasBuyerClosed = true;
             emit BuyerClosed(swapID);
             require(token.transfer(swaps[swapID].taker, returnAmount), "e19"); //"e19": "Token transfer failed"
-            require(token.transfer(serviceFeePool, swaps[swapID].serviceFeeAmount), "e42"); //"e42": "Service fee transfer failed"
+            require(token.transfer(primaryTimelock, swaps[swapID].serviceFeeAmount), "e42"); //"e42": "Service fee transfer failed"
         }
         //If caller is buyer and maker, return security deposit, swap amount, and serviceFeeUpperBound - serviceFeeAmount, and send service fee to pool
         else if (swaps[swapID].direction == SwapDirection.BUY && swaps[swapID].maker == msg.sender) {
@@ -50,7 +50,7 @@ contract CommutoSwapCloser is CommutoSwapStorage {
             swaps[swapID].hasBuyerClosed = true;
             emit BuyerClosed(swapID);
             require(token.transfer(swaps[swapID].maker, returnAmount), "e19"); //"e19": "Token transfer failed"
-            require(token.transfer(serviceFeePool, swaps[swapID].serviceFeeAmount), "e42"); //"e42": "Service fee transfer failed"
+            require(token.transfer(primaryTimelock, swaps[swapID].serviceFeeAmount), "e42"); //"e42": "Service fee transfer failed"
         }
         //If caller is seller and taker, return security deposit, and send service fee to pool
         else if (swaps[swapID].direction == SwapDirection.BUY && swaps[swapID].taker == msg.sender) {
@@ -59,7 +59,7 @@ contract CommutoSwapCloser is CommutoSwapStorage {
             swaps[swapID].hasSellerClosed = true;
             emit SellerClosed(swapID);
             require(token.transfer(swaps[swapID].taker, returnAmount), "e19"); //"e19": "Token transfer failed"
-            require(token.transfer(serviceFeePool, swaps[swapID].serviceFeeAmount), "e42"); //"e42": "Service fee transfer failed"
+            require(token.transfer(primaryTimelock, swaps[swapID].serviceFeeAmount), "e42"); //"e42": "Service fee transfer failed"
         }
         //If caller is seller and maker, return security deposit and serviceFeeUpperBound - serviceFeeAmount, and send service fee to pool
         else if (swaps[swapID].direction == SwapDirection.SELL && swaps[swapID].maker == msg.sender) {
@@ -70,7 +70,7 @@ contract CommutoSwapCloser is CommutoSwapStorage {
             swaps[swapID].hasSellerClosed = true;
             emit SellerClosed(swapID);
             require(token.transfer(swaps[swapID].maker, returnAmount), "e19"); //"e19": "Token transfer failed"
-            require(token.transfer(serviceFeePool, swaps[swapID].serviceFeeAmount), "e42"); //"e42": "Service fee transfer failed"
+            require(token.transfer(primaryTimelock, swaps[swapID].serviceFeeAmount), "e42"); //"e42": "Service fee transfer failed"
         } else {
             revert("e44"); //"e44": "Only swap maker or taker can call this function"
         }
@@ -126,10 +126,10 @@ contract CommutoSwapCloser is CommutoSwapStorage {
         or confiscation payout.
         */
         require(token.transfer(msg.sender, payoutAmountToCaller), "e19"); //"e19": "Token transfer failed"
-        require(token.transfer(serviceFeePool, swaps[swapID].serviceFeeAmount), "e42"); //"e42": "Service fee transfer failed"
+        require(token.transfer(primaryTimelock, swaps[swapID].serviceFeeAmount), "e42"); //"e42": "Service fee transfer failed"
 
         if (mustPayConfiscationAmount == true) {
-            require(token.transfer(serviceFeePool, confiscationPayout), "e67"); //"e67": "Confiscated amount transfer failed"
+            require(token.transfer(primaryTimelock, confiscationPayout), "e67"); //"e67": "Confiscated amount transfer failed"
             //Caller is the final caller, so mark swap as paid out
             disputes[swapID].state = DisputeState.PAID_OUT;
         }
@@ -156,7 +156,7 @@ contract CommutoSwapCloser is CommutoSwapStorage {
         //Pay maker, taker and service fee pool
         require(token.transfer(swaps[swapID].maker, makerPayout), "e82"); //"e82": "Token transfer to maker failed",
         require(token.transfer(swaps[swapID].taker, takerPayout), "e83"); //"e83": "Token transfer to taker failed",
-        require(token.transfer(serviceFeePool, confiscationPayout), "e67"); //"e67": "Confiscated amount transfer failed"
+        require(token.transfer(primaryTimelock, confiscationPayout), "e67"); //"e67": "Confiscated amount transfer failed"
     }
 
 }

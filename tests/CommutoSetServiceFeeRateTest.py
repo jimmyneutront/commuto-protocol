@@ -40,7 +40,7 @@ class CommutoSetServiceFeeRateTest(CommutoSwapTest.CommutoSwapTest):
         maker_initial_dai_balance = self.test_dai_contract.functions.balanceOf(self.maker_address).call()
         taker_initial_dai_balance = self.test_dai_contract.functions.balanceOf(self.taker_address).call()
         service_fee_initial_dai_balance = self.test_dai_contract.functions.balanceOf(
-            self.commuto_service_fee_account).call()
+            self.w3.eth.accounts[2]).call()
         maker_as_seller_swap_id = HexBytes(uuid4().bytes)
         tx_details = {
             "from": self.maker_address,
@@ -130,8 +130,7 @@ class CommutoSetServiceFeeRateTest(CommutoSwapTest.CommutoSwapTest):
         self.commuto_swap_contract.functions.closeSwap(maker_as_seller_swap_id).transact(tx_details)
         maker_final_dai_balance = self.test_dai_contract.functions.balanceOf(self.maker_address).call()
         taker_final_dai_balance = self.test_dai_contract.functions.balanceOf(self.taker_address).call()
-        service_fee_final_dai_balance = self.test_dai_contract.functions.balanceOf(self.commuto_service_fee_account)\
-            .call()
+        service_fee_final_dai_balance = self.test_dai_contract.functions.balanceOf(self.w3.eth.accounts[2]).call()
         self.assertEqual(maker_final_dai_balance + 10200, maker_initial_dai_balance)
         self.assertEqual(taker_final_dai_balance - 9800, taker_initial_dai_balance)
         self.assertEqual(service_fee_final_dai_balance - 400, service_fee_initial_dai_balance)

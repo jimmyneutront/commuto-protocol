@@ -26,7 +26,7 @@ class CommutoDisputeAgentTest(CommutoSwapTest.CommutoSwapTest):
     def test_dispute_agent_address_removed_check(self):
         #Ensure that a dispute agent's address is actually set as not active
         tx_details = {
-            "from": self.commuto_service_fee_account
+            "from": self.w3.eth.accounts[2]
         }
         self.commuto_swap_contract.functions.setDisputeAgentActive(self.w3.eth.accounts[6], True).transact(tx_details)
         active_dispute_agents = self.commuto_swap_contract.functions.getActiveDisputeAgents().call()

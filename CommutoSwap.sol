@@ -11,7 +11,6 @@ import "./libraries/SafeMath.sol";
 import "./libraries/CommutoSwapPaymentReporter.sol";
 import "./libraries/CommutoSwapResolutionProposalReactor.sol";
 
-//TODO: Update documentation for governance
 contract CommutoSwap is CommutoSwapStorage {
 
     //Transfer control of CommutoSwap to a new timelock
@@ -157,11 +156,9 @@ contract CommutoSwap is CommutoSwapStorage {
         return disputes[swapID];
     }
 
-    constructor (address[] memory contractAddresses) public CommutoSwapStorage(contractAddresses[1], contractAddresses[2], contractAddresses[3], contractAddresses[4], contractAddresses[5], contractAddresses[6], contractAddresses[7], contractAddresses[8], contractAddresses[9], contractAddresses[10], contractAddresses[11]) {
+    constructor (address[] memory contractAddresses) public CommutoSwapStorage(contractAddresses[0], contractAddresses[1], contractAddresses[2], contractAddresses[3], contractAddresses[4], contractAddresses[5], contractAddresses[6], contractAddresses[7], contractAddresses[8], contractAddresses[9], contractAddresses[10]) {
         primaryTimelock = msg.sender;
         disputeResolutionTimelock = msg.sender;
-        require(contractAddresses[0] != address(0), "e0"); //"e0": "_serviceFeePool address cannot be zero"
-        serviceFeePool = contractAddresses[0];
     }
 
     //Create a new swap offer
