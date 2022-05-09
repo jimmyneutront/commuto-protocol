@@ -96,3 +96,73 @@ class CommutoTokenTest(CommutoSwapTest.CommutoSwapTest):
         self.CommutoToken_contract.functions.changeRevenueCollectionPeriod(100800).transact(tx_details)
         newPeriod = self.CommutoToken_contract.functions.getRevenueCollectionPeriod().call()
         self.assertEqual(newPeriod, 100800)
+        
+    def test_takeRevenueDistributionSnapshot_event_emission_check(self):
+        #Ensure that takeRevenueDistributionSnapshot emits RevenueDistributionSnapshotTaken event upon successful call
+        RevenueDistributionSnapshotTaken_filter = self.CommutoToken_contract.events.RevenueDistributionSnapshotTaken\
+            .createFilter(fromBlock="latest")
+        #Transfer some DAI to the Commuto Token contract
+        self.test_dai_contract.functions.transfer(self.CommutoToken_contract.address, 100000)\
+            .transact({'from': self.w3.eth.accounts[0]})
+        tx_details = {
+            "from": self.w3.eth.accounts[2],
+        }
+        revenueCollectionPeriod = self.CommutoToken_contract.functions.getRevenueCollectionPeriod().call()
+        self.mine_blocks(revenueCollectionPeriod)
+        self.CommutoToken_contract.functions.takeRevenueDistributionSnapshot(self.test_dai_contract.address) \
+            .transact(tx_details)
+        events = RevenueDistributionSnapshotTaken_filter.get_new_entries()
+        self.assertEqual(len(events), 1)
+        self.assertNotEqual(events[0]["args"]["snapshotId"], 0)
+        self.assertEqual(events[0]["args"]["balance"], 100000)
+
+    def test_takeRevenueDistributionSnapshot_new_period_is_set(self):
+        #Ensure that takeRevenueDistributionSnapshot actually takes a snapshot
+        self.test_dai_contract.functions.transfer(self.CommutoToken_contract.address, 100000) \
+            .transact({'from': self.w3.eth.accounts[0]})
+        tx_details = {
+            "from": self.w3.eth.accounts[2],
+        }
+        revenueCollectionPeriod = self.CommutoToken_contract.functions.getRevenueCollectionPeriod().call()
+        self.mine_blocks(revenueCollectionPeriod)
+        self.CommutoToken_contract.functions.takeRevenueDistributionSnapshot(self.test_dai_contract.address) \
+            .transact(tx_details)
+        snapshot = self.CommutoToken_contract.functions.getRevenueDistributionSnapshot(self.test_dai_contract.address)\
+            .call()
+        self.assertNotEqual(snapshot[0], 0)
+        self.assertNotEqual(snapshot[1], 0)
+        self.assertEqual(snapshot[2], 100000)
+
+    def test_takeRevenueDistributionSnapshot_enforces_collection_period(self):
+        #Ensure that takeRevenueDistributionSnapshot enforces the revenue collection period
+        self.test_dai_contract.functions.transfer(self.CommutoToken_contract.address, 100000) \
+            .transact({'from': self.w3.eth.accounts[0]})
+        tx_details = {
+            "from": self.w3.eth.accounts[2],
+        }
+        revenueCollectionPeriod = self.CommutoToken_contract.functions.getRevenueCollectionPeriod().call()
+        self.mine_blocks(revenueCollectionPeriod)
+        #This first call to takeRevenueDistributionSnapshot should succeed
+        self.CommutoToken_contract.functions.takeRevenueDistributionSnapshot(self.test_dai_contract.address)\
+            .transact(tx_details)
+        try:
+            #This second call should not, because the revenue collection period has not yet passed
+            self.CommutoToken_contract.functions.takeRevenueDistributionSnapshot(self.test_dai_contract.address) \
+                .transact(tx_details)
+        except ValueError as e:
+            self.assertTrue("e0" in str(e)) #"e0": "More blocks must be mined before a revenue distribution snapshot can be created"
+        """
+        Mine enough blocks to pass the revenue collection period, and then the following call to 
+        takeRevenueDistributionSnapshot should succeed
+        """
+        revenueCollectionPeriod = self.CommutoToken_contract.functions.getRevenueCollectionPeriod().call()
+        self.mine_blocks(revenueCollectionPeriod)
+        #Set up a filter to make sure the snapshot is actually taken on this third attempt
+        RevenueDistributionSnapshotTaken_filter = self.CommutoToken_contract.events.RevenueDistributionSnapshotTaken \
+            .createFilter(fromBlock="latest")
+        self.CommutoToken_contract.functions.takeRevenueDistributionSnapshot(self.test_dai_contract.address) \
+            .transact(tx_details)
+        events = RevenueDistributionSnapshotTaken_filter.get_new_entries()
+        self.assertEqual(len(events), 1)
+        self.assertNotEqual(events[0]["args"]["snapshotId"], 0)
+        self.assertEqual(events[0]["args"]["balance"], 100000)

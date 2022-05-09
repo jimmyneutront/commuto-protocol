@@ -1,5 +1,5 @@
-commuto_swap_error_messages = {
-    "": "",
+commuto_error_messages = {
+    "e0": "More blocks must be mined before a revenue distribution snapshot can be created",
     "e1": "Only the current primary timelock can set dispute agent activity state",
     "e2": "Dispute agent address cannot be the zero address",
     "e3": "Selected dispute agents must be active",
