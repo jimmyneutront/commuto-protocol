@@ -12,15 +12,30 @@ contract CommutoToken is ERC20, ERC20Permit, ERC20Votes {
 
     //The address of the Timelock that shall be able to mint and burn CMTO and transfer control to another Timelock
     address public timelock;
+    //The number of blocks that must be mined between snapshot creations for a particular stablecoin
+    uint256 public revenueCollectionPeriod = 201600; // 1 week on BSC
 
     //Emitted when the old Timelock transfers control of CommutoToken to a new timelock
     event TimelockChanged(address oldTimelock, address newTimelock);
+    //Emitted when the revenue collection period is changed
+    event RevenueCollectionPeriodChanged(uint256 oldPeriod, uint256 newPeriod);
 
     //Transfer control of CommutoToken to a new timelock
     function changeTimelock(address newTimelock) public {
         require(msg.sender == timelock, "e79"); //"e79": "Only the current Timelock can call this function"
         emit TimelockChanged(timelock, newTimelock);
         timelock = newTimelock;
+    }
+
+    //Change the revenue collection period
+    function changeRevenueCollectionPeriod(uint256 newRevenueCollectionPeriod) public {
+        require(msg.sender == timelock, "e79"); //"e79": "Only the current Timelock can call this function"
+        emit RevenueCollectionPeriodChanged(revenueCollectionPeriod, newRevenueCollectionPeriod);
+        revenueCollectionPeriod = newRevenueCollectionPeriod;
+    }
+
+    function getRevenueCollectionPeriod() public view returns (uint256) {
+        return revenueCollectionPeriod;
     }
 
     //Mint function
