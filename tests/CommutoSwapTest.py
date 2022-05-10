@@ -87,16 +87,8 @@ class CommutoSwapTest(unittest.TestCase):
         # Mint some ERC20 tokens to two addresses for testing purposes
         ERC20_recipient_account_zero = w3.eth.accounts[0]
         ERC20_recipient_account_one = w3.eth.accounts[1]
-        token_mint_amount = 10_000_000_000
+        token_mint_amount = 10_000_000_000_000_000
 
-        tx_hash = self.test_dai_contract.functions.mint(ERC20_recipient_account_zero, token_mint_amount).transact(tx_details)
-        w3.eth.wait_for_transaction_receipt(tx_hash)
-        tx_hash = self.test_dai_contract.functions.mint(ERC20_recipient_account_one, token_mint_amount).transact(tx_details)
-        w3.eth.wait_for_transaction_receipt(tx_hash)
-        tx_hash = self.test_dai_contract.functions.mint(ERC20_recipient_account_zero, token_mint_amount).transact(tx_details)
-        w3.eth.wait_for_transaction_receipt(tx_hash)
-        tx_hash = self.test_dai_contract.functions.mint(ERC20_recipient_account_one, token_mint_amount).transact(tx_details)
-        w3.eth.wait_for_transaction_receipt(tx_hash)
         tx_hash = self.test_dai_contract.functions.mint(ERC20_recipient_account_zero, token_mint_amount).transact(tx_details)
         w3.eth.wait_for_transaction_receipt(tx_hash)
         tx_hash = self.test_dai_contract.functions.mint(ERC20_recipient_account_one, token_mint_amount).transact(tx_details)
@@ -129,8 +121,16 @@ class CommutoSwapTest(unittest.TestCase):
 
         #Mint CMTO tokens
         self.CommutoToken_contract.functions.mint(
+            w3.eth.accounts[0],
+            638_854
+        ).transact(tx_details)
+        self.CommutoToken_contract.functions.mint(
+            w3.eth.accounts[1],
+            1
+        ).transact(tx_details)
+        self.CommutoToken_contract.functions.mint(
             w3.eth.accounts[2],
-            100
+            99_361_145
         ).transact(tx_details)
 
         #Deploy Primary TimelockController

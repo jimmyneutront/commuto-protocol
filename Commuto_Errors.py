@@ -84,4 +84,5 @@ commuto_error_messages = {
     "e81": "Total payout amount must equal total without spent service fees",
     "e82": "Token transfer to maker failed",
     "e83": "Token transfer to taker failed",
+    "e84": "More blocks must be mined before revenue can be collected again",
 }
