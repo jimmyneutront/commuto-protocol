@@ -179,7 +179,7 @@ class CommutoSwapTest(unittest.TestCase):
             CommutoToken_address,
             primary_timelock_address,
             40, # 40 percent quorum fraction
-            1 # 1 percent proposal threshold
+            100_000 # 100_000 vote proposal threshold
         ).transact(tx_details)
         primary_governor_address = w3.eth.wait_for_transaction_receipt(primary_governor_deployment_tx_hash)\
             .contractAddress

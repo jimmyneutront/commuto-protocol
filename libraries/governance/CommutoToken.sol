@@ -31,7 +31,7 @@ contract CommutoToken is ERC20, ERC20Permit, ERC20Votes, ERC20Snapshot {
 
     //Emitted when the old Timelock transfers control of CommutoToken to a new timelock
     event TimelockChanged(address oldTimelock, address newTimelock);
-    //Emitted when the revenue collection period is changed
+    //Emitted when the Revenue Collection Period is changed
     event RevenueCollectionPeriodChanged(uint256 oldPeriod, uint256 newPeriod);
     //Emitted when a revenue distribution snapshot is taken
     event RevenueDistributionSnapshotTaken(address stablecoin, uint256 snapshotId, uint256 balance);
