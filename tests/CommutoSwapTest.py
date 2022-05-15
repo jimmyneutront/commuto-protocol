@@ -179,6 +179,7 @@ class CommutoSwapTest(unittest.TestCase):
             CommutoToken_address,
             primary_timelock_address,
             40, # 40 percent quorum fraction
+            28_800, # Ensure that at least one day passes before a governance proposal can be approved
             100_000 # 100_000 vote proposal threshold
         ).transact(tx_details)
         primary_governor_address = w3.eth.wait_for_transaction_receipt(primary_governor_deployment_tx_hash)\
@@ -255,6 +256,7 @@ class CommutoSwapTest(unittest.TestCase):
             CommutoToken_address,
             dispute_resolution_timelock_address,
             1, # 1 percent quorum fraction
+            28_800,  # Ensure that at least one day passes before a governance proposal can be approved
             0 # 0 percent proposal threshold
         ).transact(tx_details)
         dispute_resolution_governor_address = w3\

@@ -4,11 +4,11 @@ pragma solidity ^0.8.2;
 import "../../node_modules/@openzeppelin/contracts/governance/Governor.sol";
 import "../../node_modules/@openzeppelin/contracts/governance/extensions/GovernorVotes.sol";
 import "../../node_modules/@openzeppelin/contracts/governance/extensions/GovernorVotesQuorumFraction.sol";
+import "../../node_modules/@openzeppelin/contracts/governance/extensions/GovernorPreventLateQuorum.sol";
 import "../../node_modules/@openzeppelin/contracts/governance/extensions/GovernorCountingSimple.sol";
 import "../../node_modules/@openzeppelin/contracts/governance/extensions/GovernorTimelockControl.sol";
 
-
-contract CommutoGovernor is Governor, GovernorVotes, GovernorVotesQuorumFraction, GovernorCountingSimple, GovernorTimelockControl {
+contract CommutoGovernor is Governor, GovernorVotes, GovernorVotesQuorumFraction, GovernorPreventLateQuorum, GovernorCountingSimple, GovernorTimelockControl {
 
     uint256 public proposalThresholdValue;
 
@@ -16,6 +16,7 @@ contract CommutoGovernor is Governor, GovernorVotes, GovernorVotesQuorumFraction
         Governor("CommutoGovernor")
         GovernorVotes(commutoToken)
         GovernorVotesQuorumFraction(quorumFraction) //percentage of all issued tokens that must be used to abstain or vote in favor
+        GovernorPreventLateQuorum(initialVoteExtension) //
         GovernorTimelockControl(_timelock)
     {
         proposalThresholdValue = _proposalThreshold;
@@ -34,6 +35,23 @@ contract CommutoGovernor is Governor, GovernorVotes, GovernorVotesQuorumFraction
     }
 
     //Overrides required by solidity
+
+    function _castVote(uint256 proposalId, address account, uint8 support, string memory reason)
+        internal
+        override(Governor, GovernorPreventLateQuorum)
+        returns (uint256)
+    {
+        return super._castVote(proposalId, account, support, reason);
+    }
+
+    function proposalDeadline(uint256 proposalId)
+        public
+        view
+        override(IGovernor, Governor, GovernorPreventLateQuorum)
+        returns (uint256)
+    {
+        return super.proposalDeadline(proposalId);
+    }
 
     function quorum(uint256 blockNumber)
         public
