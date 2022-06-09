@@ -1,9 +1,9 @@
 from http.server import BaseHTTPRequestHandler
-from IOSCommutoSwapTest import IOSCommutoSwapTest
+from InterfaceCommutoSwapTest import InterfaceCommutoSwapTest
 import json
 
 
-class IOSTestingServer(BaseHTTPRequestHandler):
+class CommutoInterfaceTestingServer(BaseHTTPRequestHandler):
     def set_headers(self):
         self.send_response(200)
         self.send_header('Content-type', 'application/json')
@@ -13,7 +13,7 @@ class IOSTestingServer(BaseHTTPRequestHandler):
     def do_GET(self):
         if self.path.endswith('/test_blockchainservice_listen'):
             self.set_headers()
-            commuto_swap_test = IOSCommutoSwapTest()
+            commuto_swap_test = InterfaceCommutoSwapTest()
             commuto_swap_test.setUp()
             commuto_swap_test.testBlockchainServiceListen()
             response = {

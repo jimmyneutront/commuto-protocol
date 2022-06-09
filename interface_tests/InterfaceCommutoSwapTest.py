@@ -3,7 +3,7 @@ from hexbytes import HexBytes
 from tests.CommutoSwapTest import CommutoSwapTest
 
 
-class IOSCommutoSwapTest(CommutoSwapTest):
+class InterfaceCommutoSwapTest(CommutoSwapTest):
 
     def testBlockchainServiceListen(self):
         maker_as_seller_swap_id = HexBytes(uuid4().bytes)
