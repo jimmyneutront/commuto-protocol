@@ -15,8 +15,16 @@ class CommutoInterfaceTestingServer(BaseHTTPRequestHandler):
             self.set_headers()
             commuto_swap_test = InterfaceCommutoSwapTest()
             commuto_swap_test.setUp()
-            commuto_swap_test.testBlockchainServiceListen()
+            offer_id = commuto_swap_test.testBlockchainServiceListen()
             response = {
                 "commutoSwapAddress": str(commuto_swap_test.commuto_swap_contract.address),
+                "offerId":  str(offer_id),
+            }
+            self.wfile.write(bytes(json.dumps(response).encode()))
+
+        elif self.path.endswith('/test_blockchainservice_error_handling'):
+            self.set_headers()
+            response = {
+                "commutoSwapAddress": "0x0000000000000000000000000000000000000000",
             }
             self.wfile.write(bytes(json.dumps(response).encode()))
