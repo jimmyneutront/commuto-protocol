@@ -23,13 +23,6 @@ class CommutoInterfaceTestingServer(BaseHTTPRequestHandler):
             }
             self.wfile.write(bytes(json.dumps(response).encode()))
 
-        elif self.path.endswith('/test_blockchainservice_error_handling'):
-            self.set_headers()
-            response = {
-                "commutoSwapAddress": "0x0000000000000000000000000000000000000000",
-            }
-            self.wfile.write(bytes(json.dumps(response).encode()))
-
     # noinspection PyPep8Naming
     def do_POST(self):
         content_type, options_dict = cgi.parse_header(self.headers.get_content_type())
