@@ -48,7 +48,8 @@ contract CommutoSwapOfferCanceler is CommutoSwapStorage {
             offerSettlementMethods[offerID][offers[offerID].settlementMethods[i]] = false;
         }
         emit OfferCanceled(offerID);
-        require(token.transfer(offers[offerID].maker, depositAmount), "e19"); //"e19": "Token transfer failed"
+        //We have already verified that the message sender is the offer maker, so this is safe
+        require(token.transfer(msg.sender, depositAmount), "e19"); //"e19": "Token transfer failed"
     }
 
 }
