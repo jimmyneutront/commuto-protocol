@@ -2,6 +2,7 @@ import cgi
 from http.server import BaseHTTPRequestHandler
 from InterfaceCommutoSwapTest import InterfaceCommutoSwapTest
 import json
+from urllib.parse import urlparse, parse_qsl
 
 
 class CommutoInterfaceTestingServer(BaseHTTPRequestHandler):
@@ -12,16 +13,26 @@ class CommutoInterfaceTestingServer(BaseHTTPRequestHandler):
 
     # noinspection PyPep8Naming
     def do_GET(self):
-        if self.path.endswith('/test_blockchainservice_listen'):
+        if self.path.__contains__('/test_blockchainservice_listen'):
+            query = urlparse(self.path).query
+            params = dict(parse_qsl(query))
             self.set_headers()
             commuto_swap_test = InterfaceCommutoSwapTest()
             commuto_swap_test.setUp()
-            offer_id = commuto_swap_test.testBlockchainServiceListen()
-            response = {
-                "commutoSwapAddress": str(commuto_swap_test.commuto_swap_contract.address),
-                "offerId":  str(offer_id),
-            }
-            self.wfile.write(bytes(json.dumps(response).encode()))
+            if params['events'] == 'offer-opened-taken':
+                offer_id = commuto_swap_test.testBlockchainServiceListenOfferOpenedTaken()
+                response = {
+                    "commutoSwapAddress": str(commuto_swap_test.commuto_swap_contract.address),
+                    "offerId": str(offer_id),
+                }
+                self.wfile.write(bytes(json.dumps(response).encode()))
+            elif params['events'] == 'offer-opened-canceled':
+                offer_id = commuto_swap_test.testBlockchainServiceListenOfferOpenedCanceled()
+                response = {
+                    "commutoSwapAddress": str(commuto_swap_test.commuto_swap_contract.address),
+                    "offerId": str(offer_id),
+                }
+                self.wfile.write(bytes(json.dumps(response).encode()))
 
     # noinspection PyPep8Naming
     def do_POST(self):
