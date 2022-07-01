@@ -80,7 +80,7 @@ contract CommutoSwapStorage {
     address[] internal activeDisputeAgents;
 
     event OfferOpened(bytes16 offerID, bytes interfaceId);
-    event PriceChanged(bytes16 offerID);
+    event OfferEdited(bytes16 offerID);
     event OfferCanceled(bytes16 offerID);
     event OfferTaken(bytes16 offerID, bytes takerInterfaceId);
     event SwapFilled(bytes16 swapID);

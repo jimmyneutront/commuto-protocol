@@ -39,6 +39,9 @@ contract CommutoSwapOfferEditor is CommutoSwapStorage{
             }
             offers[offerID].settlementMethods = editedOffer.settlementMethods;
         }
+
+        //Notify that offer has been edited
+        emit OfferEdited(offerID);
     }
 
 }

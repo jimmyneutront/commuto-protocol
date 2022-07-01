@@ -240,12 +240,22 @@ class CommutoEditOfferTest(CommutoSwapTest.CommutoSwapTest):
                 "settlementMethods": ["EUR-SEPA".encode("utf-8"), ],
                 "protocolVersion": 1,
             }
+            OfferEdited_event_filter = self.commuto_swap_contract.events.OfferEdited.createFilter(
+                fromBlock="latest",
+                argument_filters={
+                    "offerID": newOfferID
+                }
+            )
             self.commuto_swap_contract.functions.editOffer(
                 newOfferID,
                 editedOffer,
                 True,
                 True,
             ).transact(tx_details)
+            events = OfferEdited_event_filter.get_new_entries()
+            if not (len(events) == 1 and events[0]["args"]["offerID"] == newOfferID and
+                    events[0]["event"] == "OfferEdited"):
+                raise Exception("OfferEdited event for offer with id " + str(newOfferID) + " not found")
             offer = self.commuto_swap_contract.functions.getOffer(
                 newOfferID,
             ).call()
