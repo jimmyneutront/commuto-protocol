@@ -33,6 +33,65 @@ class CommutoInterfaceTestingServer(BaseHTTPRequestHandler):
                     "offerId": str(offer_id),
                 }
                 self.wfile.write(bytes(json.dumps(response).encode()))
+            elif params['events'] == 'offer-opened-edited':
+                offer_id = commuto_swap_test.testBlockchainServiceListenOfferOpenedEdited()
+                response = {
+                    "commutoSwapAddress": str(commuto_swap_test.commuto_swap_contract.address),
+                    "offerId": str(offer_id),
+                }
+                self.wfile.write(bytes(json.dumps(response).encode()))
+        elif self.path.__contains__('/test_offerservice_handleOfferOpenedEvent'):
+            query = urlparse(self.path).query
+            params = dict(parse_qsl(query))
+            self.set_headers()
+            commuto_swap_test = InterfaceCommutoSwapTest()
+            commuto_swap_test.setUp()
+            if params['events'] == 'offer-opened':
+                offer_id = commuto_swap_test.testOfferServiceHandleOfferOpenedEvent()
+                response = {
+                    "commutoSwapAddress": str(commuto_swap_test.commuto_swap_contract.address),
+                    "offerId": str(offer_id),
+                }
+                self.wfile.write(bytes(json.dumps(response).encode()))
+        elif self.path.__contains__('/test_offerservice_handleOfferEditedEvent'):
+            query = urlparse(self.path).query
+            params = dict(parse_qsl(query))
+            self.set_headers()
+            commuto_swap_test = InterfaceCommutoSwapTest()
+            commuto_swap_test.setUp()
+            if params['events'] == 'offer-opened-edited':
+                offer_id = commuto_swap_test.testBlockchainServiceListenOfferOpenedEdited()
+                response = {
+                    "commutoSwapAddress": str(commuto_swap_test.commuto_swap_contract.address),
+                    "offerId": str(offer_id),
+                }
+                self.wfile.write(bytes(json.dumps(response).encode()))
+        elif self.path.__contains__('/test_offerservice_handleOfferCanceledEvent'):
+            query = urlparse(self.path).query
+            params = dict(parse_qsl(query))
+            self.set_headers()
+            commuto_swap_test = InterfaceCommutoSwapTest()
+            commuto_swap_test.setUp()
+            if params['events'] == 'offer-opened-canceled':
+                offer_id = commuto_swap_test.testBlockchainServiceListenOfferOpenedCanceled()
+                response = {
+                    "commutoSwapAddress": str(commuto_swap_test.commuto_swap_contract.address),
+                    "offerId": str(offer_id),
+                }
+                self.wfile.write(bytes(json.dumps(response).encode()))
+        elif self.path.__contains__('/test_offerservice_handleOfferTakenEvent'):
+            query = urlparse(self.path).query
+            params = dict(parse_qsl(query))
+            self.set_headers()
+            commuto_swap_test = InterfaceCommutoSwapTest()
+            commuto_swap_test.setUp()
+            if params['events'] == 'offer-opened-taken':
+                offer_id = commuto_swap_test.testBlockchainServiceListenOfferOpenedTaken()
+                response = {
+                    "commutoSwapAddress": str(commuto_swap_test.commuto_swap_contract.address),
+                    "offerId": str(offer_id),
+                }
+                self.wfile.write(bytes(json.dumps(response).encode()))
 
     # noinspection PyPep8Naming
     def do_POST(self):
