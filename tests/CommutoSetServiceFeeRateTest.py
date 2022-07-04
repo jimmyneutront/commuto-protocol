@@ -56,8 +56,7 @@ class CommutoSetServiceFeeRateTest(CommutoSwapTest.CommutoSwapTest):
             "securityDepositAmount": 1000,
             "serviceFeeRate": 200,
             "direction": 1,
-            "price": HexBytes("a price here".encode("utf-8").hex()),
-            "settlementMethods": ["USD-SWIFT".encode("utf-8"), ],
+            "settlementMethods": ["USD-SWIFT|a price here".encode("utf-8"), ],
             "protocolVersion": 1,
         }
         self.test_dai_contract.functions.increaseAllowance(
@@ -86,8 +85,7 @@ class CommutoSetServiceFeeRateTest(CommutoSwapTest.CommutoSwapTest):
             "serviceFeeAmount": 200,
             "serviceFeeRate": 200,
             "direction": 1,
-            "price": HexBytes("a price here".encode("utf-8").hex()),
-            "settlementMethod": "USD-SWIFT".encode("utf-8"),
+            "settlementMethod": "USD-SWIFT|a price here".encode("utf-8"),
             "protocolVersion": 1,
             "isPaymentSent": True,
             "isPaymentReceived": True,

@@ -25,8 +25,7 @@ class CommutoTakeOfferTest(CommutoSwapTest.CommutoSwapTest):
                 "serviceFeeAmount": 100,
                 "serviceFeeRate": 100,
                 "direction": 1,
-                "price": HexBytes("a price here".encode("utf-8").hex()),
-                "settlementMethod": "USD-SWIFT".encode("utf-8"),
+                "settlementMethod": "USD-SWIFT|a price here".encode("utf-8"),
                 "protocolVersion": 1,
                 "isPaymentSent": True,
                 "isPaymentReceived": True,
@@ -62,8 +61,7 @@ class CommutoTakeOfferTest(CommutoSwapTest.CommutoSwapTest):
                 "securityDepositAmount": 1000,
                 "serviceFeeRate": 100,
                 "direction": 1,
-                "price": HexBytes("a price here".encode("utf-8").hex()),
-                "settlementMethods": ["USD-SWIFT".encode("utf-8"), ],
+                "settlementMethods": ["USD-SWIFT|a price here".encode("utf-8"), ],
                 "protocolVersion": 1,
             }
             self.test_dai_contract.functions.increaseAllowance(
@@ -92,8 +90,7 @@ class CommutoTakeOfferTest(CommutoSwapTest.CommutoSwapTest):
                 "serviceFeeAmount": 100,
                 "serviceFeeRate": 100,
                 "direction": 1,
-                "price": HexBytes("a price here".encode("utf-8").hex()),
-                "settlementMethod": "USD-SWIFT".encode("utf-8"),
+                "settlementMethod": "USD-SWIFT|a price here".encode("utf-8"),
                 "protocolVersion": 1,
                 "isPaymentSent": True,
                 "isPaymentReceived": True,
@@ -137,8 +134,7 @@ class CommutoTakeOfferTest(CommutoSwapTest.CommutoSwapTest):
                 "securityDepositAmount": 1000,
                 "serviceFeeRate": 100,
                 "direction": 1,
-                "price": HexBytes("a price here".encode("utf-8").hex()),
-                "settlementMethods": ["USD-SWIFT".encode("utf-8"), ],
+                "settlementMethods": ["USD-SWIFT|a price here".encode("utf-8"), ],
                 "protocolVersion": 1,
             }
             self.test_dai_contract.functions.increaseAllowance(
@@ -167,8 +163,7 @@ class CommutoTakeOfferTest(CommutoSwapTest.CommutoSwapTest):
                 "serviceFeeAmount": 100,
                 "serviceFeeRate": 100,
                 "direction": 1,
-                "price": HexBytes("a price here".encode("utf-8").hex()),
-                "settlementMethod": "USD-SWIFT".encode("utf-8"),
+                "settlementMethod": "USD-SWIFT|a price here".encode("utf-8"),
                 "protocolVersion": 1,
                 "isPaymentSent": True,
                 "isPaymentReceived": True,
@@ -204,8 +199,7 @@ class CommutoTakeOfferTest(CommutoSwapTest.CommutoSwapTest):
                 "securityDepositAmount": 1000,
                 "serviceFeeRate": 100,
                 "direction": 1,
-                "price": HexBytes("a price here".encode("utf-8").hex()),
-                "settlementMethods": ["USD-SWIFT".encode("utf-8"), ],
+                "settlementMethods": ["USD-SWIFT|a price here".encode("utf-8"), ],
                 "protocolVersion": 1,
             }
             self.test_dai_contract.functions.increaseAllowance(
@@ -234,8 +228,7 @@ class CommutoTakeOfferTest(CommutoSwapTest.CommutoSwapTest):
                 "serviceFeeAmount": 100,
                 "serviceFeeRate": 100,
                 "direction": 1,
-                "price": HexBytes("a price here".encode("utf-8").hex()),
-                "settlementMethod": "USD-SWIFT".encode("utf-8"),
+                "settlementMethod": "USD-SWIFT|a price here".encode("utf-8"),
                 "protocolVersion": 1,
                 "isPaymentSent": True,
                 "isPaymentReceived": True,
@@ -271,8 +264,7 @@ class CommutoTakeOfferTest(CommutoSwapTest.CommutoSwapTest):
                 "securityDepositAmount": 1000,
                 "serviceFeeRate": 100,
                 "direction": 1,
-                "price": HexBytes("a price here".encode("utf-8").hex()),
-                "settlementMethods": ["USD-SWIFT".encode("utf-8"), ],
+                "settlementMethods": ["USD-SWIFT|a price here".encode("utf-8"), ],
                 "protocolVersion": 1,
             }
             self.test_dai_contract.functions.increaseAllowance(
@@ -301,8 +293,7 @@ class CommutoTakeOfferTest(CommutoSwapTest.CommutoSwapTest):
                 "serviceFeeAmount": 100,
                 "serviceFeeRate": 100,
                 "direction": 1,
-                "price": HexBytes("a price here".encode("utf-8").hex()),
-                "settlementMethod": "USD-SWIFT".encode("utf-8"),
+                "settlementMethod": "USD-SWIFT|a price here".encode("utf-8"),
                 "protocolVersion": 1,
                 "isPaymentSent": True,
                 "isPaymentReceived": True,
@@ -338,8 +329,7 @@ class CommutoTakeOfferTest(CommutoSwapTest.CommutoSwapTest):
                 "securityDepositAmount": 1000,
                 "serviceFeeRate": 100,
                 "direction": 1,
-                "price": HexBytes("a price here".encode("utf-8").hex()),
-                "settlementMethods": ["USD-SWIFT".encode("utf-8"), ],
+                "settlementMethods": ["USD-SWIFT|a price here".encode("utf-8"), ],
                 "protocolVersion": 1,
             }
             self.test_dai_contract.functions.increaseAllowance(
@@ -368,8 +358,7 @@ class CommutoTakeOfferTest(CommutoSwapTest.CommutoSwapTest):
                 "serviceFeeAmount": 100,
                 "serviceFeeRate": 100,
                 "direction": 1,
-                "price": HexBytes("a price here".encode("utf-8").hex()),
-                "settlementMethod": "USD-SWIFT".encode("utf-8"),
+                "settlementMethod": "USD-SWIFT|a price here".encode("utf-8"),
                 "protocolVersion": 1,
                 "isPaymentSent": True,
                 "isPaymentReceived": True,
@@ -405,8 +394,7 @@ class CommutoTakeOfferTest(CommutoSwapTest.CommutoSwapTest):
                 "securityDepositAmount": 1000,
                 "serviceFeeRate": 100,
                 "direction": 1,
-                "price": HexBytes("a price here".encode("utf-8").hex()),
-                "settlementMethods": ["USD-SWIFT".encode("utf-8"), ],
+                "settlementMethods": ["USD-SWIFT|a price here".encode("utf-8"), ],
                 "protocolVersion": 1,
             }
             self.test_dai_contract.functions.increaseAllowance(
@@ -435,8 +423,7 @@ class CommutoTakeOfferTest(CommutoSwapTest.CommutoSwapTest):
                 "serviceFeeAmount": 100,
                 "serviceFeeRate": 100,
                 "direction": 1,
-                "price": HexBytes("a price here".encode("utf-8").hex()),
-                "settlementMethod": "USD-SWIFT".encode("utf-8"),
+                "settlementMethod": "USD-SWIFT|a price here".encode("utf-8"),
                 "protocolVersion": 1,
                 "isPaymentSent": True,
                 "isPaymentReceived": True,
@@ -472,8 +459,7 @@ class CommutoTakeOfferTest(CommutoSwapTest.CommutoSwapTest):
                 "securityDepositAmount": 1000,
                 "serviceFeeRate": 100,
                 "direction": 1,
-                "price": HexBytes("a price here".encode("utf-8").hex()),
-                "settlementMethods": ["USD-SWIFT".encode("utf-8"), ],
+                "settlementMethods": ["USD-SWIFT|a price here".encode("utf-8"), ],
                 "protocolVersion": 1,
             }
             self.test_dai_contract.functions.increaseAllowance(
@@ -502,8 +488,7 @@ class CommutoTakeOfferTest(CommutoSwapTest.CommutoSwapTest):
                 "serviceFeeAmount": 100,
                 "serviceFeeRate": 100,
                 "direction": 1,
-                "price": HexBytes("a price here".encode("utf-8").hex()),
-                "settlementMethod": "USD-SWIFT".encode("utf-8"),
+                "settlementMethod": "USD-SWIFT|a price here".encode("utf-8"),
                 "protocolVersion": 1,
                 "isPaymentSent": True,
                 "isPaymentReceived": True,
@@ -539,8 +524,7 @@ class CommutoTakeOfferTest(CommutoSwapTest.CommutoSwapTest):
                 "securityDepositAmount": 1000,
                 "serviceFeeRate": 100,
                 "direction": 1,
-                "price": HexBytes("a price here".encode("utf-8").hex()),
-                "settlementMethods": ["USD-SWIFT".encode("utf-8"), ],
+                "settlementMethods": ["USD-SWIFT|a price here".encode("utf-8"), ],
                 "protocolVersion": 1,
             }
             self.test_dai_contract.functions.increaseAllowance(
@@ -569,8 +553,7 @@ class CommutoTakeOfferTest(CommutoSwapTest.CommutoSwapTest):
                 "serviceFeeAmount": 100,
                 "serviceFeeRate": 100,
                 "direction": 1,
-                "price": HexBytes("a price here".encode("utf-8").hex()),
-                "settlementMethod": "USD-SWIFT".encode("utf-8"),
+                "settlementMethod": "USD-SWIFT|a price here".encode("utf-8"),
                 "protocolVersion": 1,
                 "isPaymentSent": True,
                 "isPaymentReceived": True,
@@ -607,8 +590,7 @@ class CommutoTakeOfferTest(CommutoSwapTest.CommutoSwapTest):
                 "securityDepositAmount": 1000,
                 "serviceFeeRate": 100,
                 "direction": 1,
-                "price": HexBytes("a price here".encode("utf-8").hex()),
-                "settlementMethods": ["USD-SWIFT".encode("utf-8"), ],
+                "settlementMethods": ["USD-SWIFT|a price here".encode("utf-8"), ],
                 "protocolVersion": 1,
             }
             self.test_dai_contract.functions.increaseAllowance(
@@ -637,8 +619,7 @@ class CommutoTakeOfferTest(CommutoSwapTest.CommutoSwapTest):
                 "serviceFeeAmount": 100,
                 "serviceFeeRate": 100,
                 "direction": 1,
-                "price": HexBytes("a price here".encode("utf-8").hex()),
-                "settlementMethod": "USD-SWIFT".encode("utf-8"),
+                "settlementMethod": "USD-SWIFT|a price here".encode("utf-8"),
                 "protocolVersion": 1,
                 "isPaymentSent": True,
                 "isPaymentReceived": True,
@@ -675,8 +656,7 @@ class CommutoTakeOfferTest(CommutoSwapTest.CommutoSwapTest):
                 "securityDepositAmount": 1000,
                 "serviceFeeRate": 100,
                 "direction": 1,
-                "price": HexBytes("a price here".encode("utf-8").hex()),
-                "settlementMethods": ["USD-SWIFT".encode("utf-8"), ],
+                "settlementMethods": ["USD-SWIFT|a price here".encode("utf-8"), ],
                 "protocolVersion": 1,
             }
             self.test_dai_contract.functions.increaseAllowance(
@@ -705,8 +685,7 @@ class CommutoTakeOfferTest(CommutoSwapTest.CommutoSwapTest):
                 "serviceFeeAmount": 100,
                 "serviceFeeRate": 100,
                 "direction": 0,
-                "price": HexBytes("a price here".encode("utf-8").hex()),
-                "settlementMethod": "USD-SWIFT".encode("utf-8"),
+                "settlementMethod": "USD-SWIFT|a price here".encode("utf-8"),
                 "protocolVersion": 1,
                 "isPaymentSent": True,
                 "isPaymentReceived": True,
@@ -722,140 +701,6 @@ class CommutoTakeOfferTest(CommutoSwapTest.CommutoSwapTest):
         except ValueError as e:
             # "e28":"Directions must match"
             if not "e28" in str(e):
-                raise e
-
-    def test_takeOffer_price_match_check(self):
-        #Ensure takeOffer requires matching prices
-        try:
-            newOfferID = HexBytes(uuid4().bytes)
-            tx_details = {
-                "from": self.maker_address
-            }
-            newOffer = {
-                "isCreated": True,
-                "isTaken": True,
-                "maker": self.maker_address,
-                "interfaceId": HexBytes("an interface Id here".encode("utf-8").hex()),
-                "stablecoin": self.dai_deployment_tx_receipt.contractAddress,
-                "amountLowerBound": 10000,
-                "amountUpperBound": 10000,
-                "securityDepositAmount": 1000,
-                "serviceFeeRate": 100,
-                "direction": 1,
-                "price": HexBytes("a price here".encode("utf-8").hex()),
-                "settlementMethods": ["USD-SWIFT".encode("utf-8"), ],
-                "protocolVersion": 1,
-            }
-            self.test_dai_contract.functions.increaseAllowance(
-                self.commuto_swap_deployment_tx_receipt.contractAddress,
-                1100,
-            ).transact(tx_details)
-            self.commuto_swap_contract.functions.openOffer(
-                newOfferID,
-                newOffer,
-            ).transact(tx_details)
-            tx_details = {
-                "from": self.taker_address
-            }
-            newSwap = {
-                "isCreated": False,
-                "requiresFill": True,
-                "maker": self.maker_address,
-                "makerInterfaceId": HexBytes("an interface Id here".encode("utf-8").hex()),
-                "taker": self.taker_address,
-                "takerInterfaceId": HexBytes("an interface Id here".encode("utf-8").hex()),
-                "stablecoin": self.dai_deployment_tx_receipt.contractAddress,
-                "amountLowerBound": 10000,
-                "amountUpperBound": 10000,
-                "securityDepositAmount": 1000,
-                "takenSwapAmount": 10000,
-                "serviceFeeAmount": 100,
-                "serviceFeeRate": 100,
-                "direction": 1,
-                "price": HexBytes("an incorrect price here".encode("utf-8").hex()),
-                "settlementMethod": "USD-SWIFT".encode("utf-8"),
-                "protocolVersion": 1,
-                "isPaymentSent": True,
-                "isPaymentReceived": True,
-                "hasBuyerClosed": True,
-                "hasSellerClosed": True,
-                "disputeRaiser": 0,
-            }
-            self.commuto_swap_contract.functions.takeOffer(
-                newOfferID,
-                newSwap,
-            ).transact(tx_details)
-            raise (Exception("test_takeOffer_price_match_check failed without raising exception"))
-        except ValueError as e:
-            # "e29":"Prices must match"
-            if not "e29" in str(e):
-                raise e
-
-    def test_takeOffer_settlement_method_support_check(self):
-        #Ensure takeOffer requires a supported settlement method
-        try:
-            newOfferID = HexBytes(uuid4().bytes)
-            tx_details = {
-                "from": self.maker_address
-            }
-            newOffer = {
-                "isCreated": True,
-                "isTaken": True,
-                "maker": self.maker_address,
-                "interfaceId": HexBytes("an interface Id here".encode("utf-8").hex()),
-                "stablecoin": self.dai_deployment_tx_receipt.contractAddress,
-                "amountLowerBound": 10000,
-                "amountUpperBound": 10000,
-                "securityDepositAmount": 1000,
-                "serviceFeeRate": 100,
-                "direction": 1,
-                "price": HexBytes("a price here".encode("utf-8").hex()),
-                "settlementMethods": ["USD-SWIFT".encode("utf-8"), ],
-                "protocolVersion": 1,
-            }
-            self.test_dai_contract.functions.increaseAllowance(
-                self.commuto_swap_deployment_tx_receipt.contractAddress,
-                1100,
-            ).transact(tx_details)
-            self.commuto_swap_contract.functions.openOffer(
-                newOfferID,
-                newOffer,
-            ).transact(tx_details)
-            tx_details = {
-                "from": self.taker_address
-            }
-            newSwap = {
-                "isCreated": False,
-                "requiresFill": True,
-                "maker": self.maker_address,
-                "makerInterfaceId": HexBytes("an interface Id here".encode("utf-8").hex()),
-                "taker": self.taker_address,
-                "takerInterfaceId": HexBytes("an interface Id here".encode("utf-8").hex()),
-                "stablecoin": self.dai_deployment_tx_receipt.contractAddress,
-                "amountLowerBound": 10000,
-                "amountUpperBound": 10000,
-                "securityDepositAmount": 1000,
-                "takenSwapAmount": 10000,
-                "serviceFeeAmount": 100,
-                "serviceFeeRate": 100,
-                "direction": 1,
-                "price": HexBytes("a price here".encode("utf-8").hex()),
-                "settlementMethod": "NEX-Random".encode("utf-8"),
-                "protocolVersion": 1,
-                "isPaymentSent": True,
-                "isPaymentReceived": True,
-                "hasBuyerClosed": True,
-                "hasSellerClosed": True,
-                "disputeRaiser": 0,
-            }
-            self.commuto_swap_contract.functions.takeOffer(
-                newOfferID,
-                newSwap,
-            ).transact(tx_details)
-            raise (Exception("test_takeOffer_settlement_method_support_check failed without raising exception"))
-        except ValueError as e:
-            # "e46": "Settlement method must be supported"
-            if not "e46" in str(e):
                 raise e
 
     def test_takeOffer_settlement_method_accepted_check(self):
@@ -876,8 +721,7 @@ class CommutoTakeOfferTest(CommutoSwapTest.CommutoSwapTest):
                 "securityDepositAmount": 1000,
                 "serviceFeeRate": 100,
                 "direction": 1,
-                "price": HexBytes("a price here".encode("utf-8").hex()),
-                "settlementMethods": ["USD-SWIFT".encode("utf-8"), ],
+                "settlementMethods": ["USD-SWIFT|a price here".encode("utf-8"), ],
                 "protocolVersion": 1,
             }
             self.test_dai_contract.functions.increaseAllowance(
@@ -906,8 +750,7 @@ class CommutoTakeOfferTest(CommutoSwapTest.CommutoSwapTest):
                 "serviceFeeAmount": 100,
                 "serviceFeeRate": 100,
                 "direction": 1,
-                "price": HexBytes("a price here".encode("utf-8").hex()),
-                "settlementMethod": "EUR-SEPA".encode("utf-8"),
+                "settlementMethod": "EUR-SEPA|a price here".encode("utf-8"),
                 "protocolVersion": 1,
                 "isPaymentSent": True,
                 "isPaymentReceived": True,
@@ -945,8 +788,7 @@ class CommutoTakeOfferTest(CommutoSwapTest.CommutoSwapTest):
                 "securityDepositAmount": 1000,
                 "serviceFeeRate": 100,
                 "direction": 1,
-                "price": HexBytes("a price here".encode("utf-8").hex()),
-                "settlementMethods": ["USD-SWIFT".encode("utf-8"), ],
+                "settlementMethods": ["USD-SWIFT|a price here".encode("utf-8"), ],
                 "protocolVersion": 1,
             }
             self.test_dai_contract.functions.increaseAllowance(
@@ -975,8 +817,7 @@ class CommutoTakeOfferTest(CommutoSwapTest.CommutoSwapTest):
                 "serviceFeeAmount": 100,
                 "serviceFeeRate": 100,
                 "direction": 1,
-                "price": HexBytes("a price here".encode("utf-8").hex()),
-                "settlementMethod": "USD-SWIFT".encode("utf-8"),
+                "settlementMethod": "USD-SWIFT|a price here".encode("utf-8"),
                 "protocolVersion": 1,
                 "isPaymentSent": True,
                 "isPaymentReceived": True,

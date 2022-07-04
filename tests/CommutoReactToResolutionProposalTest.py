@@ -22,8 +22,7 @@ class CommutoReactToResolutionProposalTest(CommutoSwapTest.CommutoSwapTest):
                 "securityDepositAmount": 1000,
                 "serviceFeeRate": 100,
                 "direction": 1,
-                "price": HexBytes("a price here".encode("utf-8").hex()),
-                "settlementMethods": ["USD-SWIFT".encode("utf-8"), ],
+                "settlementMethods": ["USD-SWIFT|a price here".encode("utf-8"), ],
                 "protocolVersion": 1,
             }
             self.test_dai_contract.functions.increaseAllowance(
@@ -52,8 +51,7 @@ class CommutoReactToResolutionProposalTest(CommutoSwapTest.CommutoSwapTest):
                 "serviceFeeAmount": 100,
                 "serviceFeeRate": 100,
                 "direction": 1,
-                "price": HexBytes("a price here".encode("utf-8").hex()),
-                "settlementMethod": "USD-SWIFT".encode("utf-8"),
+                "settlementMethod": "USD-SWIFT|a price here".encode("utf-8"),
                 "protocolVersion": 1,
                 "isPaymentSent": True,
                 "isPaymentReceived": True,
@@ -88,6 +86,7 @@ class CommutoReactToResolutionProposalTest(CommutoSwapTest.CommutoSwapTest):
                 raise e
 
     def test_reactToResolutionProposal_not_no_reaction_check(self):
+        # Ensure a swapper cannot react with no reaction
         try:
             newOfferID = HexBytes(uuid4().bytes)
             tx_details = {
@@ -104,8 +103,7 @@ class CommutoReactToResolutionProposalTest(CommutoSwapTest.CommutoSwapTest):
                 "securityDepositAmount": 1000,
                 "serviceFeeRate": 100,
                 "direction": 1,
-                "price": HexBytes("a price here".encode("utf-8").hex()),
-                "settlementMethods": ["USD-SWIFT".encode("utf-8"), ],
+                "settlementMethods": ["USD-SWIFT|a price here".encode("utf-8"), ],
                 "protocolVersion": 1,
             }
             self.test_dai_contract.functions.increaseAllowance(
@@ -134,8 +132,7 @@ class CommutoReactToResolutionProposalTest(CommutoSwapTest.CommutoSwapTest):
                 "serviceFeeAmount": 100,
                 "serviceFeeRate": 100,
                 "direction": 1,
-                "price": HexBytes("a price here".encode("utf-8").hex()),
-                "settlementMethod": "USD-SWIFT".encode("utf-8"),
+                "settlementMethod": "USD-SWIFT|a price here".encode("utf-8"),
                 "protocolVersion": 1,
                 "isPaymentSent": True,
                 "isPaymentReceived": True,
@@ -173,6 +170,7 @@ class CommutoReactToResolutionProposalTest(CommutoSwapTest.CommutoSwapTest):
                 raise e
 
     def test_reactToResolutionProposal_maker_duplicate_call_prevention_check(self):
+        # Ensure the maker cannot react to a resolution proposal more than once
         try:
             newOfferID = HexBytes(uuid4().bytes)
             tx_details = {
@@ -189,8 +187,7 @@ class CommutoReactToResolutionProposalTest(CommutoSwapTest.CommutoSwapTest):
                 "securityDepositAmount": 1000,
                 "serviceFeeRate": 100,
                 "direction": 1,
-                "price": HexBytes("a price here".encode("utf-8").hex()),
-                "settlementMethods": ["USD-SWIFT".encode("utf-8"), ],
+                "settlementMethods": ["USD-SWIFT|a price here".encode("utf-8"), ],
                 "protocolVersion": 1,
             }
             self.test_dai_contract.functions.increaseAllowance(
@@ -219,8 +216,7 @@ class CommutoReactToResolutionProposalTest(CommutoSwapTest.CommutoSwapTest):
                 "serviceFeeAmount": 100,
                 "serviceFeeRate": 100,
                 "direction": 1,
-                "price": HexBytes("a price here".encode("utf-8").hex()),
-                "settlementMethod": "USD-SWIFT".encode("utf-8"),
+                "settlementMethod": "USD-SWIFT|a price here".encode("utf-8"),
                 "protocolVersion": 1,
                 "isPaymentSent": True,
                 "isPaymentReceived": True,
@@ -263,6 +259,7 @@ class CommutoReactToResolutionProposalTest(CommutoSwapTest.CommutoSwapTest):
                 raise e
 
     def test_reactToResolutionProposal_taker_duplicate_call_prevention_check(self):
+        # Ensure the maker cannot react to a resolution proposal more than once
         try:
             newOfferID = HexBytes(uuid4().bytes)
             tx_details = {
@@ -279,8 +276,7 @@ class CommutoReactToResolutionProposalTest(CommutoSwapTest.CommutoSwapTest):
                 "securityDepositAmount": 1000,
                 "serviceFeeRate": 100,
                 "direction": 1,
-                "price": HexBytes("a price here".encode("utf-8").hex()),
-                "settlementMethods": ["USD-SWIFT".encode("utf-8"), ],
+                "settlementMethods": ["USD-SWIFT|a price here".encode("utf-8"), ],
                 "protocolVersion": 1,
             }
             self.test_dai_contract.functions.increaseAllowance(
@@ -309,8 +305,7 @@ class CommutoReactToResolutionProposalTest(CommutoSwapTest.CommutoSwapTest):
                 "serviceFeeAmount": 100,
                 "serviceFeeRate": 100,
                 "direction": 1,
-                "price": HexBytes("a price here".encode("utf-8").hex()),
-                "settlementMethod": "USD-SWIFT".encode("utf-8"),
+                "settlementMethod": "USD-SWIFT|a price here".encode("utf-8"),
                 "protocolVersion": 1,
                 "isPaymentSent": True,
                 "isPaymentReceived": True,
@@ -348,7 +343,7 @@ class CommutoReactToResolutionProposalTest(CommutoSwapTest.CommutoSwapTest):
             raise (Exception(
                 "test_reactToResolutionProposal_taker_duplicate_call_prevention_check failed without raising exception"))
         except ValueError as e:
-            #"e60": "Maker can't react to resolution proposal more than once"
+            #"e60": "Taker can't react to resolution proposal more than once"
             if not "e60" in str(e):
                 raise e
 
@@ -370,8 +365,7 @@ class CommutoReactToResolutionProposalTest(CommutoSwapTest.CommutoSwapTest):
                 "securityDepositAmount": 1000,
                 "serviceFeeRate": 100,
                 "direction": 1,
-                "price": HexBytes("a price here".encode("utf-8").hex()),
-                "settlementMethods": ["USD-SWIFT".encode("utf-8"), ],
+                "settlementMethods": ["USD-SWIFT|a price here".encode("utf-8"), ],
                 "protocolVersion": 1,
             }
             self.test_dai_contract.functions.increaseAllowance(
@@ -400,8 +394,7 @@ class CommutoReactToResolutionProposalTest(CommutoSwapTest.CommutoSwapTest):
                 "serviceFeeAmount": 100,
                 "serviceFeeRate": 100,
                 "direction": 1,
-                "price": HexBytes("a price here".encode("utf-8").hex()),
-                "settlementMethod": "USD-SWIFT".encode("utf-8"),
+                "settlementMethod": "USD-SWIFT|a price here".encode("utf-8"),
                 "protocolVersion": 1,
                 "isPaymentSent": True,
                 "isPaymentReceived": True,
@@ -467,8 +460,7 @@ class CommutoReactToResolutionProposalTest(CommutoSwapTest.CommutoSwapTest):
             "securityDepositAmount": 1000,
             "serviceFeeRate": 100,
             "direction": 1,
-            "price": HexBytes("a price here".encode("utf-8").hex()),
-            "settlementMethods": ["USD-SWIFT".encode("utf-8"), ],
+            "settlementMethods": ["USD-SWIFT|a price here".encode("utf-8"), ],
             "protocolVersion": 1,
         }
         self.test_dai_contract.functions.increaseAllowance(
@@ -497,8 +489,7 @@ class CommutoReactToResolutionProposalTest(CommutoSwapTest.CommutoSwapTest):
             "serviceFeeAmount": 100,
             "serviceFeeRate": 100,
             "direction": 1,
-            "price": HexBytes("a price here".encode("utf-8").hex()),
-            "settlementMethod": "USD-SWIFT".encode("utf-8"),
+            "settlementMethod": "USD-SWIFT|a price here".encode("utf-8"),
             "protocolVersion": 1,
             "isPaymentSent": True,
             "isPaymentReceived": True,
@@ -543,6 +534,7 @@ class CommutoReactToResolutionProposalTest(CommutoSwapTest.CommutoSwapTest):
         self.assertEqual(events[0]["args"]["reaction"], 1)
 
     def test_reactToResolutionProposal_not_escalated_check(self):
+        # Ensure that a resolution cannot be submitted for an escalated swap
         try:
             newOfferID = HexBytes(uuid4().bytes)
             DisputeEscalated_event_filter = self.commuto_swap_contract.events.DisputeEscalated \
@@ -565,8 +557,7 @@ class CommutoReactToResolutionProposalTest(CommutoSwapTest.CommutoSwapTest):
                 "securityDepositAmount": 1000,
                 "serviceFeeRate": 100,
                 "direction": 1,
-                "price": HexBytes("a price here".encode("utf-8").hex()),
-                "settlementMethods": ["USD-SWIFT".encode("utf-8"), ],
+                "settlementMethods": ["USD-SWIFT|a price here".encode("utf-8"), ],
                 "protocolVersion": 1,
             }
             self.test_dai_contract.functions.increaseAllowance(
@@ -595,8 +586,7 @@ class CommutoReactToResolutionProposalTest(CommutoSwapTest.CommutoSwapTest):
                 "serviceFeeAmount": 100,
                 "serviceFeeRate": 100,
                 "direction": 1,
-                "price": HexBytes("a price here".encode("utf-8").hex()),
-                "settlementMethod": "USD-SWIFT".encode("utf-8"),
+                "settlementMethod": "USD-SWIFT|a price here".encode("utf-8"),
                 "protocolVersion": 1,
                 "isPaymentSent": True,
                 "isPaymentReceived": True,

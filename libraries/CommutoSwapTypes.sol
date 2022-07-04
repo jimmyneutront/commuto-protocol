@@ -54,7 +54,6 @@ struct Offer {
     uint256 securityDepositAmount;
     uint256 serviceFeeRate;
     SwapDirection direction;
-    bytes price;
     bytes[] settlementMethods;
     uint256 protocolVersion;
 }
@@ -74,7 +73,6 @@ struct Swap {
     uint256 serviceFeeAmount;
     uint256 serviceFeeRate;
     SwapDirection direction;
-    bytes price;
     bytes settlementMethod;
     uint256 protocolVersion;
     bool isPaymentSent;

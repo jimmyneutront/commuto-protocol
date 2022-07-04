@@ -18,27 +18,21 @@ contract CommutoSwapOfferEditor is CommutoSwapStorage{
     This function should only be called by CommutoSwap's editOffer function. No attempt to edit an offer by directly
     calling this method will succeed.
     */
-    function editOffer(bytes16 offerID, Offer memory editedOffer, bool editPrice, bool editSettlementMethods) public {
+    function editOffer(bytes16 offerID, Offer memory editedOffer) public {
         //Validate arguments
         require(offers[offerID].isCreated, "e15"); //"e15": "An offer with the specified id does not exist"
         require(!offers[offerID].isTaken, "e16"); //"e16": "Offer is taken and cannot be mutated"
         require(offers[offerID].maker == msg.sender, "e17"); //"e17": "Offers can only be mutated by offer maker"
 
-        if (editPrice) {
-            offers[offerID].price = editedOffer.price;
+        //Delete records of supported settlement methods in preparation for updated info
+        for (uint i = 0; i < offers[offerID].settlementMethods.length; i++) {
+            offerSettlementMethods[offerID][offers[offerID].settlementMethods[i]] = false;
         }
-
-        if (editSettlementMethods) {
-            //Delete records of supported settlement methods in preparation for updated info
-            for (uint i = 0; i < offers[offerID].settlementMethods.length; i++) {
-                offerSettlementMethods[offerID][offers[offerID].settlementMethods[i]] = false;
-            }
-            //Record new supported settlement methods
-            for (uint i = 0; i < editedOffer.settlementMethods.length; i++) {
-                offerSettlementMethods[offerID][editedOffer.settlementMethods[i]] = true;
-            }
-            offers[offerID].settlementMethods = editedOffer.settlementMethods;
+        //Record new supported settlement methods
+        for (uint i = 0; i < editedOffer.settlementMethods.length; i++) {
+            offerSettlementMethods[offerID][editedOffer.settlementMethods[i]] = true;
         }
+        offers[offerID].settlementMethods = editedOffer.settlementMethods;
 
         //Notify that offer has been edited
         emit OfferEdited(offerID);

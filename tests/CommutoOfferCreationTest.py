@@ -21,8 +21,7 @@ class CommutoOfferCreationTest(CommutoSwapTest.CommutoSwapTest):
                 "securityDepositAmount": 1000,
                 "serviceFeeRate": 100,
                 "direction": 1,
-                "price": HexBytes("a price here".encode("utf-8").hex()),
-                "settlementMethods": ["USD-SWIFT".encode("utf-8"), ],
+                "settlementMethods": ["USD-SWIFT|a price here".encode("utf-8"), ],
                 "protocolVersion": 1,
             }
             self.commuto_swap_contract.functions.openOffer(
@@ -53,8 +52,7 @@ class CommutoOfferCreationTest(CommutoSwapTest.CommutoSwapTest):
                 "securityDepositAmount": 1000,
                 "serviceFeeRate": 100,
                 "direction": 1,
-                "price": HexBytes("a price here".encode("utf-8").hex()),
-                "settlementMethods": ["USD-SWIFT".encode("utf-8"), ],
+                "settlementMethods": ["USD-SWIFT|a price here".encode("utf-8"), ],
                 "protocolVersion": 1,
             }
             self.commuto_swap_contract.functions.openOffer(
@@ -86,8 +84,7 @@ class CommutoOfferCreationTest(CommutoSwapTest.CommutoSwapTest):
                 "securityDepositAmount": 900,
                 "serviceFeeRate": 100,
                 "direction": 1,
-                "price": HexBytes("a price here".encode("utf-8").hex()),
-                "settlementMethods": ["USD-SWIFT".encode("utf-8"), ],
+                "settlementMethods": ["USD-SWIFT|a price here".encode("utf-8"), ],
                 "protocolVersion": 1,
             }
             self.commuto_swap_contract.functions.openOffer(
@@ -118,8 +115,7 @@ class CommutoOfferCreationTest(CommutoSwapTest.CommutoSwapTest):
                 "securityDepositAmount": 1000,
                 "serviceFeeRate": 100,
                 "direction": 1,
-                "price": HexBytes("a price here".encode("utf-8").hex()),
-                "settlementMethods": ["USD-SWIFT".encode("utf-8"), ],
+                "settlementMethods": ["USD-SWIFT|a price here".encode("utf-8"), ],
                 "protocolVersion": 1,
             }
             self.commuto_swap_contract.functions.openOffer(
@@ -152,8 +148,7 @@ class CommutoOfferCreationTest(CommutoSwapTest.CommutoSwapTest):
                 "securityDepositAmount": 1000,
                 "serviceFeeRate": 100,
                 "direction": 1,
-                "price": HexBytes("a price here".encode("utf-8").hex()),
-                "settlementMethods": ["USD-SWIFT".encode("utf-8"), ],
+                "settlementMethods": ["USD-SWIFT|a price here".encode("utf-8"), ],
                 "protocolVersion": 1,
             }
             response = self.commuto_swap_contract.functions.openOffer(
@@ -190,8 +185,7 @@ class CommutoOfferCreationTest(CommutoSwapTest.CommutoSwapTest):
                 "securityDepositAmount": 1000,
                 "serviceFeeRate": 100,
                 "direction": 1,
-                "price": HexBytes("a price here".encode("utf-8").hex()),
-                "settlementMethods": ["USD-SWIFT".encode("utf-8"), ],
+                "settlementMethods": ["USD-SWIFT|a price here".encode("utf-8"), ],
                 "protocolVersion": 1,
             }
             self.test_dai_contract.functions.increaseAllowance(
@@ -228,8 +222,7 @@ class CommutoOfferCreationTest(CommutoSwapTest.CommutoSwapTest):
                 "securityDepositAmount": 1000,
                 "serviceFeeRate": 100,
                 "direction": 1,
-                "price": HexBytes("a price here".encode("utf-8").hex()),
-                "settlementMethods": ["USD-SWIFT".encode("utf-8"), ],
+                "settlementMethods": ["USD-SWIFT|a price here".encode("utf-8"), ],
                 "protocolVersion": 1,
             }
             self.test_dai_contract.functions.increaseAllowance(
@@ -254,8 +247,7 @@ class CommutoOfferCreationTest(CommutoSwapTest.CommutoSwapTest):
                 "securityDepositAmount": 1000,
                 "serviceFeeRate": 100,
                 "direction": 1,
-                "price": HexBytes("a price here".encode("utf-8").hex()),
-                "settlementMethods": ["USD-SWIFT".encode("utf-8"), ],
+                "settlementMethods": ["USD-SWIFT|a price here".encode("utf-8"), ],
                 "protocolVersion": 1,
             }
             self.test_dai_contract.functions.increaseAllowance(

@@ -21,15 +21,12 @@ class CommutoEditOfferTest(CommutoSwapTest.CommutoSwapTest):
                 "securityDepositAmount": 1000,
                 "serviceFeeRate": 100,
                 "direction": 1,
-                "price": HexBytes("a price here".encode("utf-8").hex()),
-                "settlementMethods": ["USD-SWIFT".encode("utf-8"), ],
+                "settlementMethods": ["USD-SWIFT|a price here".encode("utf-8"), ],
                 "protocolVersion": 1,
             }
             self.commuto_swap_contract.functions.editOffer(
                 uuid4().bytes,
                 editedOffer,
-                True,
-                True,
             ).transact(tx_details)
             raise (Exception("test_editOffer_existence_check failed without raising exception"))
         except ValueError as e:
@@ -55,8 +52,7 @@ class CommutoEditOfferTest(CommutoSwapTest.CommutoSwapTest):
                 "securityDepositAmount": 1000,
                 "serviceFeeRate": 100,
                 "direction": 1,
-                "price": HexBytes("a price here".encode("utf-8").hex()),
-                "settlementMethods": ["USD-SWIFT".encode("utf-8"), ],
+                "settlementMethods": ["USD-SWIFT|a price here".encode("utf-8"), ],
                 "protocolVersion": 1,
             }
             self.test_dai_contract.functions.increaseAllowance(
@@ -85,8 +81,7 @@ class CommutoEditOfferTest(CommutoSwapTest.CommutoSwapTest):
                 "serviceFeeAmount": 100,
                 "serviceFeeRate": 100,
                 "direction": 1,
-                "price": HexBytes("a price here".encode("utf-8").hex()),
-                "settlementMethod": "USD-SWIFT".encode("utf-8"),
+                "settlementMethod": "USD-SWIFT|a price here".encode("utf-8"),
                 "protocolVersion": 1,
                 "isPaymentSent": True,
                 "isPaymentReceived": True,
@@ -116,15 +111,12 @@ class CommutoEditOfferTest(CommutoSwapTest.CommutoSwapTest):
                 "securityDepositAmount": 1000,
                 "serviceFeeRate": 100,
                 "direction": 1,
-                "price": HexBytes("a price here".encode("utf-8").hex()),
-                "settlementMethods": ["USD-SWIFT".encode("utf-8"), ],
+                "settlementMethods": ["USD-SWIFT|a price here".encode("utf-8"), ],
                 "protocolVersion": 1,
             }
             self.commuto_swap_contract.functions.editOffer(
                 newOfferID,
                 editedOffer,
-                True,
-                True,
             ).transact(tx_details)
             raise (Exception("test_editOffer_taken_offer_check failed without raising exception"))
         except ValueError as e:
@@ -150,8 +142,7 @@ class CommutoEditOfferTest(CommutoSwapTest.CommutoSwapTest):
                 "securityDepositAmount": 1000,
                 "serviceFeeRate": 100,
                 "direction": 1,
-                "price": HexBytes("a price here".encode("utf-8").hex()),
-                "settlementMethods": ["USD-SWIFT".encode("utf-8"), ],
+                "settlementMethods": ["USD-SWIFT|a price here".encode("utf-8"), ],
                 "protocolVersion": 1,
             }
             self.test_dai_contract.functions.increaseAllowance(
@@ -176,15 +167,12 @@ class CommutoEditOfferTest(CommutoSwapTest.CommutoSwapTest):
                 "securityDepositAmount": 1000,
                 "serviceFeeRate": 100,
                 "direction": 1,
-                "price": HexBytes("a price here".encode("utf-8").hex()),
-                "settlementMethods": ["USD-SWIFT".encode("utf-8"), ],
+                "settlementMethods": ["USD-SWIFT|a price here".encode("utf-8"), ],
                 "protocolVersion": 1,
             }
             self.commuto_swap_contract.functions.editOffer(
                 newOfferID,
                 editedOffer,
-                True,
-                True,
             ).transact(tx_details)
             raise (Exception("test_editOffer_caller_is_maker_check failed without raising exception"))
         except ValueError as e:
@@ -210,8 +198,7 @@ class CommutoEditOfferTest(CommutoSwapTest.CommutoSwapTest):
                 "securityDepositAmount": 1000,
                 "serviceFeeRate": 100,
                 "direction": 1,
-                "price": HexBytes("a price here".encode("utf-8").hex()),
-                "settlementMethods": ["USD-SWIFT".encode("utf-8"), ],
+                "settlementMethods": ["USD-SWIFT|a price here".encode("utf-8"), ],
                 "protocolVersion": 1,
             }
             self.test_dai_contract.functions.increaseAllowance(
@@ -236,8 +223,7 @@ class CommutoEditOfferTest(CommutoSwapTest.CommutoSwapTest):
                 "securityDepositAmount": 1000,
                 "serviceFeeRate": 100,
                 "direction": 1,
-                "price": HexBytes("an edited price here".encode("utf-8").hex()),
-                "settlementMethods": ["EUR-SEPA".encode("utf-8"), ],
+                "settlementMethods": ["EUR-SEPA|an edited price here".encode("utf-8"), ],
                 "protocolVersion": 1,
             }
             OfferEdited_event_filter = self.commuto_swap_contract.events.OfferEdited.createFilter(
@@ -249,8 +235,6 @@ class CommutoEditOfferTest(CommutoSwapTest.CommutoSwapTest):
             self.commuto_swap_contract.functions.editOffer(
                 newOfferID,
                 editedOffer,
-                True,
-                True,
             ).transact(tx_details)
             events = OfferEdited_event_filter.get_new_entries()
             if not (len(events) == 1 and events[0]["args"]["offerID"] == newOfferID and
@@ -259,8 +243,7 @@ class CommutoEditOfferTest(CommutoSwapTest.CommutoSwapTest):
             offer = self.commuto_swap_contract.functions.getOffer(
                 newOfferID,
             ).call()
-            if not (offer[10] == HexBytes("an edited price here".encode("utf-8").hex()) and \
-                    offer[11] == ["EUR-SEPA".encode("utf-8"), ]):
+            if not (offer[10] == ["EUR-SEPA|an edited price here".encode("utf-8"), ]):
                 raise (Exception("test_editOffer_edit_offer failed due to offer editing failure"))
         except ValueError as e:
             raise e

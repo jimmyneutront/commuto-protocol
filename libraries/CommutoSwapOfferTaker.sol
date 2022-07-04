@@ -34,8 +34,6 @@ contract CommutoSwapOfferTaker is CommutoSwapStorage {
         require(offers[offerID].amountLowerBound <= newSwap.takenSwapAmount, "e26"); //"e26": "Swap amount must be >= lower bound of offer amount"
         require(offers[offerID].amountUpperBound >= newSwap.takenSwapAmount, "e27"); //"e27": "Swap amount must be <= upper bound of offer amount"
         require(offers[offerID].direction == newSwap.direction, "e28"); //"e28": "Directions must match"
-        require(sha256(offers[offerID].price) == sha256(newSwap.price), "e29"); //"e29": "Prices must match"
-        require(settlementMethods[newSwap.settlementMethod] == true, "e46"); //"e46": "Settlement method must be supported"
         require(offerSettlementMethods[offerID][newSwap.settlementMethod] == true, "e30"); //"e30": "Settlement method must be accepted by maker"
         require(offers[offerID].protocolVersion == newSwap.protocolVersion, "e31"); //"e31": "Protocol versions must match"
 
@@ -45,7 +43,6 @@ contract CommutoSwapOfferTaker is CommutoSwapStorage {
         //Calculate required total amount
         //TODO: Service fee calculated here
         newSwap.serviceFeeAmount = SafeMath.mul(offers[offerID].serviceFeeRate, SafeMath.div(newSwap.takenSwapAmount, 10000));
-        //newSwap.serviceFeeAmount = SafeMath.mul(offers[offerID].serviceFeeRate, SafeMath.div(newSwap.takenSwapAmount, 10000));
         /*
         Slither complains that "totalAmount" is never initialized. However, compilation fails if this declaration takes place
         within the if/else statements, so it must remain here. Additionally, if initialization doesn't take place within
