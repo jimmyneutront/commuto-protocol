@@ -8,15 +8,16 @@ import "../../node_modules/@openzeppelin/contracts/governance/extensions/Governo
 import "../../node_modules/@openzeppelin/contracts/governance/extensions/GovernorCountingSimple.sol";
 import "../../node_modules/@openzeppelin/contracts/governance/extensions/GovernorTimelockControl.sol";
 
+// TODO: Add revenue transfer function
 contract CommutoGovernor is Governor, GovernorVotes, GovernorVotesQuorumFraction, GovernorPreventLateQuorum, GovernorCountingSimple, GovernorTimelockControl {
 
     uint256 public proposalThresholdValue;
 
-    constructor (IVotes commutoToken, TimelockController _timelock, uint256 quorumFraction, uint256 _proposalThreshold)
+    constructor (IVotes commutoToken, TimelockController _timelock, uint256 quorumFraction, uint64 initialVoteExtension, uint256 _proposalThreshold)
         Governor("CommutoGovernor")
         GovernorVotes(commutoToken)
-        GovernorVotesQuorumFraction(quorumFraction) //percentage of all issued tokens that must be used to abstain or vote in favor
-        GovernorPreventLateQuorum(initialVoteExtension) //
+        GovernorVotesQuorumFraction(quorumFraction) // percentage of all issued tokens that must be used to abstain or vote in favor
+        GovernorPreventLateQuorum(initialVoteExtension) // the number of blocks that are required to pass since a proposal reaches quorum until its voting period ends
         GovernorTimelockControl(_timelock)
     {
         proposalThresholdValue = _proposalThreshold;
