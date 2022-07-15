@@ -152,7 +152,7 @@ class InterfaceCommutoSwapTest(CommutoSwapTest):
         return maker_as_seller_swap_id
 
     def testOfferServiceHandleOfferOpenedEvent(self):
-        maker_as_seller_swap_id = uuid4()
+        self.maker_as_seller_swap_id = uuid4()
         tx_details = {
             "from": self.maker_address,
         }
@@ -175,8 +175,16 @@ class InterfaceCommutoSwapTest(CommutoSwapTest):
             1100,
         ).transact(tx_details)
         self.commuto_swap_contract.functions.openOffer(
-            HexBytes(maker_as_seller_swap_id.bytes),
+            HexBytes(self.maker_as_seller_swap_id.bytes),
             maker_as_seller_offer
         ).transact(tx_details)
 
-        return maker_as_seller_swap_id
+        return self.maker_as_seller_swap_id
+
+    def testOfferServiceHandleOfferCanceledEvent(self):
+        tx_details = {
+            "from": self.maker_address,
+        }
+        self.commuto_swap_contract.functions.cancelOffer(
+            HexBytes(self.maker_as_seller_swap_id.bytes),
+        ).transact(tx_details)
