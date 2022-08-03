@@ -67,6 +67,23 @@ class CommutoInterfaceTestingServer(BaseHTTPRequestHandler):
                     "offerId": str(offer_id),
                 }
                 self.wfile.write(bytes(json.dumps(response).encode()))
+        elif self.path.__contains__('/test_offerservice_forUserIsMakerOffer_handleOfferOpenedEvent'):
+            query = urlparse(self.path).query
+            params = dict(parse_qsl(query))
+            self.set_headers()
+            offerID = UUID(params['offerID'])
+            interfaceIDString = params['interfaceID']
+            if params['events'] == 'offer-opened' and offerID != None and interfaceIDString != None:
+                commuto_swap_test = InterfaceCommutoSwapTest()
+                commuto_swap_test.setUp()
+                commuto_swap_test.testOfferServiceHandleOfferOpenedEventForUserIsMakerOffer(
+                    offerID,
+                    interfaceIDString
+                )
+                response = {
+                    "commutoSwapAddress": str(commuto_swap_test.commuto_swap_contract.address),
+                }
+                self.wfile.write(bytes(json.dumps(response).encode()))
         elif self.path.__contains__('/test_offerservice_handleOfferEditedEvent'):
             query = urlparse(self.path).query
             params = dict(parse_qsl(query))
