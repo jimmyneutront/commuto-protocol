@@ -3,6 +3,7 @@ from http.server import BaseHTTPRequestHandler
 from InterfaceCommutoSwapTest import InterfaceCommutoSwapTest
 import json
 from urllib.parse import urlparse, parse_qsl
+from uuid import UUID
 from web3 import Web3
 
 
@@ -128,6 +129,27 @@ class CommutoInterfaceTestingServer(BaseHTTPRequestHandler):
                     "offerId": str(offer_id),
                 }
                 self.wfile.write(bytes(json.dumps(response).encode()))
+        elif self.path.__contains__('/test_offerservice_handleServiceFeeRateChangedEvent'):
+            query = urlparse(self.path).query
+            params = dict(parse_qsl(query))
+            self.set_headers()
+            commuto_swap_test = InterfaceCommutoSwapTest()
+            commuto_swap_test.setUp()
+            if params['events'] == 'ServiceFeeRateChanged':
+                commuto_swap_test.testOfferServiceHandleServiceFeeRateChangedEvent()
+                response = {
+                    "commutoSwapAddress": str(commuto_swap_test.commuto_swap_contract.address)
+                }
+                self.wfile.write(bytes(json.dumps(response).encode()))
+        elif self.path.__contains__('/test_offerservice_openOffer'):
+            self.set_headers()
+            commuto_swap_test = InterfaceCommutoSwapTest()
+            commuto_swap_test.setUp()
+            response = {
+                "commutoSwapAddress": str(commuto_swap_test.commuto_swap_contract.address),
+                "stablecoinAddress": str(commuto_swap_test.test_dai_contract.address)
+            }
+            self.wfile.write(bytes(json.dumps(response).encode()))
 
     # noinspection PyPep8Naming
     def do_POST(self):
