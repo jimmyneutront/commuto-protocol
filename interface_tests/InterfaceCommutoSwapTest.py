@@ -1,3 +1,4 @@
+import base64
 from uuid import uuid4
 from hexbytes import HexBytes
 from tests.CommutoSwapTest import CommutoSwapTest
@@ -141,7 +142,7 @@ class InterfaceCommutoSwapTest(CommutoSwapTest):
             "securityDepositAmount": 1000,
             "serviceFeeRate": 100,
             "direction": 1,
-            "settlementMethods": ["EUR-SEPA|an edited price here".encode("utf-8"), ],
+            "settlementMethods": ['{"f":"EUR","p":"SEPA","m":"0.98"}'.encode("utf-8"), ],
             "protocolVersion": 1,
         }
         self.commuto_swap_contract.functions.editOffer(
@@ -167,7 +168,7 @@ class InterfaceCommutoSwapTest(CommutoSwapTest):
             "securityDepositAmount": 1000,
             "serviceFeeRate": 100,
             "direction": 1,
-            "settlementMethods": ["USD-SWIFT|a price here".encode("utf-8"), ],
+            "settlementMethods": ['{"f":"USD","p":"SWIFT","m":"1.00"}'.encode("utf-8"), ],
             "protocolVersion": 1,
         }
         self.test_dai_contract.functions.increaseAllowance(
