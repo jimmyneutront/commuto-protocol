@@ -32,7 +32,10 @@ contract CommutoSwapOfferOpener is CommutoSwapStorage {
         require(SafeMath.mul(newOffer.securityDepositAmount, 10) >= newOffer.amountUpperBound, "e8"); //"e8": "The security deposit must be at least 10% of the maximum swap amount"
         //TODO: Service fee calculated here
         uint256 serviceFeeAmountLowerBound = SafeMath.mul(serviceFeeRate, SafeMath.div(newOffer.amountLowerBound, 10000));
-        require(serviceFeeAmountLowerBound > 0, "e9"); //"e9": "Service fee amount must be greater than zero"
+        //If serviceFeeRate is zero, allow offers with zero service fee.
+        if (serviceFeeRate > 0) {
+            require(serviceFeeAmountLowerBound > 0, "e9"); //"e9": "Service fee amount must be greater than zero"
+        }
         require(newOffer.protocolVersion >= protocolVersion, "e10"); //"e10": "Offers can only be created for the most recent protocol version"
         require(newOffer.direction == SwapDirection.BUY || newOffer.direction == SwapDirection.SELL, "e12"); //"e12": "You must specify a supported direction"
 

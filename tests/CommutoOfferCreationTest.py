@@ -128,6 +128,46 @@ class CommutoOfferCreationTest(CommutoSwapTest.CommutoSwapTest):
             if not "e9" in str(e):
                 raise e
 
+    def test_zero_service_fee(self):
+        #ensure the service fee can be zero when the service fee rate is zero
+        tx_details = {
+            "from": self.w3.eth.accounts[2]
+        }
+        self.commuto_swap_contract.functions.setServiceFeeRate(0).transact(tx_details)
+        newOfferID = HexBytes(uuid4().bytes)
+        tx_details = {
+            "from": self.maker_address,
+        }
+        OfferOpened_event_filter = self.commuto_swap_contract.events.OfferOpened\
+            .createFilter(fromBlock="latest",argument_filters={'offerID': newOfferID})
+        newOffer = {
+            "isCreated": True,
+            "isTaken": True,
+            "maker": self.maker_address,
+            "interfaceId": HexBytes("an interface Id here".encode("utf-8").hex()),
+            "stablecoin": self.dai_deployment_tx_receipt.contractAddress,
+            "amountLowerBound": 10000,
+            "amountUpperBound": 10000,
+            "securityDepositAmount": 1000,
+            "serviceFeeRate": 0,
+            "direction": 1,
+            "settlementMethods": ["USD-SWIFT|a price here".encode("utf-8"), ],
+            "protocolVersion": 1,
+        }
+        self.test_dai_contract.functions.increaseAllowance(
+            self.commuto_swap_deployment_tx_receipt.contractAddress,
+            1000,
+        ).transact(tx_details)
+        self.commuto_swap_contract.functions.openOffer(
+            newOfferID,
+            newOffer,
+        ).transact(tx_details)
+        events = OfferOpened_event_filter.get_new_entries()
+        self.assertEqual(len(events), 1)
+        self.assertEqual(events[0]["args"]["offerID"], newOfferID)
+        self.assertEqual(events[0]["args"]["interfaceId"], HexBytes("an interface Id here".encode("utf-8").hex()))
+        self.assertEqual(events[0]["event"], "OfferOpened")
+
     # TODO: Test offer protocol check
 
     def test_openOffer_checks_STBL_allowance(self):
