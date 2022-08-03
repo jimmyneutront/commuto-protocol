@@ -215,3 +215,9 @@ class InterfaceCommutoSwapTest(CommutoSwapTest):
         self.commuto_swap_contract.functions.cancelOffer(
             HexBytes(self.maker_as_seller_swap_id.bytes),
         ).transact(tx_details)
+
+    def testOfferServiceHandleServiceFeeRateChangedEvent(self):
+        tx_details = {
+            "from": self.w3.eth.accounts[2],
+        }
+        self.commuto_swap_contract.functions.setServiceFeeRate(200).transact(tx_details)
