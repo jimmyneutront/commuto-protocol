@@ -222,3 +222,31 @@ class InterfaceCommutoSwapTest(CommutoSwapTest):
             "from": self.w3.eth.accounts[2],
         }
         self.commuto_swap_contract.functions.setServiceFeeRate(200).transact(tx_details)
+
+    def testOfferServiceCancelOffer(self, offer_id):
+        # We are using the taker address for this test, since that is the address used by interface testing code
+        tx_details = {
+            "from": self.taker_address,
+        }
+        maker_as_seller_offer = {
+            "isCreated": True,
+            "isTaken": False,
+            "maker": self.maker_address,
+            "interfaceId": bytes(),
+            "stablecoin": self.dai_deployment_tx_receipt.contractAddress,
+            "amountLowerBound": 10000,
+            "amountUpperBound": 10000,
+            "securityDepositAmount": 1000,
+            "serviceFeeRate": 100,
+            "direction": 0,
+            "settlementMethods": ["USD-SWIFT|a price here".encode("utf-8"), ],
+            "protocolVersion": 1,
+        }
+        self.test_dai_contract.functions.increaseAllowance(
+            self.commuto_swap_deployment_tx_receipt.contractAddress,
+            1100,
+        ).transact(tx_details)
+        self.commuto_swap_contract.functions.openOffer(
+            HexBytes(offer_id.bytes),
+            maker_as_seller_offer
+        ).transact(tx_details)
