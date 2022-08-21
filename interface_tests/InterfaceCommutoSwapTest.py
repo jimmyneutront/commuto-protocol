@@ -228,7 +228,8 @@ class InterfaceCommutoSwapTest(CommutoSwapTest):
         tx_details = {
             "from": self.taker_address,
         }
-        maker_as_seller_offer = {
+        # For this test, the maker uses taker_address
+        maker_as_buyer_offer = {
             "isCreated": True,
             "isTaken": False,
             "maker": self.maker_address,
@@ -248,5 +249,32 @@ class InterfaceCommutoSwapTest(CommutoSwapTest):
         ).transact(tx_details)
         self.commuto_swap_contract.functions.openOffer(
             HexBytes(offer_id.bytes),
-            maker_as_seller_offer
+            maker_as_buyer_offer
+        ).transact(tx_details)
+
+    def testOfferServiceTakeOffer(self, offer_id, settlement_method_string: str):
+        tx_details = {
+            "from": self.maker_address,
+        }
+        maker_as_buyer_offer = {
+            "isCreated": True,
+            "isTaken": False,
+            "maker": self.maker_address,
+            "interfaceId": bytes(),
+            "stablecoin": self.dai_deployment_tx_receipt.contractAddress,
+            "amountLowerBound": 10_000_000_000_000_000_000_000,
+            "amountUpperBound": 20_000_000_000_000_000_000_000,
+            "securityDepositAmount": 2_000_000_000_000_000_000_000,
+            "serviceFeeRate": 100,
+            "direction": 0,
+            "settlementMethods": [settlement_method_string.encode("utf-8"), ],
+            "protocolVersion": 1,
+        }
+        self.test_dai_contract.functions.increaseAllowance(
+            self.commuto_swap_deployment_tx_receipt.contractAddress,
+            2_200_000_000_000_000_000_000,
+        ).transact(tx_details)
+        self.commuto_swap_contract.functions.openOffer(
+            HexBytes(offer_id.bytes),
+            maker_as_buyer_offer
         ).transact(tx_details)

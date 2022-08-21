@@ -8,7 +8,6 @@ from web3 import Web3
 
 
 class CommutoInterfaceTestingServer(BaseHTTPRequestHandler):
-
     # A dictionary mapping addresses to InterfaceCommutoSwapTest objects which are created during HTTP request handling
     # and are retained for later use.
     interfaceCommutoSwapTests = {}
@@ -150,7 +149,8 @@ class CommutoInterfaceTestingServer(BaseHTTPRequestHandler):
                 "stablecoinAddress": str(commuto_swap_test.test_dai_contract.address)
             }
             self.wfile.write(bytes(json.dumps(response).encode()))
-        elif self.path.__contains__('/test_offerservice_cancelOffer'):
+        elif self.path.__contains__('/test_offerservice_cancelOffer') or self.path\
+                .__contains__('/test_offerservice_editOffer'):
             query = urlparse(self.path).query
             params = dict(parse_qsl(query))
             self.set_headers()
@@ -163,6 +163,24 @@ class CommutoInterfaceTestingServer(BaseHTTPRequestHandler):
                 )
                 response = {
                     "commutoSwapAddress": str(commuto_swap_test.commuto_swap_contract.address),
+                }
+                self.wfile.write(bytes(json.dumps(response).encode()))
+        elif self.path.__contains__('/test_offerservice_takeOffer'):
+            query = urlparse(self.path).query
+            params = dict(parse_qsl(query))
+            self.set_headers()
+            offerID = UUID(params['offerID'])
+            settlement_method_string = params['settlement_method_string']
+            if params['events'] == 'offer-opened' and offerID is not None and settlement_method_string is not None:
+                commuto_swap_test = InterfaceCommutoSwapTest()
+                commuto_swap_test.setUp()
+                commuto_swap_test.testOfferServiceTakeOffer(
+                    offerID,
+                    settlement_method_string,
+                )
+                response = {
+                    "commutoSwapAddress": str(commuto_swap_test.commuto_swap_contract.address),
+                    "stablecoinAddress": str(commuto_swap_test.test_dai_contract.address)
                 }
                 self.wfile.write(bytes(json.dumps(response).encode()))
 
