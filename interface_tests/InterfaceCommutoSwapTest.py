@@ -1,13 +1,18 @@
 import base64
-from uuid import uuid4
+from uuid import uuid4, UUID
 from hexbytes import HexBytes
 from tests.CommutoSwapTest import CommutoSwapTest
 
 
 class InterfaceCommutoSwapTest(CommutoSwapTest):
 
-    def testBlockchainServiceListenOfferOpenedTaken(self):
-        maker_as_seller_swap_id = uuid4()
+    def testBlockchainServiceListenOfferOpenedTaken(
+            self,
+            offer_id: UUID = uuid4(),
+            maker_interface_id_string: str = base64.b64encode('maker interface Id here'.encode('utf8')).decode('ascii'),
+            taker_interface_id_string: str = base64.b64encode('taker interface Id here'.encode('utf8')).decode('ascii'),
+    ):
+        maker_as_seller_swap_id = offer_id
         tx_details = {
             "from": self.maker_address,
         }
@@ -15,7 +20,7 @@ class InterfaceCommutoSwapTest(CommutoSwapTest):
             "isCreated": True,
             "isTaken": True,
             "maker": self.maker_address,
-            "interfaceId": HexBytes("maker interface Id here".encode("utf-8").hex()),
+            "interfaceId": base64.b64decode(s = maker_interface_id_string + '=='),
             "stablecoin": self.dai_deployment_tx_receipt.contractAddress,
             "amountLowerBound": 10000,
             "amountUpperBound": 10000,
@@ -40,9 +45,9 @@ class InterfaceCommutoSwapTest(CommutoSwapTest):
             "isCreated": False,
             "requiresFill": True,
             "maker": self.maker_address,
-            "makerInterfaceId": HexBytes("maker interface Id here".encode("utf-8").hex()),
+            "makerInterfaceId": base64.b64decode(s = maker_interface_id_string),
             "taker": self.taker_address,
-            "takerInterfaceId": HexBytes("taker interface Id here".encode("utf-8").hex()),
+            "takerInterfaceId": base64.b64decode(s = taker_interface_id_string),
             "stablecoin": self.dai_deployment_tx_receipt.contractAddress,
             "amountLowerBound": 10000,
             "amountUpperBound": 10000,
@@ -182,7 +187,7 @@ class InterfaceCommutoSwapTest(CommutoSwapTest):
 
         return self.maker_as_seller_swap_id
 
-    def testOfferServiceHandleOfferOpenedEventForUserIsMakerOffer(self, offer_id, interface_id):
+    def testOfferServiceHandleOfferOpenedEventForUserIsMakerOffer(self, offer_id: UUID, interface_id: str):
         tx_details = {
             "from": self.maker_address,
         }

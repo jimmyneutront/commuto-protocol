@@ -128,6 +128,31 @@ class CommutoInterfaceTestingServer(BaseHTTPRequestHandler):
                     "offerId": str(offer_id),
                 }
                 self.wfile.write(bytes(json.dumps(response).encode()))
+        elif self.path.__contains__('/test_offerservice_forUserIsTaker_handleOfferTakenEvent'):
+            query = urlparse(self.path).query
+            params = dict(parse_qsl(query))
+            self.set_headers()
+            offerID = UUID(params['offerID'])
+            makerInterfaceIDString = params['makerInterfaceID']
+            takerInterfaceIDString = params['takerInterfaceID']
+            if params['events'] == 'offer-opened-taken' and offerID is not None and makerInterfaceIDString is not None \
+                    and takerInterfaceIDString is not None:
+                commuto_swap_test = InterfaceCommutoSwapTest()
+                commuto_swap_test.setUp()
+                '''
+                The Base64-encoded interface IDs may contain pluses, which parse_qsl interprets as encoded space 
+                characters, so replace any spaces with +.
+                '''
+                commuto_swap_test.testBlockchainServiceListenOfferOpenedTaken(
+                    offerID,
+                    makerInterfaceIDString.replace(' ', '+'),
+                    takerInterfaceIDString.replace(' ', '+'),
+                )
+                response = {
+                    "commutoSwapAddress": str(commuto_swap_test.commuto_swap_contract.address),
+                }
+                self.wfile.write(bytes(json.dumps(response).encode()))
+
         elif self.path.__contains__('/test_offerservice_handleServiceFeeRateChangedEvent'):
             query = urlparse(self.path).query
             params = dict(parse_qsl(query))
