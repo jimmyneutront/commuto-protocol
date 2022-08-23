@@ -128,6 +128,23 @@ class CommutoInterfaceTestingServer(BaseHTTPRequestHandler):
                     "offerId": str(offer_id),
                 }
                 self.wfile.write(bytes(json.dumps(response).encode()))
+        elif self.path.__contains__('/test_offerservice_forUserIsMaker_handleOfferTakenEvent'):
+            query = urlparse(self.path).query
+            params = dict(parse_qsl(query))
+            self.set_headers()
+            offerID = UUID(params['offerID'])
+            makerInterfaceIDString = params['interfaceID']
+            if params['events'] == 'offer-opened-taken' and offerID is not None and makerInterfaceIDString is not None:
+                commuto_swap_test = InterfaceCommutoSwapTest()
+                commuto_swap_test.setUp()
+                commuto_swap_test.testOfferServiceHandleOfferTakenEventForUserIsMaker(
+                    offer_id=offerID,
+                    maker_interface_id_string=makerInterfaceIDString.replace(' ', '+'),
+                )
+                response = {
+                    "commutoSwapAddress": str(commuto_swap_test.commuto_swap_contract.address),
+                }
+                self.wfile.write(bytes(json.dumps(response).encode()))
         elif self.path.__contains__('/test_offerservice_forUserIsTaker_handleOfferTakenEvent'):
             query = urlparse(self.path).query
             params = dict(parse_qsl(query))
@@ -152,7 +169,6 @@ class CommutoInterfaceTestingServer(BaseHTTPRequestHandler):
                     "commutoSwapAddress": str(commuto_swap_test.commuto_swap_contract.address),
                 }
                 self.wfile.write(bytes(json.dumps(response).encode()))
-
         elif self.path.__contains__('/test_offerservice_handleServiceFeeRateChangedEvent'):
             query = urlparse(self.path).query
             params = dict(parse_qsl(query))
@@ -174,7 +190,7 @@ class CommutoInterfaceTestingServer(BaseHTTPRequestHandler):
                 "stablecoinAddress": str(commuto_swap_test.test_dai_contract.address)
             }
             self.wfile.write(bytes(json.dumps(response).encode()))
-        elif self.path.__contains__('/test_offerservice_cancelOffer') or self.path\
+        elif self.path.__contains__('/test_offerservice_cancelOffer') or self.path \
                 .__contains__('/test_offerservice_editOffer'):
             query = urlparse(self.path).query
             params = dict(parse_qsl(query))
@@ -206,6 +222,22 @@ class CommutoInterfaceTestingServer(BaseHTTPRequestHandler):
                 response = {
                     "commutoSwapAddress": str(commuto_swap_test.commuto_swap_contract.address),
                     "stablecoinAddress": str(commuto_swap_test.test_dai_contract.address)
+                }
+                self.wfile.write(bytes(json.dumps(response).encode()))
+        elif self.path.__contains__('/test_swapservice_handleNewSwap'):
+            query = urlparse(self.path).query
+            params = dict(parse_qsl(query))
+            self.set_headers()
+            offerID = UUID(params['offerID'])
+            if params['events'] == 'offer-opened-taken' and offerID is not None:
+                commuto_swap_test = InterfaceCommutoSwapTest()
+                commuto_swap_test.setUp()
+                commuto_swap_test.testOfferServiceHandleOfferTakenEventForUserIsMaker(
+                    offer_id=offerID,
+                    maker_interface_id_string='',
+                )
+                response = {
+                    "commutoSwapAddress": str(commuto_swap_test.commuto_swap_contract.address),
                 }
                 self.wfile.write(bytes(json.dumps(response).encode()))
 
