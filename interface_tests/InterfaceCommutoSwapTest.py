@@ -157,6 +157,81 @@ class InterfaceCommutoSwapTest(CommutoSwapTest):
 
         return maker_as_seller_swap_id
 
+    def testBlockchainServiceListenSwapFilled(self) -> uuid4:
+        maker_as_seller_swap_id = uuid4()
+        tx_details = {
+            "from": self.maker_address,
+        }
+        maker_as_seller_offer = {
+            "isCreated": True,
+            "isTaken": True,
+            "maker": self.maker_address,
+            "interfaceId": bytes(),
+            "stablecoin": self.dai_deployment_tx_receipt.contractAddress,
+            "amountLowerBound": 10000,
+            "amountUpperBound": 10000,
+            "securityDepositAmount": 1000,
+            "serviceFeeRate": 100,
+            "direction": 1,
+            "settlementMethods": ['{"f":"USD","p":"SWIFT","m":"1.00"}'.encode("utf-8"), ],
+            "protocolVersion": 1,
+        }
+        self.test_dai_contract.functions.increaseAllowance(
+            self.commuto_swap_deployment_tx_receipt.contractAddress,
+            1100,
+        ).transact(tx_details)
+        self.commuto_swap_contract.functions.openOffer(
+            maker_as_seller_swap_id.bytes,
+            maker_as_seller_offer
+        ).transact(tx_details)
+        tx_details = {
+            "from": self.taker_address
+        }
+        maker_as_seller_swap = {
+            "isCreated": True,
+            "requiresFill": True,
+            "maker": self.maker_address,
+            "makerInterfaceId": bytes(),
+            "taker": self.taker_address,
+            "takerInterfaceId": bytes(),
+            "stablecoin": self.dai_deployment_tx_receipt.contractAddress,
+            "amountLowerBound": 10000,
+            "amountUpperBound": 10000,
+            "securityDepositAmount": 1000,
+            "takenSwapAmount": 10000,
+            "serviceFeeAmount": 100,
+            "serviceFeeRate": 100,
+            "direction": 1,
+            "settlementMethod": '{"f":"USD","p":"SWIFT","m":"1.00"}'.encode("utf-8"),
+            "protocolVersion": 1,
+            "isPaymentSent": False,
+            "isPaymentReceived": False,
+            "hasBuyerClosed": False,
+            "hasSellerClosed": False,
+            "disputeRaiser": 0,
+        }
+        self.test_dai_contract.functions.increaseAllowance(
+            self.commuto_swap_deployment_tx_receipt.contractAddress,
+            1100
+        ).transact(tx_details)
+        self.commuto_swap_contract.functions.takeOffer(
+            maker_as_seller_swap_id.bytes,
+            maker_as_seller_swap,
+        ).transact(tx_details)
+        tx_details = {
+            "from": self.maker_address,
+        }
+        self.test_dai_contract.functions.increaseAllowance(
+            self.commuto_swap_deployment_tx_receipt.contractAddress,
+            10000
+        ).transact(tx_details)
+        self.commuto_swap_contract.functions.fillSwap(
+            maker_as_seller_swap_id.bytes,
+        ).transact(tx_details)
+
+        return maker_as_seller_swap_id
+
+
     def testOfferServiceHandleOfferOpenedEvent(self):
         self.maker_as_seller_swap_id = uuid4()
         tx_details = {
