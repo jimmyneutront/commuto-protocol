@@ -309,6 +309,22 @@ class CommutoInterfaceTestingServer(BaseHTTPRequestHandler):
                     "stablecoinAddress": str(commuto_swap_test.test_dai_contract.address)
                 }
                 self.wfile.write(bytes(json.dumps(response).encode()))
+        elif self.path.__contains__('test_swapservice_closeSwap'):
+            query = urlparse(self.path).query
+            params = dict(parse_qsl(query))
+            self.set_headers()
+            swapID = UUID(params['swapID'])
+            if params['events'] == 'offer-opened-taken-PaymentSent-Received' and swapID is not None:
+                commuto_swap_test = InterfaceCommutoSwapTest()
+                commuto_swap_test.setUp()
+                commuto_swap_test.testSwapServiceCloseSwap(
+                    swap_id=swapID,
+                )
+                response = {
+                    "commutoSwapAddress": str(commuto_swap_test.commuto_swap_contract.address),
+                    "stablecoinAddress": str(commuto_swap_test.test_dai_contract.address)
+                }
+                self.wfile.write(bytes(json.dumps(response).encode()))
 
     # noinspection PyPep8Naming
     def do_POST(self):
