@@ -60,6 +60,13 @@ class CommutoInterfaceTestingServer(BaseHTTPRequestHandler):
                     "swapID": str(swap_id),
                 }
                 self.wfile.write(bytes(json.dumps(response).encode()))
+            elif params['events'] == 'offer-opened-taken-SwapFilled-PaymentSent-Received':
+                swap_id = commuto_swap_test.testBlockchainServiceListenPaymentReceived()
+                response = {
+                    "commutoSwapAddress": str(commuto_swap_test.commuto_swap_contract.address),
+                    "swapID": str(swap_id),
+                }
+                self.wfile.write(bytes(json.dumps(response).encode()))
         elif self.path.__contains__('/test_blockchainservice_getServiceFeeRate'):
             self.set_headers()
             commuto_swap_test = InterfaceCommutoSwapTest()
