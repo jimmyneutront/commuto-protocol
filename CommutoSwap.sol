@@ -11,6 +11,7 @@ import "./libraries/SafeMath.sol";
 import "./libraries/CommutoSwapPaymentReporter.sol";
 import "./libraries/CommutoSwapResolutionProposalReactor.sol";
 
+//TODO: Update documentation for governance
 contract CommutoSwap is CommutoSwapStorage {
 
     //Transfer control of CommutoSwap to a new timelock

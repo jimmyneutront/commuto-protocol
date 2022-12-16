@@ -6,6 +6,31 @@ from tests.CommutoSwapTest import CommutoSwapTest
 
 class InterfaceCommutoSwapTest(CommutoSwapTest):
 
+    def testBlockchainServiceHandleFailedTransaction(self) -> HexBytes:
+        transaction = self.commuto_swap_contract.functions.cancelOffer(
+            HexBytes(uuid4().bytes)
+        ).buildTransaction({
+            'from': self.taker_address,
+            'gas': 30_000_000,
+            'maxFeePerGas': 2_000_000_000,
+            'maxPriorityFeePerGas': 1_000_000_000,
+            'nonce': self.w3.eth.getTransactionCount(self.taker_address)
+        })
+        # Hardhat account 1 (taker_address), without hex prefix
+        signed_transaction = self.w3.eth.account.sign_transaction(
+            transaction,
+            private_key=bytes.fromhex("59c6995e998f97a5a0044966f0945389dc9e86dae88c7a8412f4603b6b78690d")
+        )
+        transaction_hash = signed_transaction.hash
+        try:
+            self.w3.eth.send_raw_transaction(signed_transaction.rawTransaction)
+            raise (Exception("send_raw_transaction for handleFailedTransaction failed without raising exception"))
+        except ValueError as e:
+            # "e15":"An offer with the specified id does not exist"
+            if "e15" not in str(e):
+                raise e
+        return transaction_hash
+
     def testBlockchainServiceListenOfferOpenedTaken(
             self,
             offer_id: UUID = uuid4(),
@@ -20,7 +45,7 @@ class InterfaceCommutoSwapTest(CommutoSwapTest):
             "isCreated": True,
             "isTaken": True,
             "maker": self.maker_address,
-            "interfaceId": base64.b64decode(s = maker_interface_id_string + '=='),
+            "interfaceId": base64.b64decode(s=maker_interface_id_string + '=='),
             "stablecoin": self.dai_deployment_tx_receipt.contractAddress,
             "amountLowerBound": 10000,
             "amountUpperBound": 10000,
@@ -45,9 +70,9 @@ class InterfaceCommutoSwapTest(CommutoSwapTest):
             "isCreated": False,
             "requiresFill": True,
             "maker": self.maker_address,
-            "makerInterfaceId": base64.b64decode(s = maker_interface_id_string),
+            "makerInterfaceId": base64.b64decode(s=maker_interface_id_string),
             "taker": self.taker_address,
-            "takerInterfaceId": base64.b64decode(s = taker_interface_id_string),
+            "takerInterfaceId": base64.b64decode(s=taker_interface_id_string),
             "stablecoin": self.dai_deployment_tx_receipt.contractAddress,
             "amountLowerBound": 10000,
             "amountUpperBound": 10000,
@@ -125,7 +150,7 @@ class InterfaceCommutoSwapTest(CommutoSwapTest):
             "securityDepositAmount": 1000,
             "serviceFeeRate": 100,
             "direction": 1,
-            "settlementMethods": ["USD-SWIFT|a price here".encode("utf-8"), ],
+            "settlementMethods": ['{"f":"USD","p":"1.00","m":"SWIFT"}'.encode("utf-8"), ],
             "protocolVersion": 1,
         }
         self.test_dai_contract.functions.increaseAllowance(
@@ -147,7 +172,10 @@ class InterfaceCommutoSwapTest(CommutoSwapTest):
             "securityDepositAmount": 1000,
             "serviceFeeRate": 100,
             "direction": 1,
-            "settlementMethods": ['{"f":"EUR","p":"SEPA","m":"0.98"}'.encode("utf-8"), ],
+            "settlementMethods": [
+                '{"f":"EUR","p":"0.98","m":"SEPA"}'.encode("utf-8"),
+                '{"f":"BSD","p":"1.00","m":"SANDDOLLAR"}'.encode("utf-8"),
+            ],
             "protocolVersion": 1,
         }
         self.commuto_swap_contract.functions.editOffer(
@@ -576,7 +604,7 @@ class InterfaceCommutoSwapTest(CommutoSwapTest):
             "isCreated": True,
             "isTaken": True,
             "maker": self.maker_address,
-            "interfaceId": base64.b64decode(s = interface_id + '=='),
+            "interfaceId": base64.b64decode(s=interface_id + '=='),
             "stablecoin": self.dai_deployment_tx_receipt.contractAddress,
             "amountLowerBound": 10000,
             "amountUpperBound": 10000,
@@ -673,14 +701,14 @@ class InterfaceCommutoSwapTest(CommutoSwapTest):
             "isCreated": True,
             "isTaken": False,
             "maker": self.maker_address,
-            "interfaceId": base64.b64decode(s = maker_interface_id_string + '=='),
+            "interfaceId": base64.b64decode(s=maker_interface_id_string + '=='),
             "stablecoin": self.dai_deployment_tx_receipt.contractAddress,
             "amountLowerBound": 10000,
             "amountUpperBound": 10000,
             "securityDepositAmount": 1000,
             "serviceFeeRate": 100,
             "direction": 0,
-            "settlementMethods": ['{"f":"USD","p":"SWIFT","m":"1.00"}'.encode("utf-8"), ],
+            "settlementMethods": ['{"f":"USD","p":"1.00","m":"SWIFT"}'.encode("utf-8"), ],
             "protocolVersion": 1,
         }
         self.test_dai_contract.functions.increaseAllowance(
@@ -698,7 +726,7 @@ class InterfaceCommutoSwapTest(CommutoSwapTest):
             "isCreated": False,
             "requiresFill": True,
             "maker": self.maker_address,
-            "makerInterfaceId": base64.b64decode(s = maker_interface_id_string + '=='),
+            "makerInterfaceId": base64.b64decode(s=maker_interface_id_string + '=='),
             "taker": self.taker_address,
             "takerInterfaceId": bytes(),
             "stablecoin": self.dai_deployment_tx_receipt.contractAddress,
@@ -709,7 +737,7 @@ class InterfaceCommutoSwapTest(CommutoSwapTest):
             "serviceFeeAmount": 100,
             "serviceFeeRate": 100,
             "direction": 0,
-            "settlementMethod": '{"f":"USD","p":"SWIFT","m":"1.00"}'.encode("utf-8"),
+            "settlementMethod": '{"f":"USD","p":"1.00","m":"SWIFT"}'.encode("utf-8"),
             "protocolVersion": 1,
             "isPaymentSent": True,
             "isPaymentReceived": True,
@@ -735,7 +763,7 @@ class InterfaceCommutoSwapTest(CommutoSwapTest):
             "isCreated": True,
             "isTaken": False,
             "maker": self.w3.eth.accounts[1],
-            "interfaceId":bytes(),
+            "interfaceId": bytes(),
             "stablecoin": self.dai_deployment_tx_receipt.contractAddress,
             "amountLowerBound": 10000,
             "amountUpperBound": 10000,
