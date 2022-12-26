@@ -623,13 +623,14 @@ class InterfaceCommutoSwapTest(CommutoSwapTest):
             maker_as_seller_offer
         ).transact(tx_details)
 
-    def testOfferServiceHandleOfferCanceledEvent(self):
+    def testOfferServiceHandleOfferCanceledEvent(self) -> HexBytes:
         tx_details = {
             "from": self.maker_address,
         }
-        self.commuto_swap_contract.functions.cancelOffer(
+        offer_cancellation_transaction_hash: HexBytes = self.commuto_swap_contract.functions.cancelOffer(
             HexBytes(self.maker_as_seller_swap_id.bytes),
         ).transact(tx_details)
+        return offer_cancellation_transaction_hash
 
     def testOfferServiceHandleServiceFeeRateChangedEvent(self):
         tx_details = {

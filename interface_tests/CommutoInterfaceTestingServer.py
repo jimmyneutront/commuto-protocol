@@ -160,8 +160,12 @@ class CommutoInterfaceTestingServer(BaseHTTPRequestHandler):
                 self.wfile.write(bytes(json.dumps(response).encode()))
             elif params['events'] == 'offer-canceled':
                 address = Web3.toChecksumAddress(params['commutoSwapAddress'])
-                self.interfaceCommutoSwapTests[address].testOfferServiceHandleOfferCanceledEvent()
-                self.wfile.write(bytes())
+                offer_cancellation_transaction_hash = self.interfaceCommutoSwapTests[address]\
+                    .testOfferServiceHandleOfferCanceledEvent()
+                response = {
+                    "offerCancellationTransactionHash": offer_cancellation_transaction_hash.hex()
+                }
+                self.wfile.write(bytes(json.dumps(response).encode()))
         elif self.path.__contains__('/test_offerservice_handleOfferTakenEvent'):
             query = urlparse(self.path).query
             params = dict(parse_qsl(query))
