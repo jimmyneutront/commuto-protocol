@@ -101,7 +101,7 @@ class InterfaceCommutoSwapTest(CommutoSwapTest):
 
         return maker_as_seller_swap_id
 
-    def testBlockchainServiceListenOfferOpenedCanceled(self):
+    def testBlockchainServiceListenOfferOpenedCanceled(self) -> (UUID, HexBytes):
         maker_as_seller_swap_id = uuid4()
         tx_details = {
             "from": self.maker_address,
@@ -128,11 +128,11 @@ class InterfaceCommutoSwapTest(CommutoSwapTest):
             HexBytes(maker_as_seller_swap_id.bytes),
             maker_as_seller_offer
         ).transact(tx_details)
-        self.commuto_swap_contract.functions.cancelOffer(
+        offer_cancellation_tx_hash: HexBytes = self.commuto_swap_contract.functions.cancelOffer(
             HexBytes(maker_as_seller_swap_id.bytes),
         ).transact(tx_details)
 
-        return maker_as_seller_swap_id
+        return maker_as_seller_swap_id, offer_cancellation_tx_hash
 
     def testBlockchainServiceListenOfferOpenedEdited(self):
         maker_as_seller_swap_id = uuid4()

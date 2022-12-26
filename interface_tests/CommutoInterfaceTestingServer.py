@@ -33,10 +33,12 @@ class CommutoInterfaceTestingServer(BaseHTTPRequestHandler):
                 }
                 self.wfile.write(bytes(json.dumps(response).encode()))
             elif params['events'] == 'offer-opened-canceled':
-                offer_id = commuto_swap_test.testBlockchainServiceListenOfferOpenedCanceled()
+                offer_id, offer_cancellation_transaction_hash = commuto_swap_test\
+                    .testBlockchainServiceListenOfferOpenedCanceled()
                 response = {
                     "commutoSwapAddress": str(commuto_swap_test.commuto_swap_contract.address),
                     "offerId": str(offer_id),
+                    "offerCancellationTransactionHash": offer_cancellation_transaction_hash.hex()
                 }
                 self.wfile.write(bytes(json.dumps(response).encode()))
             elif params['events'] == 'offer-opened-edited':
