@@ -127,13 +127,11 @@ class CommutoInterfaceTestingServer(BaseHTTPRequestHandler):
             params = dict(parse_qsl(query))
             self.set_headers()
             offerID = UUID(params['offerID'])
-            interfaceIDString = params['interfaceID']
-            if params['events'] == 'offer-opened' and offerID is not None and interfaceIDString is not None:
+            if params['events'] == 'offer-opened' and offerID is not None:
                 commuto_swap_test = InterfaceCommutoSwapTest()
                 commuto_swap_test.setUp()
                 commuto_swap_test.testOfferServiceHandleOfferOpenedEventForUserIsMakerOffer(
-                    offerID,
-                    interfaceIDString
+                    offerID
                 )
                 response = {
                     "commutoSwapAddress": str(commuto_swap_test.commuto_swap_contract.address),

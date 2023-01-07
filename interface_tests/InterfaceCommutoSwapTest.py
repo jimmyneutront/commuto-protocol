@@ -596,7 +596,7 @@ class InterfaceCommutoSwapTest(CommutoSwapTest):
 
         return self.maker_as_seller_swap_id
 
-    def testOfferServiceHandleOfferOpenedEventForUserIsMakerOffer(self, offer_id: UUID, interface_id: str):
+    def testOfferServiceHandleOfferOpenedEventForUserIsMakerOffer(self, offer_id: UUID):
         tx_details = {
             "from": self.maker_address,
         }
@@ -604,7 +604,7 @@ class InterfaceCommutoSwapTest(CommutoSwapTest):
             "isCreated": True,
             "isTaken": True,
             "maker": self.maker_address,
-            "interfaceId": base64.b64decode(s=interface_id + '=='),
+            "interfaceId": "maker interface Id here".encode("utf-8"),
             "stablecoin": self.dai_deployment_tx_receipt.contractAddress,
             "amountLowerBound": 10000,
             "amountUpperBound": 10000,
