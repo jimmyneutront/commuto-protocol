@@ -1087,3 +1087,66 @@ class InterfaceCommutoSwapTest(CommutoSwapTest):
         self.commuto_swap_contract.functions.reportPaymentReceived(
             swap_id.bytes
         ).transact(tx_details)
+
+    def testDisputeServiceRaiseDispute(self, swap_id: UUID):
+        tx_details = {
+            # The account used by interfaces during tests
+            "from": self.w3.eth.accounts[1],
+        }
+        maker_as_buyer_offer = {
+            "isCreated": True,
+            "isTaken": False,
+            "maker": self.w3.eth.accounts[1],
+            "interfaceId": bytes(),
+            "stablecoin": self.dai_deployment_tx_receipt.contractAddress,
+            "amountLowerBound": 10000,
+            "amountUpperBound": 10000,
+            "securityDepositAmount": 1000,
+            "serviceFeeRate": 100,
+            "direction": 0,
+            "settlementMethods": ['{"f":"USD","p":"SWIFT","m":"1.00"}'.encode("utf-8"), ],
+            "protocolVersion": 0,
+        }
+        self.test_dai_contract.functions.increaseAllowance(
+            self.commuto_swap_deployment_tx_receipt.contractAddress,
+            1100,
+        ).transact(tx_details)
+        self.commuto_swap_contract.functions.openOffer(
+            HexBytes(swap_id.bytes),
+            maker_as_buyer_offer
+        ).transact(tx_details)
+        tx_details = {
+            # NOT used by interfaces during tests, which is what we want because the interface user is the maker
+            "from": self.w3.eth.accounts[0],
+        }
+        maker_as_buyer_swap = {
+            "isCreated": False,
+            "requiresFill": True,
+            "maker": self.w3.eth.accounts[1],
+            "makerInterfaceId": bytes(),
+            "taker": self.w3.eth.accounts[0],
+            "takerInterfaceId": bytes(),
+            "stablecoin": self.dai_deployment_tx_receipt.contractAddress,
+            "amountLowerBound": 10000,
+            "amountUpperBound": 10000,
+            "securityDepositAmount": 1000,
+            "takenSwapAmount": 10000,
+            "serviceFeeAmount": 100,
+            "serviceFeeRate": 100,
+            "direction": 0,
+            "settlementMethod": '{"f":"USD","p":"SWIFT","m":"1.00"}'.encode("utf-8"),
+            "protocolVersion": 0,
+            "isPaymentSent": True,
+            "isPaymentReceived": True,
+            "hasBuyerClosed": True,
+            "hasSellerClosed": True,
+            "disputeRaiser": 0,
+        }
+        self.test_dai_contract.functions.increaseAllowance(
+            self.commuto_swap_deployment_tx_receipt.contractAddress,
+            11100
+        ).transact(tx_details)
+        self.commuto_swap_contract.functions.takeOffer(
+            swap_id.bytes,
+            maker_as_buyer_swap,
+        ).transact(tx_details)
